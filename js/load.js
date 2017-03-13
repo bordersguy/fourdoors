@@ -21,6 +21,11 @@ var loadState = {
         game.load.image('submit', 'assets/submitbutton.png');
         game.load.image('clear', 'assets/clearbutton.png');
         game.load.image('board', 'assets/boardgame.png');
+        game.load.image('die', 'assets/dice.png');
+        game.load.image('sheet', 'assets/characterFrame.png');
+        game.load.image('sheetX', 'assets/characterFrameX.png');
+        game.load.image('card', 'assets/cardCover.png');
+        game.load.image('token', 'assets/token.png');
     },
     
     create: function () {
