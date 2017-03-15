@@ -5,6 +5,15 @@ var c4;
 var c5;
 var c6;
 var cList;
+var cSet = [false, false, false, false, false, false];
+
+var p1;
+var p2;
+var p3;
+var p4;
+var p5;
+var p6;
+var pList = [0,1,2,3,4,5];
 
 var goldText;
 var attackText;
@@ -92,55 +101,127 @@ function TurnOnCharacters () {
         
         cList[i].inputEnabled = true;
         cList[i].events.onInputDown.add(AddStats, cList[i]);
+        cList[i].name = "c" + (i + 1).toString();
     }
 }
 
 
 function AddStats(player) {
         
-        // if (this.goldText) {
+        for (var i = 0; i < cSet.length; i++) {
+            
+            var pName = player.name;
+            
+            var setPlayer = parseInt(pName.substring(1,2)) - 1;
+            
+            if (setPlayer == i && cSet[i] == false) {
+                
+                cSet[i] = true;
+                
+                PickRace(player);
         
-        //     this.goldText.setText("");
-        //     this.attackText.setText("");
-        //     this.lifeText.setText("");
-        // }
+                var modifier = [-1, 1, 2];
+                var pick = Math.floor(Math.random() * modifier.length);
+                var gold = (4 + modifier[pick]).toString();
+                modifier.splice(pick, 1);
+                
+                pick = Math.floor(Math.random() * modifier.length);
+                var attack = (4 + modifier[pick]).toString();
+                modifier.splice(pick, 1);
+                
+                var life = (4 + modifier[0]).toString();
+                
+                var goldStyle = { font: "25px Impact", fill: "green", 
+                wordWrap: true, align: "center", backgroundColor: "transparent" };
+                
+                var attackStyle = { font: "25px Impact", fill: "white", 
+                wordWrap: true, align: "center", backgroundColor: "transparent" };
+                
+                var lifeStyle = { font: "25px Impact", fill: "black", 
+                wordWrap: true, align: "center", backgroundColor: "transparent" };
+                
+                if (player == c1 || player == c2 || player == c3) {
+                
+                    goldText = game.add.text(16, 3, gold, goldStyle);
+                    attackText = game.add.text(9, 46, attack, attackStyle);
+                    lifeText = game.add.text(16, 88, life, lifeStyle);
+                }
+                else {
+                
+                    goldText = game.add.text(72, 3, gold, goldStyle);
+                    attackText = game.add.text(79, 46, attack, attackStyle);
+                    lifeText = game.add.text(72, 88, life, lifeStyle);
+                }
+        
+                player.addChild(goldText);
+                player.addChild(attackText);
+                player.addChild(lifeText);
+                
+                return;
+            }
+            
+            
+            
+        }
         
         
-        var modifier = [-1, 1, 2];
-        var pick = Math.floor(Math.random() * modifier.length);
-        var gold = (4 + modifier[pick]).toString();
-        modifier.splice(pick, 1);
+
+    
+}
+
+
+function PickRace(player) {
+    var randomChoice = Math.floor(Math.random() * 6);
+    
+       if (player == c1 || player == c2 || player == c3) {
         
-        pick = Math.floor(Math.random() * modifier.length);
-        var attack = (4 + modifier[pick]).toString();
-        modifier.splice(pick, 1);
-        
-        var life = (4 + modifier[0]).toString();
-        
-        var goldStyle = { font: "25px Impact", fill: "green", 
-        wordWrap: true, align: "center", backgroundColor: "transparent" };
-        
-        var attackStyle = { font: "25px Impact", fill: "white", 
-        wordWrap: true, align: "center", backgroundColor: "transparent" };
-        
-        var lifeStyle = { font: "25px Impact", fill: "black", 
-        wordWrap: true, align: "center", backgroundColor: "transparent" };
-        
-        if (player == c1 || player == c2 || player == c3) {
-        
-            goldText = game.add.text(16, 3, gold, goldStyle);
-            attackText = game.add.text(9, 46, attack, attackStyle);
-            lifeText = game.add.text(16, 88, life, lifeStyle);
+            var x = 55;
+            var y = 65;
         }
         else {
         
-            goldText = game.add.text(72, 3, gold, goldStyle);
-            attackText = game.add.text(79, 46, attack, attackStyle);
-            lifeText = game.add.text(72, 88, life, lifeStyle);
+            var x = 45;
+            var y = 65;
         }
-
-        player.addChild(goldText);
-        player.addChild(attackText);
-        player.addChild(lifeText);
+    
+    
+    switch (randomChoice) {
+        case 0:
+            p1 = game.add.sprite(x, y, 'elf');
+            player.addChild(p1);
+            p1.anchor.set(0.5,0.5);
+            break;
+        
+        case 1:
+            p2 = game.add.sprite(x, y, 'hobbit');
+            player.addChild(p2);
+            p2.anchor.set(0.5,0.5);
+            break;
+        
+        case 2:
+            p3 = game.add.sprite(x, y, 'knight');
+            player.addChild(p3);
+            p3.anchor.set(0.5,0.5);
+            break;
+                
+        case 3:
+            p4 = game.add.sprite(x, y, 'ogre');
+            player.addChild(p4);
+            p4.anchor.set(0.5,0.5);
+            break;
+    
+        case 4:
+            p5 = game.add.sprite(x, y, 'warrior');
+            player.addChild(p5);
+            p5.anchor.set(0.5,0.5);
+            break;
+        
+        case 5:
+            p6 = game.add.sprite(x, y, 'wizard');
+            player.addChild(p6);
+            p6.anchor.set(0.5,0.5);
+            break;
+   
+    }
     
 }

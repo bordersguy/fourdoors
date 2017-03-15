@@ -2,7 +2,7 @@ var bootState = {
     
     preload: function () {
         
-        game.load.image('menu', 'assets/MenuScreen.png');
+        game.load.image('ogre', 'assets/ogre.png');
         
     },
     
@@ -10,7 +10,7 @@ var bootState = {
         
            game.physics.startSystem(Phaser.Physics.ARCADE);
            
-           game.add.sprite(0,0,'menu');
+           game.add.sprite(0,0,'ogre');
            
            
            var loadingText = game.add.text(300,150, 'Enjoy!', { fill: '#ffffff', fontSize: '60px' });
