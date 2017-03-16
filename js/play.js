@@ -7,6 +7,7 @@ var c6;
 var cList;
 var cSet = [false, false, false, false, false, false];
 
+var race;
 var p1;
 var p2;
 var p3;
@@ -63,6 +64,8 @@ create: function () {
     
     TurnOnCharacters();
     
+    //packList = [pack1, pack2, pack3, pack4, pack5, pack6];
+    
     //Create Card
     card = this.game.add.button (75, 500, 'card', ShowQuestion, this, 2,1,0);
     
@@ -116,7 +119,7 @@ function TurnOnCharacters () {
         cList[i].events.onInputDown.add(AddStats, cList[i]);
         cList[i].name = "c" + (i + 1).toString();
         
-        packList[i] = game.add.group();
+        packList[i] = this.game.add.group();
     }
 }
 
@@ -133,7 +136,9 @@ function AddStats(player) {
                 
                 cSet[i] = true;
                 
-                PickRace(player);
+                player.addChild(packList[i]);
+                
+                PickRace(player, i);
         
                 var modifier = [-1, 1, 2];
                 var pick = Math.floor(Math.random() * modifier.length);
@@ -175,16 +180,18 @@ function AddStats(player) {
                 
                 deletePlayer.name = "delete" + player.name;
                 
-                player.addChild(goldText);
-                player.addChild(attackText);
-                player.addChild(lifeText);
-                player.addChild(deletePlayer);
+                
+                
+                
+                // player.addChild(goldText);
+                // player.addChild(attackText);
+                // player.addChild(lifeText);
+                // player.addChild(deletePlayer);
                 
                 packList[i].add(goldText);
                 packList[i].add(attackText);
                 packList[i].add(lifeText);
                 packList[i].add(deletePlayer);
-                
                 
                 deletePlayer.input.priorityID = 10;
                 
@@ -203,7 +210,7 @@ function AddStats(player) {
 }
 
 
-function PickRace(player) {
+function PickRace(player, pNumber) {
     var randomChoice = Math.floor(Math.random() * 6);
     
        if (player == c1 || player == c2 || player == c3) {
@@ -218,46 +225,47 @@ function PickRace(player) {
         }
     
     
+    
     switch (randomChoice) {
         case 0:
-            p1 = this.game.add.sprite(x, y, 'elf');
-            player.addChild(p1);
-            p1.anchor.set(0.5,0.5);
+            race = this.game.add.sprite(x, y, 'elf');
+            packList[pNumber].add(this.race);
+            race.anchor.set(0.5,0.5);
             currentRace = "elf";
             break;
         
         case 1:
-            p2 = this.game.add.sprite(x, y, 'hobbit');
-            player.addChild(p2);
-            p2.anchor.set(0.5,0.5);
+            race = this.game.add.sprite(x, y, 'hobbit');
+            packList[pNumber].add(this.race);
+            race.anchor.set(0.5,0.5);
             currentRace = "hobbit";
             break;
         
         case 2:
-            p3 = this.game.add.sprite(x, y, 'knight');
-            player.addChild(p3);
-            p3.anchor.set(0.5,0.5);
+            race = this.game.add.sprite(x, y, 'knight');
+            packList[pNumber].add(this.race);
+            race.anchor.set(0.5,0.5);
             currentRace = "knight";
             break;
                 
         case 3:
-            p4 = this.game.add.sprite(x, y, 'ogre');
-            player.addChild(p4);
-            p4.anchor.set(0.5,0.5);
+            race = this.game.add.sprite(x, y, 'ogre');
+            packList[pNumber].add(this.race);
+            race.anchor.set(0.5,0.5);
             currentRace = "ogre";
             break;
     
         case 4:
-            p5 = this.game.add.sprite(x, y, 'warrior');
-            player.addChild(p5);
-            p5.anchor.set(0.5,0.5);
+            race = this.game.add.sprite(x, y, 'warrior');
+            packList[pNumber].add(this.race);
+            race.anchor.set(0.5,0.5);
             currentRace = "warrior";
             break;
         
         case 5:
-            p6 = this.game.add.sprite(x, y, 'wizard');
-            player.addChild(p6);
-            p6.anchor.set(0.5,0.5);
+            race = this.game.add.sprite(x, y, 'wizard');
+            packList[pNumber].add(this.race);
+            race.anchor.set(0.5,0.5);
             currentRace = "wizard";
             break;
    
@@ -296,19 +304,27 @@ function DeletePlayer() {
     //var text = game.add.text(200,200, this.name, { font: "200px Arial", fill: "#ff0044", align: "center" });
      
     //rollDie();
-    // var getPlayer = this.name;
-    // var thisPlayer;
-    // for (var i = 0; i < cList.length; i++) {
-        
-    //     if (i.name == getPlayer ){
-    //         thisPlayer = i;
-    //     }
-        
-        
-    // }
     
-    //this.removeChildren(0, this.name.length - 1);
+    var getPlayer = parseInt(this.name.substring(1,2)) - 1;
+    
+    for (var i = 0; i < packList.length; i++) {
+        
+        if (i == getPlayer ) {
+            rollDie();
+            packList[i].remove(goldText);
+            packList[i].remove(attackText);
+            packList[i].remove(lifeText);
+            packList[i].remove(race);
+            //packList[i].removeBetween(0, 3, true, true);
+            //packList[i].removeChildren(0, packList[i].length - 1);
+            //packList[i].destroy(destroyChrildren, soft);
+            return;
+        }
+        
+        
+    }
+    
+   
     
 }
     
-}
