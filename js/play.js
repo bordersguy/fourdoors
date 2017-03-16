@@ -21,6 +21,9 @@ var lifeText;
 
 var card;
 
+var question;
+
+
 var token;
 
 var dice;
@@ -48,7 +51,8 @@ create: function () {
     TurnOnCharacters();
     
     
-    card = game.add.sprite(125, 500, 'card');
+    
+    card = game.add.button (75, 500, 'card', ShowQuestion, this, 2,1,0);
     
     token = game.add.sprite(350, 50, 'token');
     token.inputEnabled = true;
@@ -224,4 +228,19 @@ function PickRace(player) {
    
     }
     
+}
+
+function ShowQuestion() {
+    
+    question = game.add.sprite(300, 0, 'answersheet');
+    var deleteX = game.add.button (500, 50, 'deleteX', DeleteQuestion, this, 2,1,0);
+    
+    question.addChild(deleteX);
+
+}
+
+function DeleteQuestion() {
+    
+    question.destroy();
+
 }

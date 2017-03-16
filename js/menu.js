@@ -21,10 +21,10 @@ var menuState = {
         
     game.plugins.add(PhaserInput.Plugin);
     
-    game.add.sprite(0,0,'board');
+    game.add.sprite(300, 25,'mainmenu');
     
 
-    var button = game.add.button (400,300, 'startbutton', start, this, 2,1,0);
+    var button = game.add.button (450,250, 'startbutton', start, this, 2,1,0);
     
     var button2 = game.add.button (1100,25, 'settings', showSettings, this, 2,1,0);
     
