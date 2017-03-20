@@ -20,6 +20,10 @@ var loadState = {
         game.load.image('sheetX', 'assets/characterFrameX.png');
         game.load.image('card', 'assets/cardCover.png');
         game.load.image('answersheet', 'assets/answersheet.png');
+        game.load.image('outerSpace', 'assets/invisibleOuter.png');
+        game.load.image('turnButton', 'assets/turnButton.png');
+        game.load.image('aSpot', 'assets/aMarker.png');
+        game.load.image('bSpot', 'assets/bMarker.png');
         //Characters
         game.load.image('elf', 'assets/elf.png');
         game.load.image('hobbit', 'assets/hobbit.png');

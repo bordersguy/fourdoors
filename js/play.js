@@ -7,15 +7,25 @@ var c6;
 var cList;
 var cSet = [false, false, false, false, false, false];
 
+//vars used to set the position of the tokens
+var cPos1;
+var cPos2;
+var cPos3;
+var cPos4;
+var cPos5;
+var cPos6;
+var cPosSet = [cPos1,cPos2,cPos3, cPos4, cPos5,cPos6];
+
+
 var race;
 
+//vars used to set character information
 var pack1;
 var pack2;
 var pack3;
 var pack4;
 var pack5;
 var pack6;
-var refreshPack = [pack1, pack2, pack3, pack4, pack5, pack6];
 var packList = [pack1, pack2, pack3, pack4, pack5, pack6];
 
 var goldText;
@@ -45,6 +55,15 @@ var dice;
 var currentRace;
 var getPlayer;
 
+var boardSpaces = [];
+var spaceMaker = 0;
+
+var turn = 0;
+var turnManagerButton;
+var turnText;
+var currentPlayer = 1;
+var aSpot;
+var bSpot;
 
 
 var playState = {
@@ -80,8 +99,13 @@ create: function () {
     dice.inputEnabled = true;
     dice.events.onInputDown.add(rollDie, this);
     
+    CreateBoardSpaces();
     
-    
+    //Create Turn Management Button
+    turnManagerButton = this.game.add.button(1050, 500, "turnButton", manageTurn, 2,1,0);
+    turnText = this.game.add.text(turnManagerButton.width/2, turnManagerButton.height/2, "start", { font: "40px Arial", fill: "black", align: "center" }); 
+    turnManagerButton.addChild(turnText);
+    turnText.anchor.set(0.5, 0.5);
     
     this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
   
@@ -89,11 +113,102 @@ create: function () {
 },
 
 update: function() {
-
+    
+    
 
 }
   
 };
+
+function CreateBoardSpaces() {
+    
+    for (var i = 0; i < 24; i++) {
+        
+        var space = [0,0];
+        
+        boardSpaces.splice(i,0, space);
+        
+        if (i < 6) {
+            
+            boardSpaces[i][0] = (board.x + (spaceMaker * 85.71));
+            boardSpaces[i][1] = (board.y);
+        }
+        
+        if (i > 5 && i < 12) {
+            
+            boardSpaces[i][0] = (board.x + (board.width - 85.71));
+            boardSpaces[i][1] = (board.y + (spaceMaker * 85.71));
+            
+        }
+        
+        if (i > 11 && i < 18) {
+        
+            boardSpaces[i][0] = (board.x + (board.width - 85.71) - (spaceMaker * 85.71));
+            boardSpaces[i][1] = (board.height - 85.71);
+        
+        }
+        
+        if (i > 17 && i < 25) {
+            
+            boardSpaces[i][0] = (board.x);
+            boardSpaces[i][1] = ((board.height - 85.71) - (spaceMaker * 85.71));
+            
+        }
+
+        spaceMaker += 1;
+        
+        if (spaceMaker == 6) {
+            spaceMaker = 0;
+            
+        }
+        
+        
+    }
+    
+    
+    
+}
+
+function manageTurn () {
+    //console.log(turn);
+    switch (turn) {
+        case 0:
+            turnText.setText("roll");
+            turn += 1;
+            break;
+    }
+    
+    
+    
+}
+
+function movePlayer (spot) {
+    
+    tokenList[currentPlayer - 1].position.x = spot.x;
+    tokenList[currentPlayer - 1].position.y = spot.y;
+    
+    //YOU HAVE TO MOVE THIS!!! THIS WILL BE LAID DOWN LAST!!!!!S
+    
+    if (currentPlayer > tokenList.length) {
+        
+        currentPlayer = 1;
+        
+    }
+    else {
+    
+        currentPlayer += 1;
+        
+    }
+    
+    
+    
+    aSpot.destroy();
+    bSpot.destroy();
+    
+    
+    
+}
+
 
 function rollDie() {
     
@@ -104,7 +219,7 @@ function rollDie() {
     
     var rollTime = Math.floor(((Math.random() * 3) + 3) * 1000);
     
-    rollTimer.loop(rollTime, stopDie, this);
+    rollTimer.add(rollTime, stopDie, this);
     
     rollTimer.start();
 }
@@ -112,6 +227,34 @@ function rollDie() {
 function stopDie () {
     
     dice.animations.stop();
+    
+    if (turn == 1) {
+        
+        var newSpot1 = (dice.animations.currentAnim.frame + 1) + cPosSet[currentPlayer - 1];
+        var newSpot2 = cPosSet[currentPlayer - 1] - (dice.animations.currentAnim.frame + 1);
+        console.log("turn = " + currentPlayer);
+        console.log("NS1 = " + newSpot1);
+        console.log("NS2 = " + newSpot2);
+        
+        if (newSpot1 > 23) {
+            
+            newSpot1 -= 24;
+            
+        }
+        
+        if (newSpot2 <= -1) {
+            
+            newSpot2 = 24 + newSpot2;
+        }
+        
+        var aX = boardSpaces[newSpot1][0];
+        var aY = boardSpaces[newSpot1][1];
+        var bX = boardSpaces[newSpot2][0];
+        var bY = boardSpaces[newSpot2][1];
+        
+        aSpot = this.game.add.button(aX, aY, "aSpot", movePlayer, this, 2,1,0);
+        bSpot = this.game.add.button(bX, bY, "bSpot", movePlayer, this, 2,1,0);
+    }
     
 }
 
@@ -271,35 +414,13 @@ function CreateToken(player) {
     //outer box = x85.71 y85.71
     //player is equal to i from AddStats()
     
-    var startSpaceXY = Math.floor(Math.random() * 4);
-    var tokenX;
-    var tokenY;
-    switch (startSpaceXY) {
-        case 0:
-            tokenX = board.x;
-            tokenY = board.y + ((1 * player) * 85.71);
-            break;
-            
-         case 1:
-            tokenX = board.x + ((1 * player) * 85.71);
-            tokenY = board.y;
-            break;
-            
-         case 2:
-            tokenX = board.x + (board.width - 85.71);
-            tokenY = board.y + ((1 * player) * 85.71);
-            break;
-            
-         case 3:
-            tokenX = board.x + ((1 * player) * 85.71);
-            tokenY = board.height - 85.71;
-            break;
-    }
+    var startSpaceXY = Math.floor(Math.random() * 24);
     
-    console.log(startSpaceXY);
-    console.log(tokenX);
-
+    var tokenX = boardSpaces[startSpaceXY][0];
+    var tokenY = boardSpaces[startSpaceXY][1];
     
+    cPosSet[player] = startSpaceXY;
+    console.log(cPosSet[player]);
     
     tokenList[player] = this.game.add.sprite(tokenX, tokenY, currentRace);
     tokenList[player].x = tokenX; 
@@ -310,6 +431,8 @@ function CreateToken(player) {
     tokenName = this.game.add.text(0, 0, currentRace + (player + 1).toString(), { font: "20px Arial", fill: "white", align: "center" });
     tokenList[player].addChild(tokenName);
     tokenName.y = tokenList[player].height;
+    
+ 
 
 }
 
