@@ -6,6 +6,8 @@ var c5;
 var c6;
 var cList;
 var cSet = [false, false, false, false, false, false];
+var totalPlayers = 0;
+var playersList = [];
 
 //vars used to set the position of the tokens
 var cPos1;
@@ -64,6 +66,13 @@ var turnText;
 var currentPlayer = 1;
 var aSpot;
 var bSpot;
+var newSpot1;
+var newSpot2;
+var updatePos;
+
+var questionText;
+var getQuestion = "What's your favorite color?";
+var qType;
 
 
 var playState = {
@@ -176,38 +185,18 @@ function manageTurn () {
             turnText.setText("roll");
             turn += 1;
             break;
+            
+        case 1:
+            UpdateTurnText(updatePos);
+            turn += 1;
+            break;
     }
     
     
     
 }
 
-function movePlayer (spot) {
-    
-    tokenList[currentPlayer - 1].position.x = spot.x;
-    tokenList[currentPlayer - 1].position.y = spot.y;
-    
-    //YOU HAVE TO MOVE THIS!!! THIS WILL BE LAID DOWN LAST!!!!!S
-    
-    if (currentPlayer > tokenList.length) {
-        
-        currentPlayer = 1;
-        
-    }
-    else {
-    
-        currentPlayer += 1;
-        
-    }
-    
-    
-    
-    aSpot.destroy();
-    bSpot.destroy();
-    
-    
-    
-}
+
 
 
 function rollDie() {
@@ -230,8 +219,21 @@ function stopDie () {
     
     if (turn == 1) {
         
-        var newSpot1 = (dice.animations.currentAnim.frame + 1) + cPosSet[currentPlayer - 1];
-        var newSpot2 = cPosSet[currentPlayer - 1] - (dice.animations.currentAnim.frame + 1);
+        CreateMovementToken();
+        
+        
+    }
+    
+}
+
+function CreateMovementToken() {
+    
+    
+    if (cSet[currentPlayer - 1]) {
+    
+        console.log("after roll...CP is " + currentPlayer);
+        newSpot1 = (dice.animations.currentAnim.frame + 1) + cPosSet[currentPlayer - 1];
+        newSpot2 = cPosSet[currentPlayer - 1] - (dice.animations.currentAnim.frame + 1);
         console.log("turn = " + currentPlayer);
         console.log("NS1 = " + newSpot1);
         console.log("NS2 = " + newSpot2);
@@ -252,9 +254,57 @@ function stopDie () {
         var bX = boardSpaces[newSpot2][0];
         var bY = boardSpaces[newSpot2][1];
         
+        
+        
         aSpot = this.game.add.button(aX, aY, "aSpot", movePlayer, this, 2,1,0);
         bSpot = this.game.add.button(bX, bY, "bSpot", movePlayer, this, 2,1,0);
+        
+        turnText.setText("move");
+        
     }
+    else {
+    
+        currentPlayer +=1;
+        CreateMovementToken();
+        
+    }
+    
+    
+    
+    
+}
+
+function movePlayer (spot) {
+    
+    tokenList[currentPlayer - 1].position.x = spot.x;
+    tokenList[currentPlayer - 1].position.y = spot.y;
+    
+    
+    
+    if (spot == aSpot) {
+        
+        updatePos = newSpot1;
+    }
+    else {
+        
+        updatePos = newSpot2;
+        
+    }
+    
+    cPosSet[currentPlayer - 1] = updatePos;
+    
+    //YOU HAVE TO MOVE THIS!!! THIS WILL BE LAID DOWN LAST!!!!!S
+    ResetCurrentPlayer();
+    
+
+    console.log("CP is " + currentPlayer);
+    console.log("totalPlayers is " + totalPlayers);
+    
+    aSpot.destroy();
+    bSpot.destroy();
+    
+    //UpdateTurnText(updatePos);
+    manageTurn();
     
 }
 
@@ -278,11 +328,13 @@ function AddStats(player) {
             
             var pName = player.name;
             
-            var setPlayer = parseInt(pName.substring(1,2)) - 1;
+            var setPlayer = parseInt(pName.substring(1,2), 10) - 1;
             
             if (setPlayer == i && cSet[i] == false) {
                 
                 cSet[i] = true;
+                
+                totalPlayers += 1;
                 
                 player.addChild(packList[i]);
                 
@@ -442,12 +494,64 @@ function ShowQuestion() {
     var deleteQuestion = this.game.add.button (500, 50, 'deleteX', DeleteQuestion, this, 2,1,0);
     
     question.addChild(deleteQuestion);
+    GetQuestion();
+    questionText = this.game.add.text(20, 50, getQuestion, { font: "40px Arial", fill: "black", align: "center" }); 
+    question.addChild(questionText);
+}
 
+function GetQuestion() {
+
+    getQuestion = "What's your favorite color?";
+    
+    CreateQuestion(getQuestion);
+
+}
+
+function CreateQuestion(puzzle) {
+    
+    //var pickPuzzle = Math.floor(Math.random() * 3);
+    var pickPuzzle = 0;
+    var deconstructed;
+    
+    switch(pickPuzzle) {
+        
+        case 0:
+            qType = "Fill in the Blank";
+            
+            deconstructed = getQuestion.split(" ");
+            var toDelete = Math.round(deconstructed.length/2);
+            var startPoint = Math.floor(Math.random() * (toDelete));
+            
+            console.log(deconstructed);
+            console.log("TD is " + toDelete);
+            console.log("sp is " + startPoint);
+            for (var i = 0; i < deconstructed.length; i++) {
+                
+               if (i >= startPoint && i < (startPoint + (toDelete)))  {
+                   
+                    deconstructed.splice(i, 1,  "_____");
+                    console.log("checked");
+               }
+                
+                
+            }
+            
+            getQuestion = deconstructed.join(" ");
+            
+            //getQuestion = getQuestion.splice(startPoint, toDelete, "_____");
+        
+            break;
+        
+        
+    }
+    
 }
 
 function DeleteQuestion() {
     
     question.destroy();
+    
+    ResetTurn();
 
 }
 
@@ -459,7 +563,7 @@ function DeletePlayer() {
         
         if (i == getPlayer ) {
             
-           
+            totalPlayers -= 1;
             
             packList[i].getChildAt(1).destroy();
             
@@ -480,3 +584,64 @@ function DeletePlayer() {
     }
 }
     
+    
+function ResetCurrentPlayer () {
+        
+    currentPlayer += 1;
+    
+    if (currentPlayer > totalPlayers) {
+        
+        currentPlayer = 1;
+        
+    }
+}    
+
+function UpdateTurnText(box) {
+
+    var checkSpace;
+    
+    if (box != 0 && box != 6 && box != 12 && box != 18) {
+        
+        checkSpace = 1;
+        
+    }
+    else {
+        
+        checkSpace = box;
+        
+    }
+    
+    
+    switch (checkSpace) {
+        case 1 :
+            turnText.setText("Quest!");
+            break;
+            
+        case 0 :
+            turnText.setText("castle");
+            break;
+            
+        case 6 :
+            turnText.setText("witch");
+            break;
+            
+        case 12 :
+            turnText.setText("forest");
+            break;
+            
+        case 18 :
+            turnText.setText("village");
+            break;
+        
+       
+    }
+    
+    
+    
+}
+
+function ResetTurn() {
+    
+    turn = 0;
+    manageTurn();
+}
