@@ -73,6 +73,10 @@ var updatePos;
 var questionText;
 var getQuestion = "What's your favorite color?";
 var qType;
+var questionExplain;
+var answer;
+var wrongButton;
+var correctButton;
 
 
 var playState = {
@@ -112,7 +116,7 @@ create: function () {
     
     //Create Turn Management Button
     turnManagerButton = this.game.add.button(1050, 500, "turnButton", manageTurn, 2,1,0);
-    turnText = this.game.add.text(turnManagerButton.width/2, turnManagerButton.height/2, "start", { font: "40px Arial", fill: "black", align: "center" }); 
+    turnText = this.game.add.text(turnManagerButton.width/2, turnManagerButton.height/2,  "start", { font: "40px Arial", fill: "black", align: "center" }); 
     turnManagerButton.addChild(turnText);
     turnText.anchor.set(0.5, 0.5);
     
@@ -231,12 +235,12 @@ function CreateMovementToken() {
     
     if (cSet[currentPlayer - 1]) {
     
-        console.log("after roll...CP is " + currentPlayer);
+        //console.log("after roll...CP is " + currentPlayer);
         newSpot1 = (dice.animations.currentAnim.frame + 1) + cPosSet[currentPlayer - 1];
         newSpot2 = cPosSet[currentPlayer - 1] - (dice.animations.currentAnim.frame + 1);
-        console.log("turn = " + currentPlayer);
-        console.log("NS1 = " + newSpot1);
-        console.log("NS2 = " + newSpot2);
+        //console.log("turn = " + currentPlayer);
+        //console.log("NS1 = " + newSpot1);
+        //console.log("NS2 = " + newSpot2);
         
         if (newSpot1 > 23) {
             
@@ -293,12 +297,8 @@ function movePlayer (spot) {
     
     cPosSet[currentPlayer - 1] = updatePos;
     
-    //YOU HAVE TO MOVE THIS!!! THIS WILL BE LAID DOWN LAST!!!!!S
-    ResetCurrentPlayer();
-    
-
-    console.log("CP is " + currentPlayer);
-    console.log("totalPlayers is " + totalPlayers);
+    // console.log("CP is " + currentPlayer);
+    // console.log("totalPlayers is " + totalPlayers);
     
     aSpot.destroy();
     bSpot.destroy();
@@ -363,8 +363,11 @@ function AddStats(player) {
                 if (player == c1 || player == c2 || player == c3) {
                 
                     goldText = this.game.add.text(16, 3, gold, goldStyle);
+                    goldText.name = "goldText";
                     attackText = this.game.add.text(9, 46, attack, attackStyle);
+                    attackText.name = "attackText";
                     lifeText = this.game.add.text(16, 88, life, lifeStyle);
+                    lifeText.name = "lifeText";
                     deletePlayer = this.game.add.button(80, -10, 'deleteX', DeletePlayer, this, 2,1,0);
                     packList[i].add(deletePlayer);
                     packList[i].add(goldText);
@@ -375,8 +378,11 @@ function AddStats(player) {
                 else {
                 
                     goldText = this.game.add.text(72, 3, gold, goldStyle);
+                    goldText.name = "goldText";
                     attackText = this.game.add.text(79, 46, attack, attackStyle);
+                    attackText.name = "attackText";
                     lifeText = this.game.add.text(72, 88, life, lifeStyle);
+                    lifeText.name = "lifeText";
                     deletePlayer = this.game.add.button(-20, -10, 'deleteX', DeletePlayer, this, 2,1,0);
                     packList[i].add(deletePlayer);
                     packList[i].add(goldText);
@@ -491,12 +497,21 @@ function CreateToken(player) {
 function ShowQuestion() {
     
     question = this.game.add.sprite(300, 0, 'answersheet');
-    var deleteQuestion = this.game.add.button (500, 50, 'deleteX', DeleteQuestion, this, 2,1,0);
+    var deleteQuestion = this.game.add.button (500, 525, 'deleteX', DeleteQuestion, this, 2,1,0);
+    wrongButton = this.game.add.button(100, 400, 'wrong', CheckAnswer, this, 2,1,0);
+    correctButton = this.game.add.button(400, 400, 'correct', CheckAnswer, this, 2,1,0);
+    var revealButton = this.game.add.button(250, 500, 'reveal', ShowAnswer, this, 2,1,0);
     
     question.addChild(deleteQuestion);
     GetQuestion();
-    questionText = this.game.add.text(20, 50, getQuestion, { font: "40px Arial", fill: "black", align: "center" }); 
+    questionText = this.game.add.text(20, 150, getQuestion, { font: "40px Arial", fill: "black", align: "center", wordWrap: true, wordWrapWidth: question.width - 20 });
+    questionExplain = this.game.add.text(20, 50, qType, { font: "40px Arial", fill: "blue", align: "center", wordWrap: true, wordWrapWidth: question.width - 20 }); 
+    
+    question.addChild(wrongButton);
+    question.addChild(correctButton);
+    question.addChild(questionExplain);
     question.addChild(questionText);
+    question.addChild(revealButton);
 }
 
 function GetQuestion() {
@@ -510,21 +525,22 @@ function GetQuestion() {
 function CreateQuestion(puzzle) {
     
     //var pickPuzzle = Math.floor(Math.random() * 3);
-    var pickPuzzle = 0;
+    var pickPuzzle = 2;
     var deconstructed;
     
     switch(pickPuzzle) {
         
         case 0:
             qType = "Fill in the Blank";
-            
+            getQuestion = "My favorite food is cheese pizza!";
+            answer = getQuestion;
             deconstructed = getQuestion.split(" ");
             var toDelete = Math.round(deconstructed.length/2);
-            var startPoint = Math.floor(Math.random() * (toDelete));
+            var startPoint = Math.floor(Math.random() * (toDelete + 1));
             
-            console.log(deconstructed);
-            console.log("TD is " + toDelete);
-            console.log("sp is " + startPoint);
+            // console.log(deconstructed);
+            // console.log("TD is " + toDelete);
+            // console.log("sp is " + startPoint);
             for (var i = 0; i < deconstructed.length; i++) {
                 
                if (i >= startPoint && i < (startPoint + (toDelete)))  {
@@ -541,15 +557,111 @@ function CreateQuestion(puzzle) {
             //getQuestion = getQuestion.splice(startPoint, toDelete, "_____");
         
             break;
+            
+        case 1:
+            qType = "Answer the Question";
+            getQuestion = "What's your name?";
+            answer = "My name is ______ .";
+            deconstructed = getQuestion.split(" ");
+          
+            
+            //getQuestion = getQuestion.splice(startPoint, toDelete, "_____");
+        
+            break;
+        
+        
+        case 2:
+            qType = "Sentence Scramble";
+            getQuestion = "My favorite food is cheese pizza!";
+            answer = getQuestion;
+            deconstructed = getQuestion.split(" ");
+            var newOrder = [];
+            var sentenceLength = deconstructed.length;
+           
+            for (var i = 0; i < sentenceLength; i++) {
+                    
+                    var randomPick = Math.floor(Math.random() * deconstructed.length);
+                    console.log(randomPick);
+                    
+                    
+                    
+                    newOrder[i] = deconstructed[randomPick];
+                    
+                    deconstructed.splice(randomPick, 1);
+               
+               
+               
+                
+                
+            }
+            
+            getQuestion = newOrder.join(" ");
+
+            
+            
+            //getQuestion = getQuestion.splice(startPoint, toDelete, "_____");
+        
+            break;
+        
+    }
+    
+}
+
+function CheckAnswer(result) {
+    
+    //console.log("cp is " + currentPlayer);
+    
+    //console.log(packList[currentPlayer - 1].getChildAt(2).text);
+    // console.log(packList[currentPlayer - 1].getChildAt(0));
+    // console.log(packList[currentPlayer - 1].getChildAt(1));
+    // console.log(packList[currentPlayer - 1].getChildAt(2));
+    // console.log(packList[currentPlayer - 1].getChildAt(3));
+    // console.log(packList[currentPlayer - 1].getChildAt(4));
+    
+    
+    var getGold = packList[currentPlayer - 1].getChildAt(2);
+    var getLife = packList[currentPlayer - 1].getChildAt(4);
+    
+    //ADD RESULT OF LIFE = 0 WHEN ADDING DEATH CODE
+    if (result == wrongButton) {
+        
+        if (parseInt(getGold.text, 10) >= 1) {
+            
+            getGold = getGold.setText((parseInt(getGold.text, 10) - 1).toString());
+                
+        }
+        else {
+            
+            getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
+            
+        }
+        
         
         
     }
+    else {
+        
+         getGold = getGold.setText((parseInt(getGold.text, 10) + 1).toString());
+        
+        
+    }
+    
+    
+}
+
+function ShowAnswer(argument) {
+    
+    var showAnswer = this.game.add.text(20, 250, answer, { font: "40px Arial", fill: "green", align: "center", wordWrap: true, wordWrapWidth: question.width - 20 }); 
+    question.addChild(showAnswer);
     
 }
 
 function DeleteQuestion() {
     
     question.destroy();
+    
+    //YOU HAVE TO MOVE THIS!!! THIS WILL BE LAID DOWN LAST!!!!!S
+    ResetCurrentPlayer();
     
     ResetTurn();
 

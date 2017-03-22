@@ -24,6 +24,9 @@ var loadState = {
         game.load.image('turnButton', 'assets/turnButton.png');
         game.load.image('aSpot', 'assets/aMarker.png');
         game.load.image('bSpot', 'assets/bMarker.png');
+        game.load.image('correct', 'assets/correct.png');
+        game.load.image('wrong', 'assets/wrong.png');
+        game.load.image('reveal', 'assets/revealAnswer.png');
         //Characters
         game.load.image('elf', 'assets/elf.png');
         game.load.image('hobbit', 'assets/hobbit.png');
