@@ -77,7 +77,7 @@ var questionExplain;
 var answer;
 var wrongButton;
 var correctButton;
-
+var shuffledWord;
 
 var playState = {
  
@@ -524,9 +524,15 @@ function GetQuestion() {
 
 function CreateQuestion(puzzle) {
     
-    //var pickPuzzle = Math.floor(Math.random() * 3);
-    var pickPuzzle = 2;
+    var pickPuzzle = Math.floor(Math.random() * 4);
+    //var pickPuzzle = 4;
     var deconstructed;
+    var toDelete;
+    var startPoint;
+    var randomPick;
+    var sentenceLength;
+    var newOrder;
+    
     
     switch(pickPuzzle) {
         
@@ -535,8 +541,8 @@ function CreateQuestion(puzzle) {
             getQuestion = "My favorite food is cheese pizza!";
             answer = getQuestion;
             deconstructed = getQuestion.split(" ");
-            var toDelete = Math.round(deconstructed.length/2);
-            var startPoint = Math.floor(Math.random() * (toDelete + 1));
+            toDelete = Math.round(deconstructed.length/2);
+            startPoint = Math.floor(Math.random() * (toDelete + 1));
             
             // console.log(deconstructed);
             // console.log("TD is " + toDelete);
@@ -575,12 +581,12 @@ function CreateQuestion(puzzle) {
             getQuestion = "My favorite food is cheese pizza!";
             answer = getQuestion;
             deconstructed = getQuestion.split(" ");
-            var newOrder = [];
-            var sentenceLength = deconstructed.length;
+            newOrder = [];
+            sentenceLength = deconstructed.length;
            
             for (var i = 0; i < sentenceLength; i++) {
                     
-                    var randomPick = Math.floor(Math.random() * deconstructed.length);
+                    randomPick = Math.floor(Math.random() * deconstructed.length);
                     console.log(randomPick);
                     
                     
@@ -588,11 +594,7 @@ function CreateQuestion(puzzle) {
                     newOrder[i] = deconstructed[randomPick];
                     
                     deconstructed.splice(randomPick, 1);
-               
-               
-               
-                
-                
+
             }
             
             getQuestion = newOrder.join(" ");
@@ -602,9 +604,46 @@ function CreateQuestion(puzzle) {
             //getQuestion = getQuestion.splice(startPoint, toDelete, "_____");
         
             break;
+            
+            
+            case 3:
+            qType = "Scramble Words";
+            getQuestion = "My favorite food is cheese pizza!";
+            answer = getQuestion;
+            deconstructed = getQuestion.split(" ");
+            newOrder = [];
+            sentenceLength = deconstructed.length;
+           
+                for (var i = 0; i < sentenceLength; i++) {
+                    
+                    var word = deconstructed[i];
+                    //var wordLength = deconstructed[i];
+                    
+                    ShuffelWord(word);
+                    
+                    newOrder[i] = shuffledWord;
+                    
+                }
+            
+           
+   
+            getQuestion = newOrder.join(" ");
+            break;
         
     }
     
+}
+
+function ShuffelWord (word){
+    shuffledWord = '';
+    var charIndex = 0;
+    word = word.split('');
+    while(word.length > 0){
+        charIndex = word.length * Math.random() << 0;
+        shuffledWord += word[charIndex];
+        word.splice(charIndex,1);
+    }
+    return shuffledWord;
 }
 
 function CheckAnswer(result) {
