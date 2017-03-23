@@ -70,6 +70,7 @@ var newSpot1;
 var newSpot2;
 var updatePos;
 
+var questionPanel;
 var questionText;
 var getQuestion = "What's your favorite color?";
 var qType;
@@ -78,6 +79,12 @@ var answer;
 var wrongButton;
 var correctButton;
 var shuffledWord;
+var showAnswer;
+var revealButton;
+var deleteQuestion;
+var restButton;
+var treasureButton;
+var monsterButton;
 
 var playState = {
  
@@ -496,11 +503,15 @@ function CreateToken(player) {
 
 function ShowQuestion() {
     
-    question = this.game.add.sprite(300, 0, 'answersheet');
-    var deleteQuestion = this.game.add.button (500, 525, 'deleteX', DeleteQuestion, this, 2,1,0);
+    questionPanel = this.game.add.sprite(300, 0, 'answersheet');
+    question = this.game.add.group();
+    question.width = questionPanel.width;
+    questionPanel.addChild(question);
+    
+    deleteQuestion = this.game.add.button (500, 525, 'deleteX', DeleteQuestion, this, 2,1,0);
     wrongButton = this.game.add.button(100, 400, 'wrong', CheckAnswer, this, 2,1,0);
     correctButton = this.game.add.button(400, 400, 'correct', CheckAnswer, this, 2,1,0);
-    var revealButton = this.game.add.button(250, 500, 'reveal', ShowAnswer, this, 2,1,0);
+    revealButton = this.game.add.button(250, 500, 'reveal', ShowAnswer, this, 2,1,0);
     
     question.addChild(deleteQuestion);
     GetQuestion();
@@ -512,6 +523,7 @@ function ShowQuestion() {
     question.addChild(questionExplain);
     question.addChild(questionText);
     question.addChild(revealButton);
+    
 }
 
 function GetQuestion() {
@@ -534,19 +546,18 @@ function CreateQuestion(puzzle) {
     var newOrder;
     
     
+    
     switch(pickPuzzle) {
         
         case 0:
+            
             qType = "Fill in the Blank";
             getQuestion = "My favorite food is cheese pizza!";
             answer = getQuestion;
             deconstructed = getQuestion.split(" ");
             toDelete = Math.round(deconstructed.length/2);
             startPoint = Math.floor(Math.random() * (toDelete + 1));
-            
-            // console.log(deconstructed);
-            // console.log("TD is " + toDelete);
-            // console.log("sp is " + startPoint);
+       
             for (var i = 0; i < deconstructed.length; i++) {
                 
                if (i >= startPoint && i < (startPoint + (toDelete)))  {
@@ -554,14 +565,8 @@ function CreateQuestion(puzzle) {
                     deconstructed.splice(i, 1,  "_____");
                     console.log("checked");
                }
-                
-                
             }
-            
             getQuestion = deconstructed.join(" ");
-            
-            //getQuestion = getQuestion.splice(startPoint, toDelete, "_____");
-        
             break;
             
         case 1:
@@ -570,11 +575,7 @@ function CreateQuestion(puzzle) {
             answer = "My name is ______ .";
             deconstructed = getQuestion.split(" ");
           
-            
-            //getQuestion = getQuestion.splice(startPoint, toDelete, "_____");
-        
             break;
-        
         
         case 2:
             qType = "Sentence Scramble";
@@ -583,26 +584,20 @@ function CreateQuestion(puzzle) {
             deconstructed = getQuestion.split(" ");
             newOrder = [];
             sentenceLength = deconstructed.length;
+            
            
             for (var i = 0; i < sentenceLength; i++) {
                     
                     randomPick = Math.floor(Math.random() * deconstructed.length);
                     console.log(randomPick);
-                    
-                    
-                    
+   
                     newOrder[i] = deconstructed[randomPick];
                     
                     deconstructed.splice(randomPick, 1);
-
             }
-            
+
             getQuestion = newOrder.join(" ");
 
-            
-            
-            //getQuestion = getQuestion.splice(startPoint, toDelete, "_____");
-        
             break;
             
             
@@ -613,20 +608,19 @@ function CreateQuestion(puzzle) {
             deconstructed = getQuestion.split(" ");
             newOrder = [];
             sentenceLength = deconstructed.length;
+            
            
                 for (var i = 0; i < sentenceLength; i++) {
                     
                     var word = deconstructed[i];
                     //var wordLength = deconstructed[i];
                     
-                    ShuffelWord(word);
+                    ShuffleWord(word);
                     
                     newOrder[i] = shuffledWord;
                     
                 }
-            
-           
-   
+
             getQuestion = newOrder.join(" ");
             break;
         
@@ -634,7 +628,7 @@ function CreateQuestion(puzzle) {
     
 }
 
-function ShuffelWord (word){
+function ShuffleWord (word){
     shuffledWord = '';
     var charIndex = 0;
     word = word.split('');
@@ -647,17 +641,7 @@ function ShuffelWord (word){
 }
 
 function CheckAnswer(result) {
-    
-    //console.log("cp is " + currentPlayer);
-    
-    //console.log(packList[currentPlayer - 1].getChildAt(2).text);
-    // console.log(packList[currentPlayer - 1].getChildAt(0));
-    // console.log(packList[currentPlayer - 1].getChildAt(1));
-    // console.log(packList[currentPlayer - 1].getChildAt(2));
-    // console.log(packList[currentPlayer - 1].getChildAt(3));
-    // console.log(packList[currentPlayer - 1].getChildAt(4));
-    
-    
+
     var getGold = packList[currentPlayer - 1].getChildAt(2);
     var getLife = packList[currentPlayer - 1].getChildAt(4);
     
@@ -674,15 +658,27 @@ function CheckAnswer(result) {
             getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
             
         }
-        
-        
-        
     }
     else {
         
-         getGold = getGold.setText((parseInt(getGold.text, 10) + 1).toString());
+        getGold = getGold.setText((parseInt(getGold.text, 10) + 1).toString());
+
+        var allKids = 0;
         
+        question.forEach(function(child) {
+
+                allKids += 1;
+    
+            });
+
+        for (var i = 0; i < allKids - 1; i++) {
+            
+            question.getChildAt(1).destroy();
+            
+        }
         
+        GoToQuest();
+
     }
     
     
@@ -690,14 +686,33 @@ function CheckAnswer(result) {
 
 function ShowAnswer(argument) {
     
-    var showAnswer = this.game.add.text(20, 250, answer, { font: "40px Arial", fill: "green", align: "center", wordWrap: true, wordWrapWidth: question.width - 20 }); 
+    showAnswer = this.game.add.text(20, 250, answer, { font: "40px Arial", fill: "green", align: "center", wordWrap: true, wordWrapWidth: question.width - 20 }); 
     question.addChild(showAnswer);
     
 }
 
+function GoToQuest() {
+    
+    var choiceText = this.game.add.text(50, 50, "Great!  Here's 1 Gold. \nWhat now?", { font: "40px Arial", fill: "green", align: "center", wordWrap: true, wordWrapWidth: question.width - 20 });
+    
+    restButton = this.game.add.button(250, 200, "restButton", ManageQuest, 2,1,0);
+    monsterButton = this.game.add.button(100, 400, "monsterButton", ManageQuest, 2,1,0);
+    treasureButton = this.game.add.button(400, 400, "treasureButton", ManageQuest, 2,1,0);
+    
+    question.addChild(restButton);
+    question.addChild(monsterButton);
+    question.addChild(treasureButton);
+    
+    question.addChild(choiceText);
+}
+
+function ManageQuest() {
+    // body...
+}
+
 function DeleteQuestion() {
     
-    question.destroy();
+    questionPanel.destroy();
     
     //YOU HAVE TO MOVE THIS!!! THIS WILL BE LAID DOWN LAST!!!!!S
     ResetCurrentPlayer();
