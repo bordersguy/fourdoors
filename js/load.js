@@ -30,7 +30,17 @@ var loadState = {
         this.game.load.image('monsterButton', 'assets/huntButton.png');
         this.game.load.image('treasureButton', 'assets/treasureButton.png');
         this.game.load.image('restButton', 'assets/restButton.png');
+        this.game.load.image('ring', 'assets/ring.png');
+        this.game.load.image('wand', 'assets/wand.png');
+        this.game.load.image('boots', 'assets/boots.png');
+        this.game.load.image('potion', 'assets/potion.png');
+        this.game.load.image('sword', 'assets/sword.png');
+        this.game.load.image('shield', 'assets/shield.png');
+        this.game.load.image('coin', 'assets/coin.png');
+        this.game.load.image('garbage', 'assets/garbageButton.png');
+        this.game.load.image('take', 'assets/takeButton.png');
         
+
         
         //Characters
         this.game.load.image('elf', 'assets/elf.png');

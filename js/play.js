@@ -85,6 +85,16 @@ var deleteQuestion;
 var restButton;
 var treasureButton;
 var monsterButton;
+var choiceText;
+
+var monsterModifier;
+var monster;
+
+var treasureType;
+var bonusType;
+var currentItem;
+var itemModifier;
+var itemObject;
 
 var playState = {
  
@@ -232,6 +242,12 @@ function stopDie () {
         
         CreateMovementToken();
         
+        
+    }
+    
+    if (turn == 4) {
+        
+        AttackResult();
         
     }
     
@@ -693,7 +709,7 @@ function ShowAnswer(argument) {
 
 function GoToQuest() {
     
-    var choiceText = this.game.add.text(50, 50, "Great!  Here's 1 Gold. \nWhat now?", { font: "40px Arial", fill: "green", align: "center", wordWrap: true, wordWrapWidth: question.width - 20 });
+    choiceText = this.game.add.text(50, 50, "Great!  Here's 1 Gold. \nWhat now?", { font: "40px Arial", fill: "green", align: "center", wordWrap: true, wordWrapWidth: question.width - 20 });
     
     restButton = this.game.add.button(250, 200, "restButton", ManageQuest, 2,1,0);
     monsterButton = this.game.add.button(100, 400, "monsterButton", ManageQuest, 2,1,0);
@@ -706,8 +722,158 @@ function GoToQuest() {
     question.addChild(choiceText);
 }
 
-function ManageQuest() {
-    // body...
+function ManageQuest(choice) {
+    
+    var getGold = packList[currentPlayer - 1].getChildAt(2);
+    var getLife = packList[currentPlayer - 1].getChildAt(4);
+    
+    question.getChildAt(1).destroy();
+    question.getChildAt(1).destroy();
+    question.getChildAt(1).destroy();
+    
+    switch (choice) {
+        case restButton:
+            
+            var resting = Math.floor(Math.random() * 10 + 1);
+           
+           
+            
+            if (resting == 1) {
+                
+                getGold = getGold.setText((parseInt(getGold.text, 10) - 1).toString());
+                getLife = getLife.setText((parseInt(getLife.text, 10) + 1).toString());
+                choiceText.setText("Oh no!  While you were sleeping a thief stole 1 gold! \nGain 1 life.");
+                
+            }
+            else if (resting == 2) {
+                choiceText.setText("No sleep!  A monster wakes you up!");
+                turn = 4;
+                FightMonster();
+                
+            }
+            else {
+                choiceText.setText("Sweet Dreams! \nGain 1 life.");
+                getLife = getLife.setText((parseInt(getLife.text, 10) + 1).toString());
+                
+            }
+            
+            
+            break;
+        
+        case monsterButton:
+            turn = 4;
+            FightMonster();
+            break;
+            
+        case treasureButton:
+            
+            TreasureHunt();
+            break;
+    }
+    
+    
+    
+    
+}
+
+function FightMonster() {
+    
+    var monsterList = ['dragon', 'zombie', 'ghost', 'troll',
+    'giant snake', 'werewolf', 'thief', 'vampire'];
+    
+    var pickMonster = Math.floor(Math.random() * monsterList.length);
+    monster = monsterList[pickMonster];
+    //var monsterbase =  packList[currentPlayer - 1].getChildAt(3);
+    monsterModifier = getRandomInt(2,4);
+    //var monsterPower = monsterbase + monsterModifier;
+     
+    choiceText.setText("A " + monster + " is attacking you! \nRoll to fight! \nYou need a " + monsterModifier.toString() + " to win!!!" );
+    
+}
+
+function AttackResult() {
+    var getLife = packList[currentPlayer - 1].getChildAt(4);
+    var getAttack = packList[currentPlayer - 1].getChildAt(3);
+    var dieResult = dice.animations.currentAnim.frame + 1;
+    
+    if (dieResult == monsterModifier) {
+        
+        choiceText.setText("Try again! \nRoll Again!!");
+        return;
+        
+    } else if (dieResult < monsterModifier) {
+        
+        choiceText.setText("Uggghh! The " + monster + " won. \nLose 1 life.");
+        getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
+        turn += 1;
+    }
+    else {
+        choiceText.setText("You won!!  \nGain 1 attack!");
+        getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 1).toString());
+        turn += 1;
+    }
+    
+    
+    
+}
+
+
+function TreasureHunt() {
+    
+    CreateItem();
+    
+    var getGold = packList[currentPlayer - 1].getChildAt(2);
+    
+    var treasureFound = getRandomInt(1,10);
+    
+    if (treasureFound == 1) {
+        
+        choiceText.setText("You looked all day!  \nSorry, but, you found nothing.");
+        
+    } else if (treasureFound == 2){
+        
+        choiceText.setText("No treasure....but you did \nfind 1 Gold.");
+        getGold = getGold.setText((parseInt(getGold.text, 10) - 1).toString());
+        DisplayItem("coin");
+    } else {
+        
+        choiceText.setText("Wow! You found a \n" + currentItem + " !");
+        DisplayItem(itemObject);
+    }
+    
+    //console.log(question);
+
+}
+
+function CreateItem() {
+    
+    treasureType = ['sword', 'ring', 'shield', 'potion', 'wand', 'boots'];
+    bonusType = ['health', 'strength', 'luck', 'speed', 'gold'];
+    
+    itemObject = treasureType[getRandomInt(0, treasureType.length)];
+    itemModifier = bonusType[getRandomInt(0, bonusType.length)];
+    
+    currentItem = itemObject + " of " + itemModifier;
+}
+
+
+function DisplayItem(item) {
+    
+    var displayItem = this.game.add.sprite(200,200, item);
+    var garbageButton = this.game.add.button(100, 400, 'garbage', AddInventory, this, 2,1,0);
+    var keepButton = this.game.add.button(400, 400, 'take', AddInventory, this, 2,1,0);
+    
+    console.log(question);
+    
+    question.addChild(keepButton);
+    question.addChild(garbageButton);
+    question.addChild(displayItem);
+    
+}
+
+function AddInventory() {
+    
+    question.getChildAt(4).destroy();
 }
 
 function DeleteQuestion() {
@@ -810,4 +976,10 @@ function ResetTurn() {
     
     turn = 0;
     manageTurn();
+}
+
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min)) + min;
 }
