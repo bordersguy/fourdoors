@@ -7,7 +7,7 @@ var c6;
 var cList;
 var cSet = [false, false, false, false, false, false];
 var totalPlayers = 0;
-var playersList = [];
+//var playersList = [];
 
 //vars used to set the position of the tokens
 var cPos1;
@@ -41,7 +41,7 @@ var card;
 var board;
 
 var question;
-var test;
+//var test;
 
 var token1;
 var token2;
@@ -95,6 +95,19 @@ var bonusType;
 var currentItem;
 var itemModifier;
 var itemObject;
+var garbageButton;
+var keepButton;
+var inventory;
+var displayItem;
+
+var emitter;
+var emitter1;
+var emitter2;
+var emitter3;
+var emitter4;
+var emitter5;
+var emitter6;
+var emitterList = [emitter, emitter1, emitter2, emitter3, emitter4, emitter5, emitter6];
 
 var playState = {
  
@@ -127,16 +140,20 @@ create: function () {
     dice = this.game.add.sprite(950, 500, 'die');
     dice.animations.add('roll', [0,1,2,3,4,5], 10, true);
     dice.inputEnabled = true;
-    dice.events.onInputDown.add(rollDie, this);
+    dice.events.onInputDown.add(RollDie, this);
     
     CreateBoardSpaces();
     
     //Create Turn Management Button
-    turnManagerButton = this.game.add.button(1050, 500, "turnButton", manageTurn, 2,1,0);
+    turnManagerButton = this.game.add.button(1050, 500, "turnButton", ManageTurn, 2,1,0);
     turnText = this.game.add.text(turnManagerButton.width/2, turnManagerButton.height/2,  "start", { font: "40px Arial", fill: "black", align: "center" }); 
     turnManagerButton.addChild(turnText);
     turnText.anchor.set(0.5, 0.5);
     
+    //Create Particles
+    
+    this.game.physics.startSystem(Phaser.Physics.ARCADE);
+
     this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
   
     this.scale.setScreenSize( true );
@@ -149,6 +166,8 @@ update: function() {
 }
   
 };
+
+
 
 function CreateBoardSpaces() {
     
@@ -199,7 +218,7 @@ function CreateBoardSpaces() {
     
 }
 
-function manageTurn () {
+function ManageTurn () {
     //console.log(turn);
     switch (turn) {
         case 0:
@@ -217,10 +236,7 @@ function manageTurn () {
     
 }
 
-
-
-
-function rollDie() {
+function RollDie() {
     
     dice.animations.play('roll');
     
@@ -229,12 +245,12 @@ function rollDie() {
     
     var rollTime = Math.floor(((Math.random() * 3) + 3) * 1000);
     
-    rollTimer.add(rollTime, stopDie, this);
+    rollTimer.add(rollTime, StopDie, this);
     
     rollTimer.start();
 }
 
-function stopDie () {
+function StopDie () {
     
     dice.animations.stop();
     
@@ -283,8 +299,8 @@ function CreateMovementToken() {
         
         
         
-        aSpot = this.game.add.button(aX, aY, "aSpot", movePlayer, this, 2,1,0);
-        bSpot = this.game.add.button(bX, bY, "bSpot", movePlayer, this, 2,1,0);
+        aSpot = this.game.add.button(aX, aY, "aSpot", MovePlayer, this, 2,1,0);
+        bSpot = this.game.add.button(bX, bY, "bSpot", MovePlayer, this, 2,1,0);
         
         turnText.setText("move");
         
@@ -301,7 +317,7 @@ function CreateMovementToken() {
     
 }
 
-function movePlayer (spot) {
+function MovePlayer (spot) {
     
     tokenList[currentPlayer - 1].position.x = spot.x;
     tokenList[currentPlayer - 1].position.y = spot.y;
@@ -327,10 +343,9 @@ function movePlayer (spot) {
     bSpot.destroy();
     
     //UpdateTurnText(updatePos);
-    manageTurn();
+    ManageTurn();
     
 }
-
 
 function TurnOnCharacters () {
     
@@ -343,7 +358,6 @@ function TurnOnCharacters () {
         packList[i] = this.game.add.group();
     }
 }
-
 
 function AddStats(player) {
         
@@ -426,7 +440,6 @@ function AddStats(player) {
             
         }
 }
-
 
 function PickRace(player, number) {
     var randomChoice = Math.floor(Math.random() * 6);
@@ -817,7 +830,6 @@ function AttackResult() {
     
 }
 
-
 function TreasureHunt() {
     
     CreateItem();
@@ -835,6 +847,12 @@ function TreasureHunt() {
         choiceText.setText("No treasure....but you did \nfind 1 Gold.");
         getGold = getGold.setText((parseInt(getGold.text, 10) - 1).toString());
         DisplayItem("coin");
+    } else if (treasureFound == 3) {
+        
+        turn = 4;
+        choiceText.setText("Uh oh...you found a monster!");
+        FightMonster();
+        
     } else {
         
         choiceText.setText("Wow! You found a \n" + currentItem + " !");
@@ -856,12 +874,11 @@ function CreateItem() {
     currentItem = itemObject + " of " + itemModifier;
 }
 
-
 function DisplayItem(item) {
     
-    var displayItem = this.game.add.sprite(200,200, item);
-    var garbageButton = this.game.add.button(100, 400, 'garbage', AddInventory, this, 2,1,0);
-    var keepButton = this.game.add.button(400, 400, 'take', AddInventory, this, 2,1,0);
+    displayItem = this.game.add.sprite(200 ,200, item);
+    garbageButton = this.game.add.button(100, 400, 'garbage', AddInventory, this, 2,1,0);
+    keepButton = this.game.add.button(400, 400, 'take', AddInventory, this, 2,1,0);
     
     console.log(question);
     
@@ -869,16 +886,88 @@ function DisplayItem(item) {
     question.addChild(garbageButton);
     question.addChild(displayItem);
     
+    CreateParticles("lifeParticle", displayItem, false);
+    
 }
 
-function AddInventory() {
+function AddInventory(choice) {
     
-    question.getChildAt(4).destroy();
+    if (choice == garbageButton) {
+        
+        question.getChildAt(4).destroy();    
+        
+    } else {
+        
+        inventory = this.game.add.sprite (75,80, itemObject);
+        inventory.scale.setTo(.25,.25);
+        packList[currentPlayer - 1].add(inventory);
+        CreateParticles("lifeParticle", inventory, true);
+        
+    }
+    
 }
+
+function CreateParticles(particle, object, mini) {
+    
+    
+
+    //StartParticles(emitter, particle);
+    if (mini == true) {
+        
+        var getPos = cList[currentPlayer - 1];
+        
+        emitterList[1] = this.game.add.emitter(getPos.x + getPos.width - 10  , getPos.y + getPos.height, 100);
+        
+        
+        
+        emitterList[1].maxParticleScale = .35;
+        emitterList[1].minParticleScale = 0.15;
+        
+        emitterList[1].makeParticles(particle);
+
+
+        emitterList[1].gravity = -200;
+
+        emitterList[1].start(false, 500, 100);
+        
+        
+    } else {
+        emitter = this.game.add.emitter(600, object.world.y + object.height, 100);
+        
+        emitter.maxParticleScale = 1.0;
+        emitter.minParticleScale = 0.5;
+        
+        emitter.makeParticles(particle);
+
+
+        emitter.gravity = -200;
+
+        emitter.start(false, 1000, 100);
+        
+    }
+    
+    
+
+    
+}
+
+// function StartParticles(emit, particle) {
+//     console.log("hellooooooo!!")
+
+// }
+
+// function ParticleRelease () {
+    
+    
+// }
 
 function DeleteQuestion() {
     
     questionPanel.destroy();
+    if (emitter) {
+            
+        emitter.destroy();
+    }
     
     //YOU HAVE TO MOVE THIS!!! THIS WILL BE LAID DOWN LAST!!!!!S
     ResetCurrentPlayer();
@@ -915,8 +1004,7 @@ function DeletePlayer() {
         }
     }
 }
-    
-    
+  
 function ResetCurrentPlayer () {
         
     currentPlayer += 1;
@@ -975,7 +1063,7 @@ function UpdateTurnText(box) {
 function ResetTurn() {
     
     turn = 0;
-    manageTurn();
+    ManageTurn();
 }
 
 function getRandomInt(min, max) {
