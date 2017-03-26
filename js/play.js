@@ -18,6 +18,13 @@ var cPos5;
 var cPos6;
 var cPosSet = [cPos1,cPos2,cPos3, cPos4, cPos5,cPos6];
 
+var bonus1;
+var bonus2;
+var bonus3;
+var bonus4;
+var bonus5;
+var bonus6;
+var playerBonus = [bonus1, bonus2, bonus3, bonus4, bonus5, bonus6];
 
 var race;
 
@@ -99,6 +106,8 @@ var garbageButton;
 var keepButton;
 var inventory;
 var displayItem;
+var hasItem;
+var hasBonus;
 
 var emitter;
 var emitter1;
@@ -108,6 +117,8 @@ var emitter4;
 var emitter5;
 var emitter6;
 var emitterList = [emitter, emitter1, emitter2, emitter3, emitter4, emitter5, emitter6];
+
+var particleList = ['goldParticle', 'lifeParticle', 'luckParticle', 'speedParticle', 'strengthParticle' ];
 
 var playState = {
  
@@ -166,8 +177,6 @@ update: function() {
 }
   
 };
-
-
 
 function CreateBoardSpaces() {
     
@@ -796,10 +805,10 @@ function FightMonster() {
     
     var pickMonster = Math.floor(Math.random() * monsterList.length);
     monster = monsterList[pickMonster];
-    //var monsterbase =  packList[currentPlayer - 1].getChildAt(3);
     monsterModifier = getRandomInt(2,4);
-    //var monsterPower = monsterbase + monsterModifier;
-     
+    
+    CheckInventory("sword", "strength");
+
     choiceText.setText("A " + monster + " is attacking you! \nRoll to fight! \nYou need a " + monsterModifier.toString() + " to win!!!" );
     
 }
@@ -864,9 +873,12 @@ function TreasureHunt() {
 }
 
 function CreateItem() {
-    
+    //sword is plus 1 in a fight, ring is nothing, shield will save a life in a fight once then break,
+    //potion is bonus dependent, wand is bonus dependent, boots are bonus dependent.
     treasureType = ['sword', 'ring', 'shield', 'potion', 'wand', 'boots'];
-    bonusType = ['health', 'strength', 'luck', 'speed', 'gold'];
+    //gold is worth 2 gold, life adds 2 life(while wearing), strength adds 1 strength while wearing
+    //luck lets you reroll once(anything) then its gone, speed lets you reroll movement twice then magic is gone.
+    bonusType = ['gold', 'life', 'luck', 'speed', 'strength'];
     
     itemObject = treasureType[getRandomInt(0, treasureType.length)];
     itemModifier = bonusType[getRandomInt(0, bonusType.length)];
@@ -877,16 +889,29 @@ function CreateItem() {
 function DisplayItem(item) {
     
     displayItem = this.game.add.sprite(200 ,200, item);
-    garbageButton = this.game.add.button(100, 400, 'garbage', AddInventory, this, 2,1,0);
-    keepButton = this.game.add.button(400, 400, 'take', AddInventory, this, 2,1,0);
+    
+    if (item != "coin") {
+        
+        garbageButton = this.game.add.button(100, 400, 'garbage', AddInventory, this, 2,1,0);
+        keepButton = this.game.add.button(400, 400, 'take', AddInventory, this, 2,1,0);
+        
+        question.addChild(keepButton);
+        question.addChild(garbageButton);
+            
+    }
     
     console.log(question);
     
-    question.addChild(keepButton);
-    question.addChild(garbageButton);
+
     question.addChild(displayItem);
+    console.log(bonusType);
     
-    CreateParticles("lifeParticle", displayItem, false);
+    if (item != "coin") {
+        
+        CreateParticles(itemModifier + "Particle", displayItem, false);
+            
+    }
+    
     
 }
 
@@ -897,12 +922,14 @@ function AddInventory(choice) {
         question.getChildAt(4).destroy();    
         
     } else {
-        
+
+        DeleteInventory();
+        console.log(packList[currentPlayer - 1]);
         inventory = this.game.add.sprite (75,80, itemObject);
         inventory.scale.setTo(.25,.25);
         packList[currentPlayer - 1].add(inventory);
-        CreateParticles("lifeParticle", inventory, true);
-        
+        CreateParticles(itemModifier + 'Particle', inventory, true);
+        playerBonus[currentPlayer - 1] = [treasureType, bonusType];
     }
     
 }
@@ -917,9 +944,7 @@ function CreateParticles(particle, object, mini) {
         var getPos = cList[currentPlayer - 1];
         
         emitterList[1] = this.game.add.emitter(getPos.x + getPos.width - 10  , getPos.y + getPos.height, 100);
-        
-        
-        
+
         emitterList[1].maxParticleScale = .35;
         emitterList[1].minParticleScale = 0.15;
         
@@ -951,15 +976,32 @@ function CreateParticles(particle, object, mini) {
     
 }
 
-// function StartParticles(emit, particle) {
-//     console.log("hellooooooo!!")
 
-// }
-
-// function ParticleRelease () {
+function CheckInventory(item, modify) {
     
+    var treasure = playerBonus[currentPlayer - 1][0];
+    var bonus = playerBonus[currentPlayer - 1][1];
     
-// }
+    if (item == treasure) {
+        
+        hasItem = true;
+        
+    } else {
+        
+        hasItem = false;
+        
+    }
+    
+    if (bonus == modify) {
+        
+        hasBonus = true;
+        
+    } else {
+        
+        hasBonus = false;
+    }
+    
+}
 
 function DeleteQuestion() {
     
@@ -1003,6 +1045,16 @@ function DeletePlayer() {
             
         }
     }
+}
+
+function DeleteInventory() {
+    
+    if (packList[currentPlayer - 1].length > 6) {
+            
+        packList[currentPlayer - 1].getChildAt(6).destroy();
+            
+    }
+    
 }
   
 function ResetCurrentPlayer () {
