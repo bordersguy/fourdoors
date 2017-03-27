@@ -46,6 +46,8 @@ var loadState = {
         this.game.load.image('goldParticle', 'assets/goldParticle.png');
         this.game.load.image('noMagicButton', 'assets/noMagic.png');
         this.game.load.image('useMagicButton', 'assets/useMagic.png');
+        this.game.load.image('sun', 'assets/sun.png');
+        this.game.load.image('timerBackground', 'assets/timerBackground.png');
         
 
         

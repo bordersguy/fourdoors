@@ -1,6 +1,7 @@
 //To Do: Add Timer to post question choices.
 //       Resize Magic Buttons....and add to question
-
+//       ****I think this is okay***** There's something wrong when the coin runs.
+//       Limit objects to certain classes
 
 var c1;
 var c2;
@@ -127,6 +128,10 @@ var noMagicButton;
 var magicUsed;
 var reroll = false;
 
+var timerBackground;
+var sun;
+var timer;
+
 var playState = {
  
 create: function () {
@@ -167,6 +172,7 @@ create: function () {
     turnText = this.game.add.text(turnManagerButton.width/2, turnManagerButton.height/2,  "start", { font: "40px Arial", fill: "black", align: "center" }); 
     turnManagerButton.addChild(turnText);
     turnText.anchor.set(0.5, 0.5);
+    
     
     //Create Particles
     
@@ -726,9 +732,9 @@ function GoToQuest() {
     
     choiceText = this.game.add.text(50, 50, "Great!  Here's 1 Gold. \nWhat now?", { font: "40px Arial", fill: "green", align: "center", wordWrap: true, wordWrapWidth: question.width - 20 });
     
-    restButton = this.game.add.button(250, 200, "restButton", ManageQuest, 2,1,0);
-    monsterButton = this.game.add.button(100, 400, "monsterButton", ManageQuest, 2,1,0);
-    treasureButton = this.game.add.button(400, 400, "treasureButton", ManageQuest, 2,1,0);
+    restButton = this.game.add.button(250, 200, "restButton", StartActionTimer, 2,1,0);
+    monsterButton = this.game.add.button(100, 400, "monsterButton", StartActionTimer, 2,1,0);
+    treasureButton = this.game.add.button(400, 400, "treasureButton", StartActionTimer, 2,1,0);
     
     question.addChild(restButton);
     question.addChild(monsterButton);
@@ -737,14 +743,21 @@ function GoToQuest() {
     question.addChild(choiceText);
 }
 
+function StartActionTimer(action) {
+    
+    RunTimer(action);
+    
+    question.getChildAt(1).destroy();
+    question.getChildAt(1).destroy();
+    question.getChildAt(1).destroy();    
+}
+
 function ManageQuest(choice) {
     
     var getGold = packList[currentPlayer - 1].getChildAt(2);
     var getLife = packList[currentPlayer - 1].getChildAt(4);
     
-    question.getChildAt(1).destroy();
-    question.getChildAt(1).destroy();
-    question.getChildAt(1).destroy();
+  
     
     switch (choice) {
         case restButton:
@@ -992,10 +1005,14 @@ function DisplayItem(item) {
 
 function AddInventory(choice) {
     
+    
+    
     if (choice == garbageButton) {
         
-        question.getChildAt(4).destroy();
+        question.getChildAt(6).destroy();
         emitterList[0].destroy();
+        garbageButton.destroy();
+        keepButton.destroy();
         
     } else {
 
@@ -1006,6 +1023,8 @@ function AddInventory(choice) {
         packList[currentPlayer - 1].add(inventory);
         CreateParticles(itemModifier + 'Particle', inventory, true);
         playerBonus[currentPlayer - 1] = [itemObject, itemModifier];
+        garbageButton.destroy();
+        keepButton.destroy();
     }
     
 }
@@ -1092,7 +1111,7 @@ function CheckInventory(item, modify) {
 function DeleteQuestion() {
     
     
-    if (displayItem !== null) {
+    if (typeof displayItem !== "undefined") {
         
         if (displayItem.name != "coin") {
    
@@ -1210,6 +1229,24 @@ function ResetTurn() {
     
     turn = 0;
     ManageTurn();
+}
+
+function RunTimer(doThis) {
+    
+    timerBackground = this.game.add.sprite(150,200, "timerBackground");
+    sun = this.game.add.sprite(50, 200, "sun");
+    
+    question.add(timerBackground);
+    timerBackground.addChild(sun);
+    
+    timer = this.game.time.create(false);
+    
+    
+    var actionTime = Math.floor(((Math.random() * 3) + 3) * 1000);
+    
+    timer.add(actionTime, ManageQuest, this, doThis);
+    
+    timer.start();
 }
 
 function getRandomInt(min, max) {
