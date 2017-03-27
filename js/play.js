@@ -1,3 +1,7 @@
+//To Do: Add Timer to post question choices.
+//       Resize Magic Buttons....and add to question
+
+
 var c1;
 var c2;
 var c3;
@@ -18,12 +22,12 @@ var cPos5;
 var cPos6;
 var cPosSet = [cPos1,cPos2,cPos3, cPos4, cPos5,cPos6];
 
-var bonus1;
-var bonus2;
-var bonus3;
-var bonus4;
-var bonus5;
-var bonus6;
+var bonus1 = ["none", "none"];
+var bonus2 = ["none", "none"];
+var bonus3 = ["none", "none"];
+var bonus4 = ["none", "none"];
+var bonus5 = ["none", "none"];
+var bonus6 = ["none", "none"];
 var playerBonus = [bonus1, bonus2, bonus3, bonus4, bonus5, bonus6];
 
 var race;
@@ -43,12 +47,10 @@ var lifeText;
 var playerName;
 var deletePlayer;
 
-
 var card;
 var board;
 
 var question;
-//var test;
 
 var token1;
 var token2;
@@ -119,6 +121,11 @@ var emitter6;
 var emitterList = [emitter, emitter1, emitter2, emitter3, emitter4, emitter5, emitter6];
 
 var particleList = ['goldParticle', 'lifeParticle', 'luckParticle', 'speedParticle', 'strengthParticle' ];
+
+var useMagicButton;
+var noMagicButton;
+var magicUsed;
+var reroll = false;
 
 var playState = {
  
@@ -228,7 +235,7 @@ function CreateBoardSpaces() {
 }
 
 function ManageTurn () {
-    //console.log(turn);
+    
     switch (turn) {
         case 0:
             turnText.setText("roll");
@@ -240,9 +247,7 @@ function ManageTurn () {
             turn += 1;
             break;
     }
-    
-    
-    
+ 
 }
 
 function RollDie() {
@@ -283,13 +288,9 @@ function CreateMovementToken() {
     
     if (cSet[currentPlayer - 1]) {
     
-        //console.log("after roll...CP is " + currentPlayer);
         newSpot1 = (dice.animations.currentAnim.frame + 1) + cPosSet[currentPlayer - 1];
         newSpot2 = cPosSet[currentPlayer - 1] - (dice.animations.currentAnim.frame + 1);
-        //console.log("turn = " + currentPlayer);
-        //console.log("NS1 = " + newSpot1);
-        //console.log("NS2 = " + newSpot2);
-        
+
         if (newSpot1 > 23) {
             
             newSpot1 -= 24;
@@ -344,14 +345,10 @@ function MovePlayer (spot) {
     }
     
     cPosSet[currentPlayer - 1] = updatePos;
-    
-    // console.log("CP is " + currentPlayer);
-    // console.log("totalPlayers is " + totalPlayers);
-    
+
     aSpot.destroy();
     bSpot.destroy();
-    
-    //UpdateTurnText(updatePos);
+
     ManageTurn();
     
 }
@@ -444,9 +441,7 @@ function AddStats(player) {
                 
                 return;
             }
-            
-            
-            
+ 
         }
 }
 
@@ -523,8 +518,7 @@ function CreateToken(player) {
     var tokenY = boardSpaces[startSpaceXY][1];
     
     cPosSet[player] = startSpaceXY;
-    console.log(cPosSet[player]);
-    
+
     tokenList[player] = this.game.add.sprite(tokenX, tokenY, currentRace);
     tokenList[player].x = tokenX; 
     tokenList[player].inputEnabled = true;
@@ -601,7 +595,7 @@ function CreateQuestion(puzzle) {
                if (i >= startPoint && i < (startPoint + (toDelete)))  {
                    
                     deconstructed.splice(i, 1,  "_____");
-                    console.log("checked");
+               
                }
             }
             getQuestion = deconstructed.join(" ");
@@ -627,7 +621,7 @@ function CreateQuestion(puzzle) {
             for (var i = 0; i < sentenceLength; i++) {
                     
                     randomPick = Math.floor(Math.random() * deconstructed.length);
-                    console.log(randomPick);
+
    
                     newOrder[i] = deconstructed[randomPick];
                     
@@ -718,8 +712,7 @@ function CheckAnswer(result) {
         GoToQuest();
 
     }
-    
-    
+
 }
 
 function ShowAnswer(argument) {
@@ -804,13 +797,31 @@ function FightMonster() {
     'giant snake', 'werewolf', 'thief', 'vampire'];
     
     var pickMonster = Math.floor(Math.random() * monsterList.length);
-    monster = monsterList[pickMonster];
-    monsterModifier = getRandomInt(2,4);
+    
+    if (reroll == false) {
+
+        monster = monsterList[pickMonster];
+        monsterModifier = getRandomInt(2,4);
+ 
+    }
+
     
     CheckInventory("sword", "strength");
 
-    choiceText.setText("A " + monster + " is attacking you! \nRoll to fight! \nYou need a " + monsterModifier.toString() + " to win!!!" );
+    if (hasItem && hasBonus) {
+        
+        monsterModifier -= 2;
+        
+        
+        
+    } else if ((hasItem && !hasBonus) || (!hasItem && hasBonus)) {
+        
+        monsterModifier -= 1;
+    }
     
+    
+    choiceText.setText("A " + monster + " is attacking you! \nRoll to fight! \nYou need a " + monsterModifier.toString() + " to win!!!" );
+    reroll == false;
 }
 
 function AttackResult() {
@@ -825,14 +836,77 @@ function AttackResult() {
         
     } else if (dieResult < monsterModifier) {
         
-        choiceText.setText("Uggghh! The " + monster + " won. \nLose 1 life.");
-        getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
-        turn += 1;
+        CheckInventory("shield", "luck" );
+        
+        if (hasItem && hasBonus) {
+            
+            choiceText.setText("Uggghh! The " + monster + " won. \nYour shield saved 1 life.  \nDo you want to roll again?");    
+            CreateMagicButtons();
+            
+            return;
+        } else if (hasItem){
+            
+            choiceText.setText("Uggghh! The " + monster + " won. \nYour shield saved 1 life.");                
+            turn += 1;
+            
+            return;
+        } else if (hasBonus) {
+            
+            choiceText.setText("Uggghh! The " + monster + " won. \nDo you want to roll again?");                
+            CreateMagicButtons();
+            
+            return;
+        } else {
+            
+            choiceText.setText("Uggghh! The " + monster + " won. \nLose 1 life.");
+            getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
+            turn += 1;
+            
+        }
+        
+       
     }
     else {
         choiceText.setText("You won!!  \nGain 1 attack!");
         getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 1).toString());
         turn += 1;
+    }
+    
+    
+    
+}
+
+function CreateMagicButtons () {
+    
+    noMagicButton = this.game.add.button(100, 400, "noMagicButton", UseMagic, 2,1,0);
+    useMagicButton = this.game.add.button(400, 400, "useMagicButton", UseMagic, 2,1,0);
+    
+}
+
+function UseMagic(magic) {
+    
+    if (magic == noMagicButton) {
+        
+        if (turn == 4) {
+            
+             choiceText.setText("You still have your magic.");
+
+            
+        }
+        
+    } else {
+        
+        if (turn == 4) {
+            
+            reroll = true;
+            emitterList[currentPlayer].destroy(); 
+            DeleteInventory();
+            playerBonus[currentPlayer - 1][1] = ["none"];
+            FightMonster();
+            
+            
+        }
+        
     }
     
     
@@ -854,8 +928,9 @@ function TreasureHunt() {
     } else if (treasureFound == 2){
         
         choiceText.setText("No treasure....but you did \nfind 1 Gold.");
-        getGold = getGold.setText((parseInt(getGold.text, 10) - 1).toString());
+        getGold = getGold.setText((parseInt(getGold.text, 10) + 1).toString());
         DisplayItem("coin");
+        
     } else if (treasureFound == 3) {
         
         turn = 4;
@@ -868,7 +943,7 @@ function TreasureHunt() {
         DisplayItem(itemObject);
     }
     
-    //console.log(question);
+    
 
 }
 
@@ -889,7 +964,7 @@ function CreateItem() {
 function DisplayItem(item) {
     
     displayItem = this.game.add.sprite(200 ,200, item);
-    
+    displayItem.name = "displayItem" + item;
     if (item != "coin") {
         
         garbageButton = this.game.add.button(100, 400, 'garbage', AddInventory, this, 2,1,0);
@@ -900,11 +975,11 @@ function DisplayItem(item) {
             
     }
     
-    console.log(question);
+    
     
 
     question.addChild(displayItem);
-    console.log(bonusType);
+    
     
     if (item != "coin") {
         
@@ -919,55 +994,58 @@ function AddInventory(choice) {
     
     if (choice == garbageButton) {
         
-        question.getChildAt(4).destroy();    
+        question.getChildAt(4).destroy();
+        emitterList[0].destroy();
         
     } else {
 
         DeleteInventory();
-        console.log(packList[currentPlayer - 1]);
+        
         inventory = this.game.add.sprite (75,80, itemObject);
         inventory.scale.setTo(.25,.25);
         packList[currentPlayer - 1].add(inventory);
         CreateParticles(itemModifier + 'Particle', inventory, true);
-        playerBonus[currentPlayer - 1] = [treasureType, bonusType];
+        playerBonus[currentPlayer - 1] = [itemObject, itemModifier];
     }
     
 }
 
 function CreateParticles(particle, object, mini) {
     
-    
-
+    var getPos = cList[currentPlayer - 1];
+    var currentEmitter;
     //StartParticles(emitter, particle);
     if (mini == true) {
         
-        var getPos = cList[currentPlayer - 1];
+        emitterList[currentPlayer] = this.game.add.emitter(getPos.x + getPos.width - 10  , getPos.y + getPos.height, 100);
+
+        currentEmitter = emitterList[currentPlayer];
+
+        currentEmitter.maxParticleScale = .35;
+        currentEmitter.minParticleScale = 0.15;
         
-        emitterList[1] = this.game.add.emitter(getPos.x + getPos.width - 10  , getPos.y + getPos.height, 100);
-
-        emitterList[1].maxParticleScale = .35;
-        emitterList[1].minParticleScale = 0.15;
-        
-        emitterList[1].makeParticles(particle);
+        currentEmitter.makeParticles(particle);
 
 
-        emitterList[1].gravity = -200;
+        currentEmitter.gravity = -200;
 
-        emitterList[1].start(false, 500, 100);
+        currentEmitter.start(false, 500, 100);
         
         
     } else {
-        emitter = this.game.add.emitter(600, object.world.y + object.height, 100);
+        emitterList[0] = this.game.add.emitter(600, object.world.y + object.height, 100);
         
-        emitter.maxParticleScale = 1.0;
-        emitter.minParticleScale = 0.5;
+        currentEmitter = emitterList[0];
         
-        emitter.makeParticles(particle);
+        currentEmitter.maxParticleScale = 1.0;
+        currentEmitter.minParticleScale = 0.5;
+        
+        currentEmitter.makeParticles(particle);
 
 
-        emitter.gravity = -200;
+        currentEmitter.gravity = -200;
 
-        emitter.start(false, 1000, 100);
+        currentEmitter.start(false, 1000, 100);
         
     }
     
@@ -976,11 +1054,15 @@ function CreateParticles(particle, object, mini) {
     
 }
 
-
 function CheckInventory(item, modify) {
+    
+    console.log("inventory Checked");
     
     var treasure = playerBonus[currentPlayer - 1][0];
     var bonus = playerBonus[currentPlayer - 1][1];
+    
+    console.log(item + " and " + treasure);
+    console.log(modify + " and " + bonus);
     
     if (item == treasure) {
         
@@ -1000,17 +1082,28 @@ function CheckInventory(item, modify) {
         
         hasBonus = false;
     }
+        
+            
+   
     
+
 }
 
 function DeleteQuestion() {
     
-    questionPanel.destroy();
-    if (emitter) {
-            
-        emitter.destroy();
+    
+    if (displayItem !== null) {
+        
+        if (displayItem.name != "coin") {
+   
+            emitterList[0].destroy();
+        }    
+        
     }
     
+    
+    
+    questionPanel.destroy();
     //YOU HAVE TO MOVE THIS!!! THIS WILL BE LAID DOWN LAST!!!!!S
     ResetCurrentPlayer();
     
@@ -1021,7 +1114,7 @@ function DeleteQuestion() {
 function DeletePlayer() {
 
     getPlayer = parseInt(this.name.substring(1,2), 10) - 1;
-    console.log(getPlayer);
+    
     for (var i = 0; i < packList.length; i++) {
         
         if (i == getPlayer ) {
@@ -1052,7 +1145,8 @@ function DeleteInventory() {
     if (packList[currentPlayer - 1].length > 6) {
             
         packList[currentPlayer - 1].getChildAt(6).destroy();
-            
+        
+        emitterList[currentPlayer].destroy();    
     }
     
 }
