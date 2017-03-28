@@ -127,6 +127,7 @@ var magicUsed;
 var reroll = false;
 
 var timerBackground;
+var backgroundAsset;
 var sun;
 var timer;
 var timerGroup;
@@ -746,6 +747,22 @@ function StartActionTimer(action) {
     
     RunTimer(action);
     
+    switch (action) {
+        case restButton:
+            choiceText.setText("You take a rest and......");
+            break;
+            
+        case monsterButton:
+            choiceText.setText("You go looking for a monster and......");
+            break;
+            
+        case treasureButton:
+            choiceText.setText("You look for some treasure and......");
+            break;
+        
+    }
+    
+    
     question.getChildAt(1).destroy();
     question.getChildAt(1).destroy();
     question.getChildAt(1).destroy();    
@@ -769,17 +786,17 @@ function ManageQuest(choice) {
                 
                 getGold = getGold.setText((parseInt(getGold.text, 10) - 1).toString());
                 getLife = getLife.setText((parseInt(getLife.text, 10) + 1).toString());
-                choiceText.setText("Oh no!  While you were sleeping a thief stole 1 gold! \nGain 1 life.");
+                choiceText.setText("....Oh no!  While you were sleeping a thief stole 1 gold! \nGain 1 life.");
                 
             }
             else if (resting == 2) {
-                choiceText.setText("No sleep!  A monster wakes you up!");
+                choiceText.setText("No rest for you!  A monster wakes you up!");
                 turn = 4;
                 FightMonster();
                 
             }
             else {
-                choiceText.setText("Sweet Dreams! \nGain 1 life.");
+                choiceText.setText("....you had a great rest! \nGain 1 life.");
                 getLife = getLife.setText((parseInt(getLife.text, 10) + 1).toString());
                 
             }
@@ -1204,22 +1221,27 @@ function UpdateTurnText(box) {
     switch (checkSpace) {
         case 1 :
             turnText.setText("Quest!");
+            backgroundAsset = "roadBackground";
             break;
             
         case 0 :
             turnText.setText("castle");
+            backgroundAsset = "castleBackground";
             break;
             
         case 6 :
             turnText.setText("witch");
+            backgroundAsset = "witchBackground";
             break;
             
         case 12 :
             turnText.setText("forest");
+            backgroundAsset = "forestBackground";
             break;
             
         case 18 :
             turnText.setText("village");
+            backgroundAsset = "villageBackground";
             break;
         
        
@@ -1241,7 +1263,7 @@ function RunTimer(doThis) {
     question.add(timerGroup);
     // timerGroup.x = question.x;
     // timerGroup.y = question.y;
-    timerBackground = timerGroup.create(150,200, "timerBackground");
+    timerBackground = timerGroup.create(45,200, backgroundAsset);
     sun = this.game.add.sprite(550, 300, "sun");
     
     StartSun();

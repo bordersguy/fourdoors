@@ -47,7 +47,11 @@ var loadState = {
         this.game.load.image('noMagicButton', 'assets/noMagic.png');
         this.game.load.image('useMagicButton', 'assets/useMagic.png');
         this.game.load.image('sun', 'assets/sun.png');
-        this.game.load.image('timerBackground', 'assets/timerBackground.png');
+        this.game.load.image('roadBackground', 'assets/roadBackground.png');
+        this.game.load.image('villageBackground', 'assets/villageBackground.png');
+        this.game.load.image('castleBackground', 'assets/castleBackground.png');
+        this.game.load.image('witchBackground', 'assets/witchBackground.png');
+        this.game.load.image('forestBackground', 'assets/forestBackground.png');
         
 
         
