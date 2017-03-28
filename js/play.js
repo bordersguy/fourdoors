@@ -1,6 +1,4 @@
 //To Do: Add Timer to post question choices.
-//       Resize Magic Buttons....and add to question
-//       ****I think this is okay***** There's something wrong when the coin runs.
 //       Limit objects to certain classes
 
 var c1;
@@ -131,6 +129,7 @@ var reroll = false;
 var timerBackground;
 var sun;
 var timer;
+var timerGroup;
 
 var playState = {
  
@@ -894,6 +893,9 @@ function CreateMagicButtons () {
     noMagicButton = this.game.add.button(100, 400, "noMagicButton", UseMagic, 2,1,0);
     useMagicButton = this.game.add.button(400, 400, "useMagicButton", UseMagic, 2,1,0);
     
+    question.add(noMagicButton);
+    question.add(useMagicButton);
+    
 }
 
 function UseMagic(magic) {
@@ -1111,9 +1113,11 @@ function CheckInventory(item, modify) {
 function DeleteQuestion() {
     
     
+    //question.add(sun);
+    
     if (typeof displayItem !== "undefined") {
         
-        if (displayItem.name != "coin") {
+        if (displayItem.name !== "displayItemcoin") {
    
             emitterList[0].destroy();
         }    
@@ -1233,20 +1237,49 @@ function ResetTurn() {
 
 function RunTimer(doThis) {
     
-    timerBackground = this.game.add.sprite(150,200, "timerBackground");
-    sun = this.game.add.sprite(50, 200, "sun");
+    timerGroup = this.game.add.group();
+    question.add(timerGroup);
+    // timerGroup.x = question.x;
+    // timerGroup.y = question.y;
+    timerBackground = timerGroup.create(150,200, "timerBackground");
+    sun = this.game.add.sprite(550, 300, "sun");
     
-    question.add(timerBackground);
-    timerBackground.addChild(sun);
-    
+    StartSun();
+    //question.add(timerBackground);
+
     timer = this.game.time.create(false);
-    
+   
     
     var actionTime = Math.floor(((Math.random() * 3) + 3) * 1000);
     
+    timer.add(actionTime, StopSun, this);
+    
     timer.add(actionTime, ManageQuest, this, doThis);
+  
+    
+    
+    
     
     timer.start();
+    
+}
+
+function StartSun() {
+    
+    this.game.physics.enable(sun);
+    sun.enableBody = true;
+    sun.body.gravity.setTo(0, 0);
+    sun.body.velocity.setTo( 4, -15);
+    
+}
+
+function StopSun() {
+    //sun.body.velocity.setTo(0, 0);
+    //question.add(sun);
+    var newSun = this.game.add.sprite(sun.x - 300, sun.y, "sun");
+    question.add(newSun);
+    sun.destroy();
+    
 }
 
 function getRandomInt(min, max) {
@@ -1254,3 +1287,4 @@ function getRandomInt(min, max) {
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min)) + min;
 }
+
