@@ -1,10 +1,11 @@
 //To Do: Add Timer to post question choices.
 //       Limit objects to certain classes
+//       Make some objects just regular items....no magic      
 //       Add inner board movement
 //       Add entrance to inner board
 //       Add corner interactions
-//       Add indicator for wrong question
 //       Add glowing rock quest
+//       Create world events      
 
 var c1;
 var c2;
@@ -296,10 +297,15 @@ function StopDie () {
             
             }
             break;
+        case 3:
+            //treasurehunt & rest & monsterhunt timer;
+            break;
         
         case 4:
             AttackResult();
             break;
+            
+        
             
         case 18:
             VillageResult();
@@ -606,18 +612,12 @@ function ShowQuestion() {
         question.addChild(questionExplain);
         question.addChild(questionText);
         question.addChild(revealButton);
-        
-       
-    
+
         questionUp = true;
-        
-        
-        
+   
         } else if (turnText.text == "village" || turnText.text == "castle" || turnText.text == "forest"
             || turnText.text == "witch") {
-        
-              
-                
+    
             questionPanel = this.game.add.sprite(300, 0, 'answersheet');
             question = this.game.add.group();
             question.width = questionPanel.width;
@@ -627,21 +627,10 @@ function ShowQuestion() {
             question.addChild(deleteQuestion);
             
             GetCorner();
-            
-      
-    
+
             questionUp = true;
         }
-        
-        
-        
- 
-        
     }
-    
- 
-    
-
 }
 
 function GetCorner() {
@@ -679,7 +668,7 @@ function GetQuestion() {
 
 function CreateQuestion(puzzle) {
     
-    var pickPuzzle = Math.floor(Math.random() * 4);
+    var pickPuzzle = Math.floor(Math.random() * 5);
     //var pickPuzzle = 4;
     var deconstructed;
     var toDelete;
@@ -766,6 +755,13 @@ function CreateQuestion(puzzle) {
 
             getQuestion = newOrder.join(" ");
             break;
+            
+            case 4:
+            qType = "Make a sentence";
+            getQuestion = "grade";
+            answer = "Your teacher will say if you are correct.";
+
+            break;
         
     }
     
@@ -788,18 +784,22 @@ function CheckAnswer(result) {
     var getGold = packList[currentPlayer - 1].getChildAt(2);
     var getLife = packList[currentPlayer - 1].getChildAt(4);
     
+    wrongButton.inputEnabled = false;
+    correctButton.inputEnabled = false;
+    
     //ADD RESULT OF LIFE = 0 WHEN ADDING DEATH CODE
     if (result == wrongButton) {
-        
+        turnText.setText("Next");
         if (parseInt(getGold.text, 10) >= 1) {
             
             getGold = getGold.setText((parseInt(getGold.text, 10) - 1).toString());
-                
+            questionExplain.setText("Sorry, you lose 1 gold."); 
+
         }
         else {
             
             getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
-            
+            questionExplain.setText("Sorry.  Oh no! You have no gold! \nLose 1 life.");
         }
     }
     else {
@@ -838,7 +838,7 @@ function GoToQuest() {
     choiceText = this.game.add.text(50, 50, "Great!  Here's 1 Gold. \nWhat now?", { font: "40px Arial", fill: "green", align: "center", wordWrap: true, wordWrapWidth: question.width - 20 });
     
     if (turnText.text === "Quest!") {
-        
+        turn = 3;
         restButton = this.game.add.button(250, 200, "restButton", StartActionTimer, 2,1,0);
         monsterButton = this.game.add.button(100, 400, "monsterButton", StartActionTimer, 2,1,0);
         treasureButton = this.game.add.button(400, 400, "treasureButton", StartActionTimer, 2,1,0);
@@ -932,18 +932,19 @@ function ManageQuest(choice) {
                 getGold = getGold.setText((parseInt(getGold.text, 10) - 1).toString());
                 getLife = getLife.setText((parseInt(getLife.text, 10) + 1).toString());
                 choiceText.setText("....Oh no!  While you were sleeping a thief stole 1 gold! \nGain 1 life.");
-                
+                turnText.setText("Next");
             }
             else if (resting == 2) {
                 choiceText.setText("No rest for you!  A monster wakes you up!");
                 turn = 4;
-                FightMonster();
+                RunDelay(FightMonster, "none");
+                
                 
             }
             else {
                 choiceText.setText("....you had a great rest! \nGain 1 life.");
                 getLife = getLife.setText((parseInt(getLife.text, 10) + 1).toString());
-                
+                turnText.setText("Next");
             }
             
             
@@ -1021,8 +1022,8 @@ function AttackResult() {
         } else if (hasItem){
             
             choiceText.setText("Uggghh! The " + monster + " won. \nYour shield saved 1 life.");                
-            turn += 1;
-            
+            turn = 3;
+            turnText.setText("next");
             return;
         } else if (hasBonus) {
             
@@ -1034,8 +1035,8 @@ function AttackResult() {
             
             choiceText.setText("Uggghh! The " + monster + " won. \nLose 1 life.");
             getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
-            turn += 1;
-            
+            turn = 3;
+            turnText.setText("next");
         }
         
        
@@ -1043,7 +1044,8 @@ function AttackResult() {
     else {
         choiceText.setText("You won!!  \nGain 1 attack!");
         getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 1).toString());
-        turn += 1;
+        turn = 3;
+        turnText.setText("next");
     }
     
     
@@ -1134,6 +1136,7 @@ function VillageResult() {
         case 1:
             choiceText.setText("A farmer gives you some food.  \nGain 1 life.");
             getLife = getLife.setText((parseInt(getLife.text, 10) + 1).toString());
+            turnText.setText("next");
             break;
             
         case 2:
@@ -1146,12 +1149,13 @@ function VillageResult() {
         case 3:
             choiceText.setText("While you are having fun, a thief steals 1 gold.");
             getGold = getGold.setText((parseInt(getGold.text, 10) - 1).toString());
- 
+            turnText.setText("next");
             break;
             
         case 4:
             choiceText.setText("A farmer gives you some food.  \nGain 1 life.");
             getLife = getLife.setText((parseInt(getLife.text, 10) + 1).toString());
+            turnText.setText("next");
             break;
             
         case 5:
@@ -1162,7 +1166,9 @@ function VillageResult() {
             
         case 6:
             choiceText.setText("You fight with some farmers.  \nThey kick you out!");
-            CreateMovementToken(1);
+            //CreateMovementToken(1);
+            RunDelay(CreateMovementToken, 1);
+            RunDelay(DeleteQuestion, "none");
             break;
 
     }
@@ -1182,6 +1188,7 @@ function CastleResult() {
         case 1:
             choiceText.setText("You eat at a delicious restaurant.  \nGain 1 life.");
             getLife = getLife.setText((parseInt(getLife.text, 10) + 1).toString());
+            turnText.setText("next");
             break;
             
         case 2:
@@ -1194,22 +1201,25 @@ function CastleResult() {
         case 3:
             choiceText.setText("While you are having fun, a thief steals 1 gold.");
             getGold = getGold.setText((parseInt(getGold.text, 10) - 1).toString());
- 
+            turnText.setText("next");
             break;
             
         case 4:
             choiceText.setText("You train with some soldiers.  \nGain 1 strength.");
             getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 1).toString());
+            turnText.setText("next");
             break;
             
         case 5:
             choiceText.setText("Soldiers think you're a thief.  \nThey arrest you!!");
             //Add arrest code next
+            turnText.setText("next");
             break;
             
         case 6:
             choiceText.setText("The King helps you with your adventure.  \nHe shows you a secret way into the mountain!");
             //Add movement into the mountain here.
+            turnText.setText("next");
             break;
 
     }
@@ -1233,13 +1243,13 @@ function CreateItem() {
 
 function DisplayItem(item) {
     
-    displayItem = this.game.add.sprite(200 ,200, item);
+    displayItem = this.game.add.sprite(225 ,275, item);
     displayItem.name = "displayItem" + item;
     
     if (item != "coin") {
         
-        garbageButton = this.game.add.button(100, 400, 'garbage', AddInventory, this, 2,1,0);
-        keepButton = this.game.add.button(400, 400, 'take', AddInventory, this, 2,1,0);
+        garbageButton = this.game.add.button(50, 510, 'garbage', AddInventory, this, 2,1,0);
+        keepButton = this.game.add.button(300, 510, 'take', AddInventory, this, 2,1,0);
         
         question.addChild(keepButton);
         question.addChild(garbageButton);
@@ -1248,37 +1258,37 @@ function DisplayItem(item) {
 
     question.addChild(displayItem);
     
+    console.log(question);
     
     if (item != "coin" && item != "rock") {
         
         CreateParticles(itemModifier + "Particle", displayItem, false);
             
     }
-    
-    
 }
 
 function AddInventory(choice) {
-    
-    
-    
-    if (choice == garbageButton) {
-        
-        question.getChildAt(6).destroy();
-        emitterList[0].destroy();
-        garbageButton.destroy();
-        keepButton.destroy();
-        
-    } else {
 
-        DeleteInventory();
-    
-        
-        garbageButton.destroy();
-        keepButton.destroy();
+    if (choice == garbageButton) {
         
         if (currentItem !== "rock") {
             
+            emitterList[0].destroy();    
+            question.getChildAt(6).destroy();
+        } else {
+            
+            question.getChildAt(5).destroy();
+            
+        }
+  
+    } else {
+
+        DeleteInventory();
+
+        
+        if (currentItem !== "rock") {
+            emitterList[0].destroy();
+            question.getChildAt(6).destroy();
             inventory = this.game.add.sprite (75,80, itemObject);
             inventory.scale.setTo(.25,.25);
             packList[currentPlayer - 1].add(inventory);
@@ -1286,15 +1296,17 @@ function AddInventory(choice) {
             playerBonus[currentPlayer - 1] = [itemObject, itemModifier];
             
         } else {
-            
+            question.getChildAt(5).destroy();
             inventory = this.game.add.sprite (75,80, currentItem);
             inventory.scale.setTo(.25,.25);
             packList[currentPlayer - 1].add(inventory);
-      
-            
         }
-        
     }
+    
+    
+    garbageButton.destroy();
+    keepButton.destroy();
+    turnText.setText("next");
     
 }
 
@@ -1542,6 +1554,24 @@ function RunTimer(doThis) {
     
     timer.start();
     
+}
+
+function RunDelay(ToDo, arg) {
+    
+    timer = this.game.time.create(false);
+    //var actionTime = Math.floor(((Math.random() * 3) + 3) * 1000);
+    var actionTime = 4000;
+    if (arg == "none") {
+        
+        timer.add(actionTime, ToDo, this);    
+        
+    } else {
+        
+        timer.add(actionTime, ToDo, this, arg);    
+    }
+    
+    
+    timer.start();
 }
 
 function StartSun() {
