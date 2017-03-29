@@ -37,6 +37,7 @@ var loadState = {
         this.game.load.image('sword', 'assets/sword.png');
         this.game.load.image('shield', 'assets/shield.png');
         this.game.load.image('coin', 'assets/coin.png');
+        this.game.load.image('rock', 'assets/rock.png');
         this.game.load.image('garbage', 'assets/garbageButton.png');
         this.game.load.image('take', 'assets/takeButton.png');
         this.game.load.image('lifeParticle', 'assets/lifeParticle.png');
