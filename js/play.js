@@ -3,9 +3,11 @@
 //       Make some objects just regular items....no magic      
 //       Add inner board movement
 //       Add entrance to inner board
-//       Add corner interactions
-//       Add glowing rock quest
+//       finish corner interactions
+//       Add glowing rock & witch & robinhood quest
 //       Create world events      
+//       Add monster images
+//       Add monster side effects
 
 var c1;
 var c2;
@@ -117,6 +119,7 @@ var inventory;
 var displayItem;
 var hasItem;
 var hasBonus;
+var isMagic = false;
 
 var emitter;
 var emitter1;
@@ -304,16 +307,22 @@ function StopDie () {
         case 4:
             AttackResult();
             break;
-            
-        
-            
+    
         case 18:
             VillageResult();
             break;
             
         case 19:
             CastleResult();
-            break;    
+            break;   
+            
+        case 20:
+            ForestResult();
+            break;     
+            
+        case 21:
+            WitchResult();
+            break;      
             
         default:
             CreateMovementToken(dieResult);
@@ -863,7 +872,7 @@ function GoToQuest() {
                 
             case "witch":
                 choiceText.setText("Do you want some help? \nRoll the die.");
-                turn = 18;
+                turn = 21;
                 //VillageResult();
                 break;
             
@@ -875,7 +884,7 @@ function GoToQuest() {
             
             case "forest":
                 choiceText.setText("The forest can be a dangerous place! \nRoll the die.");
-                turn = 18;
+                turn = 20;
                 //VillageResult();
                 break;
         }
@@ -1118,12 +1127,27 @@ function TreasureHunt() {
         
     } else {
         
-        choiceText.setText("Wow! You found a \n" + currentItem + " !");
+        var article;
+        console.log(itemObject.slice(-1));
+        if (itemObject.slice(-1) == "s") {
+            
+            article = "some";
+            
+        } else {
+            article = "a";
+        }
+
+        if (isMagic == true)  {
+            
+            choiceText.setText("Wow! You found " + article + "\n" + currentItem + "!");    
+            
+        } else {
+            
+            choiceText.setText("You found " + article + "\n" + currentItem + "!");
+        }
+        
         DisplayItem(itemObject);
     }
-    
-    
-
 }
 
 function VillageResult() {
@@ -1227,18 +1251,137 @@ function CastleResult() {
     
 }
 
+function WitchResult() {
+    console.log("WitchResult");
+    var getLife = packList[currentPlayer - 1].getChildAt(4);
+    var getAttack = packList[currentPlayer - 1].getChildAt(3);
+    var getGold = packList[currentPlayer - 1].getChildAt(2);
+    
+    
+    switch (dieResult) {
+        
+        case 1:
+            choiceText.setText("The witch heals you.  \nGain 1 life.");
+            getLife = getLife.setText((parseInt(getLife.text, 10) + 1).toString());
+            turnText.setText("next");
+            break;
+            
+        case 2:
+            choiceText.setText("She says, 'Good Luck!' and then \nteleports you inside the mountain!");
+            //add teleport to mountain here.
+            turnText.setText("next");
+            break;
+            
+        case 3:
+            choiceText.setText("The witch makes you stronger!  \nGain 1 strength.");
+            getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 1).toString());
+            turnText.setText("next");
+            break;
+            
+        case 4:
+            choiceText.setText("You train with some soldiers.  \nGain 1 strength.");
+            getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 1).toString());
+            turnText.setText("next");
+            break;
+            
+        case 5:
+            choiceText.setText("She says, 'Maybe you can help me.'  \nDo you help the witch?");
+            //Add witch quest here.
+            turnText.setText("next");
+            break;
+            
+        case 6:
+            choiceText.setText("She says, 'Ooops!'  \nShe turns you into a frog.");
+            //Add frog change here.
+            turnText.setText("next");
+            break;
+
+    }
+    
+    
+}
+
+function ForestResult() {
+    
+    var getLife = packList[currentPlayer - 1].getChildAt(4);
+    var getAttack = packList[currentPlayer - 1].getChildAt(3);
+    var getGold = packList[currentPlayer - 1].getChildAt(2);
+    
+    
+    switch (dieResult) {
+        
+        case 1:
+            choiceText.setText("You find some fruit!.  \nGain 1 life.");
+            getLife = getLife.setText((parseInt(getLife.text, 10) + 1).toString());
+            turnText.setText("next");
+            break;
+            
+        case 2:
+            choiceText.setText("You get lost and eat nothing!  \nLose 1 life.");
+            getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
+            turn = 1;
+            reroll = true;
+            break;
+            
+        case 3:
+            choiceText.setText("You get sleepy and fall take a nap....");
+            //add nap method here.
+            turnText.setText("next");
+            break;
+            
+        case 4:
+            choiceText.setText("You find an old treasure chest.  \nDo you open it?.");
+            //add treasure chest method
+            turnText.setText("next");
+            break;
+            
+        case 5:
+            choiceText.setText("You meet a group of thieves.  \nThey ask you for help!!");
+            //Add robin hood quest
+            turnText.setText("next");
+            break;
+            
+        case 6:
+            choiceText.setText("Giant spiders attack you!  \nCan you defeat them all!");
+            //Add movement into the mountain here.
+            turnText.setText("next");
+            break;
+
+    }
+    
+    
+}
+
 function CreateItem() {
+    
+    var giveBonus = Math.floor(Math.random() * 10 + 1);
+    
     //sword is plus 1 in a fight, ring is nothing, shield will save a life in a fight once then break,
     //potion is bonus dependent, wand is bonus dependent, boots are bonus dependent.
     treasureType = ['sword', 'ring', 'shield', 'potion', 'wand', 'boots'];
     //gold is worth 2 gold, life adds 2 life(while wearing), strength adds 1 strength while wearing
     //luck lets you reroll once(anything) then its gone, speed lets you reroll movement twice then magic is gone.
     bonusType = ['gold', 'life', 'luck', 'speed', 'strength'];
+
     
-    itemObject = treasureType[getRandomInt(0, treasureType.length)];
-    itemModifier = bonusType[getRandomInt(0, bonusType.length)];
-    
-    currentItem = itemObject + " of " + itemModifier;
+
+    if (giveBonus > 4) {
+        
+        treasureType = ['sword', 'ring', 'shield', 'potion', 'wand', 'boots'];
+        itemObject = treasureType[getRandomInt(0, treasureType.length)];
+        itemModifier = bonusType[getRandomInt(0, bonusType.length)];
+        currentItem = itemObject + " of " + itemModifier;
+        isMagic = true;
+        
+    } else {
+        
+        treasureType = ['sword', 'shield', 'boots'];
+        itemObject = treasureType[getRandomInt(0, treasureType.length)];
+        itemModifier = "none";
+        currentItem = itemObject;
+        isMagic = false;
+    }   
+
 }
 
 function DisplayItem(item) {
@@ -1260,7 +1403,7 @@ function DisplayItem(item) {
     
     console.log(question);
     
-    if (item != "coin" && item != "rock") {
+    if (isMagic == true) {
         
         CreateParticles(itemModifier + "Particle", displayItem, false);
             
@@ -1271,10 +1414,11 @@ function AddInventory(choice) {
 
     if (choice == garbageButton) {
         
-        if (currentItem !== "rock") {
+        if (isMagic == true) {
             
             emitterList[0].destroy();    
             question.getChildAt(6).destroy();
+            
         } else {
             
             question.getChildAt(5).destroy();
@@ -1286,7 +1430,7 @@ function AddInventory(choice) {
         DeleteInventory();
 
         
-        if (currentItem !== "rock") {
+        if (isMagic == true) {
             emitterList[0].destroy();
             question.getChildAt(6).destroy();
             inventory = this.game.add.sprite (75,80, itemObject);
@@ -1523,6 +1667,7 @@ function UpdateTurnText(box) {
 
 function ResetTurn() {
     
+    isMagic = false;
     turn = 0;
     ManageTurn();
 }
