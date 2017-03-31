@@ -1,6 +1,9 @@
-//To Do: Add Timer to post question choices.
+//Bugs:  
+
+
+//To Do: 
+//       Add Timer to post question choices.
 //       Limit objects to certain classes
-//       Make some objects just regular items....no magic      
 //       Add inner board movement
 //       Add entrance to inner board
 //       finish corner interactions
@@ -8,6 +11,9 @@
 //       Create world events      
 //       Add monster images
 //       Add monster side effects
+//       Add night and day
+//       Add cave exit
+
 
 var c1;
 var c2;
@@ -75,7 +81,9 @@ var currentRace;
 var getPlayer;
 
 var boardSpaces = [];
+var boardSpacesInner = [];
 var spaceMaker = 0;
+var boardLevel = [1,1,1,1,1,1];
 
 var turn = 0;
 var turnManagerButton;
@@ -102,6 +110,7 @@ var deleteQuestion;
 var restButton;
 var treasureButton;
 var monsterButton;
+var caveButton;
 var choiceText;
 var questionUp = false;
 
@@ -136,7 +145,7 @@ var useMagicButton;
 var noMagicButton;
 var magicUsed;
 var reroll = false;
-
+var cave;
 var timerBackground;
 var backgroundAsset;
 var sun;
@@ -177,6 +186,7 @@ create: function () {
     dice.events.onInputDown.add(RollDie, this);
     
     CreateBoardSpaces();
+    CreateInnerBoard();
     
     //Create Turn Management Button
     turnManagerButton = this.game.add.button(1050, 500, "turnButton", ManageTurn, 2,1,0);
@@ -203,6 +213,7 @@ update: function() {
 };
 
 function CreateBoardSpaces() {
+    
     
     for (var i = 0; i < 24; i++) {
         
@@ -236,7 +247,7 @@ function CreateBoardSpaces() {
             boardSpaces[i][1] = ((board.height - 85.71) - (spaceMaker * 85.71));
             
         }
-
+        
         spaceMaker += 1;
         
         if (spaceMaker == 6) {
@@ -251,19 +262,70 @@ function CreateBoardSpaces() {
     
 }
 
+function CreateInnerBoard () {
+        
+        spaceMaker = 0;
+        
+        for (var i = 0; i < 16; i++) {
+        
+        var space = [0,0];
+        
+        boardSpacesInner.splice(i,0, space);
+        
+        if (i < 4) {
+            
+            boardSpacesInner[i][0] = (board.x + 110) + (spaceMaker * 77);
+            boardSpacesInner[i][1] = (board.y + 107);
+        }
+        
+        if (i > 3 && i < 8) {
+            
+            boardSpacesInner[i][0] = (board.x + (board.width - 187));
+            boardSpacesInner[i][1] = (board.y + 107) + (spaceMaker * 78);
+            
+        }
+        
+        if (i > 7 && i < 12) {
+        
+            boardSpacesInner[i][0] = (board.x + (board.width - 187) - (spaceMaker * 77));
+            boardSpacesInner[i][1] = (board.height - 185);
+        
+        }
+        
+        if (i > 11 && i < 16) {
+            
+            boardSpacesInner[i][0] = (board.x + 110);
+            boardSpacesInner[i][1] = ((board.height - 185) - (spaceMaker * 78));
+            
+        }
+        
+        console.log("i is " + i + " " +  boardSpacesInner[i][0], boardSpacesInner[i][1]);
+        
+        
+        spaceMaker += 1;
+        
+        if (spaceMaker == 4) {
+            spaceMaker = 0;
+            
+        }
+        
+        
+    }
+}
+
 function ManageTurn () {
-    
+    console.log("turn on MT = " + turn);
     turnManagerButton.inputEnabled = false;
     
     switch (turn) {
         case 0:
             turnText.setText("roll");
-            turn += 1;
+            turn = 1;
             break;
             
         case 1:
             UpdateTurnText(updatePos);
-            turn += 1;
+            turn = 2;
             break;
     }
  
@@ -322,7 +384,27 @@ function StopDie () {
             
         case 21:
             WitchResult();
-            break;      
+            break;
+            
+        case 22:
+            TunnelResult();
+            break;
+            
+        case 23:
+            WitchResult();
+            break;
+            
+        case 24:
+            WitchResult();
+            break;
+            
+        case 25:
+            WitchResult();
+            break;
+            
+        case 26:
+            WitchResult();
+            break;
             
         default:
             CreateMovementToken(dieResult);
@@ -341,42 +423,89 @@ function StopDie () {
 }
 
 function CreateMovementToken(moves) {
-
-    if (cSet[currentPlayer - 1]) {
     
-        newSpot1 = (moves) + cPosSet[currentPlayer - 1];
-        newSpot2 = cPosSet[currentPlayer - 1] - (moves);
+    console.log (boardLevel[currentPlayer - 1]);
+    
+    if (boardLevel[currentPlayer - 1] == 1) {
+        
+        if (cSet[currentPlayer - 1]) {
+    
+            newSpot1 = (moves) + cPosSet[currentPlayer - 1];
+            newSpot2 = cPosSet[currentPlayer - 1] - (moves);
 
-        if (newSpot1 > 23) {
+            if (newSpot1 > 23) {
+                
+                newSpot1 -= 24;
+                
+            }
             
-            newSpot1 -= 24;
+            if (newSpot2 <= -1) {
+                
+                newSpot2 = 24 + newSpot2;
+            }
+            
+            var aX = boardSpaces[newSpot1][0];
+            var aY = boardSpaces[newSpot1][1];
+            var bX = boardSpaces[newSpot2][0];
+            var bY = boardSpaces[newSpot2][1];
+            
+            
+            
+            aSpot = this.game.add.button(aX, aY, "aSpot", MovePlayer, this, 2,1,0);
+            bSpot = this.game.add.button(bX, bY, "bSpot", MovePlayer, this, 2,1,0);
+            
+            turnText.setText("move");
             
         }
+        else {
         
-        if (newSpot2 <= -1) {
+            currentPlayer +=1;
+            CreateMovementToken(moves);
             
-            newSpot2 = 24 + newSpot2;
         }
-        
-        var aX = boardSpaces[newSpot1][0];
-        var aY = boardSpaces[newSpot1][1];
-        var bX = boardSpaces[newSpot2][0];
-        var bY = boardSpaces[newSpot2][1];
-        
-        
-        
-        aSpot = this.game.add.button(aX, aY, "aSpot", MovePlayer, this, 2,1,0);
-        bSpot = this.game.add.button(bX, bY, "bSpot", MovePlayer, this, 2,1,0);
-        
-        turnText.setText("move");
-        
+            
     }
-    else {
     
-        currentPlayer +=1;
-        CreateMovementToken(moves);
+    if (boardLevel[currentPlayer - 1] == 2) {
         
+        if (cSet[currentPlayer - 1]) {
+    
+            newSpot1 = (moves) + cPosSet[currentPlayer - 1];
+            newSpot2 = cPosSet[currentPlayer - 1] - (moves);
+
+            if (newSpot1 > 15) {
+                
+                newSpot1 -= 16;
+                
+            }
+            
+            if (newSpot2 <= -1) {
+                
+                newSpot2 = 16 + newSpot2;
+            }
+            
+            var aX2 = boardSpacesInner[newSpot1][0];
+            var aY2 = boardSpacesInner[newSpot1][1];
+            var bX2 = boardSpacesInner[newSpot2][0];
+            var bY2 = boardSpacesInner[newSpot2][1];
+            
+            
+            
+            aSpot = this.game.add.button(aX2, aY2, "aSpot", MovePlayer, this, 2,1,0);
+            bSpot = this.game.add.button(bX2, bY2, "bSpot", MovePlayer, this, 2,1,0);
+            
+            turnText.setText("move");
+            
+        }
+        else {
+        
+            currentPlayer +=1;
+            CreateMovementToken(moves);
+            
+        }
+            
     }
+
     
     
     
@@ -408,6 +537,27 @@ function MovePlayer (spot) {
     ManageTurn();
     
     reroll = false;
+    
+}
+
+function LevelSwitch(where) {
+    
+    switch (where) {
+        
+        case "in10":
+            console.log("LS is okay");
+            tokenList[currentPlayer - 1].position.x = boardSpacesInner[10][0];
+            tokenList[currentPlayer - 1].position.y = boardSpacesInner[10][1];
+            cPosSet[currentPlayer - 1] = 10;
+            
+            ResetTurn();
+    
+            reroll = false;
+            break;
+            
+        
+        
+    }
     
 }
 
@@ -596,7 +746,7 @@ function ShowQuestion() {
     
     if (questionUp == false) {
         
-        if (turnText.text == "Quest!") {
+        if (turnText.text == "Quest!" || turnText.text == "cave") {
         
             
         questionPanel = this.game.add.sprite(300, 0, 'answersheet');
@@ -625,7 +775,8 @@ function ShowQuestion() {
         questionUp = true;
    
         } else if (turnText.text == "village" || turnText.text == "castle" || turnText.text == "forest"
-            || turnText.text == "witch") {
+            || turnText.text == "witch" || turnText.text == "ants" || turnText.text == "stairs" || 
+            turnText.text == "dragon" || turnText.text == "pool") {
     
             questionPanel = this.game.add.sprite(300, 0, 'answersheet');
             question = this.game.add.group();
@@ -658,6 +809,22 @@ function GetCorner() {
             break;
             
         case 'forest':
+            GoToQuest();
+            break;
+            
+        case 'ants':
+            GoToQuest();
+            break;
+            
+        case 'dragon':
+            GoToQuest();
+            break;
+            
+        case 'pool':
+            GoToQuest();
+            break;
+            
+        case 'stairs':
             GoToQuest();
             break;
 
@@ -856,7 +1023,22 @@ function GoToQuest() {
         question.addChild(monsterButton);
         question.addChild(treasureButton);
         
-    } else {
+    } else if (turnText.text == "cave") {
+        
+        turn = 3;
+        restButton = this.game.add.button(400, 200, "restButton", StartActionTimer, 2,1,0);
+        monsterButton = this.game.add.button(100, 400, "monsterButton", StartActionTimer, 2,1,0);
+        treasureButton = this.game.add.button(400, 400, "treasureButton", StartActionTimer, 2,1,0);
+        caveButton = this.game.add.button(100, 200, "caveButton", StartActionTimer, 2,1,0);
+        
+        question.addChild(restButton);
+        question.addChild(monsterButton);
+        question.addChild(treasureButton);
+        question.addChild(caveButton);
+ 
+    }
+ 
+    else {
         
         backgroundAsset = turnText.text + "Background";
         timerBackground = this.game.add.sprite(45,200, backgroundAsset);
@@ -887,6 +1069,30 @@ function GoToQuest() {
                 turn = 20;
                 //VillageResult();
                 break;
+                
+            case "ants":
+                choiceText.setText("Aaaahhh!! Giant Ants!!! \nRoll the die.");
+                turn = 23;
+                //VillageResult();
+                break;
+                
+            case "dragon":
+                choiceText.setText("The dragon stands up and.... \nRoll the die.");
+                turn = 24;
+                //VillageResult();
+                break;
+                
+            case "stairs":
+                choiceText.setText("You found the stairs to the 4 Doors.... \nRoll the die.");
+                turn = 25;
+                //VillageResult();
+                break;
+                
+            case "pool":
+                choiceText.setText("You found the stairs to the 4 Doors.... \nRoll the die.");
+                turn = 25;
+                //VillageResult();
+                break;
         }
         
         
@@ -899,27 +1105,56 @@ function GoToQuest() {
 
 function StartActionTimer(action) {
     
-    RunTimer(action);
+    var buttons = 3;
     
     switch (action) {
+        
         case restButton:
             choiceText.setText("You take a rest and......");
+            RunTimer(action);
             break;
             
         case monsterButton:
             choiceText.setText("You go looking for a monster and......");
+            RunTimer(action);
             break;
             
         case treasureButton:
             choiceText.setText("You look for some treasure and......");
+            RunTimer(action);
             break;
+            
+        case caveButton:
+            choiceText.setText("You walk to the cave...");
+            buttons = 4;
+            MakeCave();
+            
+        
+            break;
+            
+        
+    }
+    
+    for (var i = 0; i < buttons; i++) {
+            
+        question.getChildAt(1).destroy();
         
     }
     
     
-    question.getChildAt(1).destroy();
-    question.getChildAt(1).destroy();
-    question.getChildAt(1).destroy();    
+    
+}
+
+function MakeCave() {
+       // backgroundAsset = turnText.text + "Background";
+        cave = this.game.add.sprite(45,200, 'caveBackground');
+            
+        question.add(cave);
+
+        turn = 22;
+        RollDie();
+           
+          
 }
 
 function ManageQuest(choice) {
@@ -1101,9 +1336,16 @@ function UseMagic(magic) {
     
 }
 
+function TunnelResult() {
+    console.log("TR is okay");
+    choiceText.setText("You found a way in!");
+    boardLevel[currentPlayer - 1] = 2;
+    LevelSwitch("in10");
+}
+
 function TreasureHunt() {
     
-    CreateItem();
+    
     
     var getGold = packList[currentPlayer - 1].getChildAt(2);
     
@@ -1122,11 +1364,12 @@ function TreasureHunt() {
     } else if (treasureFound == 3) {
         
         turn = 4;
+        RunDelay(FightMonster, "none");
         choiceText.setText("Uh oh...you found a monster!");
-        FightMonster();
+        
         
     } else {
-        
+        CreateItem();
         var article;
         console.log(itemObject.slice(-1));
         if (itemObject.slice(-1) == "s") {
@@ -1320,7 +1563,7 @@ function ForestResult() {
             choiceText.setText("You get lost and eat nothing!  \nLose 1 life.");
             getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
             turn = 1;
-            reroll = true;
+            //reroll = true;
             break;
             
         case 3:
@@ -1431,6 +1674,7 @@ function AddInventory(choice) {
 
         
         if (isMagic == true) {
+            console.log(question);
             emitterList[0].destroy();
             question.getChildAt(6).destroy();
             inventory = this.game.add.sprite (75,80, itemObject);
@@ -1440,7 +1684,8 @@ function AddInventory(choice) {
             playerBonus[currentPlayer - 1] = [itemObject, itemModifier];
             
         } else {
-            question.getChildAt(5).destroy();
+            console.log(question);
+            displayItem.destroy();
             inventory = this.game.add.sprite (75,80, currentItem);
             inventory.scale.setTo(.25,.25);
             packList[currentPlayer - 1].add(inventory);
@@ -1537,32 +1782,23 @@ function DeleteQuestion() {
     
     if (typeof displayItem !== "undefined") {
         
-        if (displayItem.name !== "displayItemcoin" && displayItem.name !== "displayItemrock") {
+        if (isMagic == true) {
    
             emitterList[0].destroy();
         }    
         
     }
-    
-    
-    
+
     questionPanel.destroy();
     questionUp = false;
     
     if (reroll == false) {
         
         ResetCurrentPlayer();
-    
-        ResetTurn();
-        
-        
+ 
     }
 
-    
-
-
-
-
+    ResetTurn();
 }
 
 function DeletePlayer() {
@@ -1620,46 +1856,97 @@ function UpdateTurnText(box) {
 
     var checkSpace;
     
-    if (box != 0 && box != 6 && box != 12 && box != 18) {
+    if (box != 0 && box != 6 && box != 12 && 
+        box != 18 && box != 15 && boardLevel[currentPlayer - 1] == 1) {
         
         checkSpace = 1;
         
     }
-    else {
+    else if (box != 0 && box != 4 && box != 8 && 
+            box != 12 && box != 10 && boardLevel[currentPlayer - 1] == 2) {
+        
+        checkSpace = 1;
+        
+    } else {
         
         checkSpace = box;
-        
     }
     
-    
-    switch (checkSpace) {
-        case 1 :
-            turnText.setText("Quest!");
-            backgroundAsset = "roadBackground";
-            break;
-            
-        case 0 :
-            turnText.setText("castle");
-            backgroundAsset = "castleBackground";
-            break;
-            
-        case 6 :
-            turnText.setText("witch");
-            backgroundAsset = "witchBackground";
-            break;
-            
-        case 12 :
-            turnText.setText("forest");
-            backgroundAsset = "forestBackground";
-            break;
-            
-        case 18 :
-            turnText.setText("village");
-            backgroundAsset = "villageBackground";
-            break;
+    if (boardLevel[currentPlayer - 1] == 1) {
         
+        switch (checkSpace) {
+            case 1 :
+                turnText.setText("Quest!");
+                backgroundAsset = "roadBackground";
+                break;
+                
+            case 0 :
+                turnText.setText("castle");
+                backgroundAsset = "castleBackground";
+                break;
+                
+            case 6 :
+                turnText.setText("witch");
+                backgroundAsset = "witchBackground";
+                break;
+                
+            case 12 :
+                turnText.setText("forest");
+                backgroundAsset = "forestBackground";
+                break;
+                
+            case 15 :
+                turnText.setText("cave");
+                backgroundAsset = "caveBackground";
+                break;
+                
+            case 18 :
+                turnText.setText("village");
+                backgroundAsset = "villageBackground";
+                break;
+            
        
+        }
+   
+    } else {
+        
+        if (boardLevel[currentPlayer - 1] == 2) {
+        
+        switch (checkSpace) {
+            
+            case 1 :
+                turnText.setText("Quest!");
+                backgroundAsset = "roadBackground";
+                break;
+            
+            case 0 :
+                turnText.setText("stairs");
+                backgroundAsset = "roadBackground";
+                break;
+                
+            case 4 :
+                turnText.setText("ants");
+                backgroundAsset = "castleBackground";
+                break;
+                
+            case 8 :
+                turnText.setText("dragon");
+                backgroundAsset = "witchBackground";
+                break;
+                
+            case 12 :
+                turnText.setText("pool");
+                backgroundAsset = "forestBackground";
+                break;
+
+            
+       
+        }
+   
     }
+        
+    }
+
     
     
     
@@ -1680,7 +1967,6 @@ function RunTimer(doThis) {
     // timerGroup.y = question.y;
     timerBackground = timerGroup.create(45,200, backgroundAsset);
     sun = this.game.add.sprite(550, 300, "sun");
-    
     StartSun();
     //question.add(timerBackground);
 
@@ -1692,11 +1978,7 @@ function RunTimer(doThis) {
     timer.add(actionTime, StopSun, this);
     
     timer.add(actionTime, ManageQuest, this, doThis);
-  
-    
-    
-    
-    
+
     timer.start();
     
 }

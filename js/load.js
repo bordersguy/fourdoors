@@ -30,6 +30,7 @@ var loadState = {
         this.game.load.image('monsterButton', 'assets/huntButton.png');
         this.game.load.image('treasureButton', 'assets/treasureButton.png');
         this.game.load.image('restButton', 'assets/restButton.png');
+        this.game.load.image('caveButton', 'assets/caveButton.png');
         this.game.load.image('ring', 'assets/ring.png');
         this.game.load.image('wand', 'assets/wand.png');
         this.game.load.image('boots', 'assets/boots.png');
@@ -53,6 +54,7 @@ var loadState = {
         this.game.load.image('castleBackground', 'assets/castleBackground.png');
         this.game.load.image('witchBackground', 'assets/witchBackground.png');
         this.game.load.image('forestBackground', 'assets/forestBackground.png');
+        this.game.load.image('caveBackground', 'assets/caveBackground.png');
         
 
         
