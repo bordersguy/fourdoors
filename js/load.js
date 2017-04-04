@@ -15,6 +15,8 @@ var loadState = {
         
         //Boarditems
         this.game.load.image('board', 'assets/boardgame.png');
+        this.game.load.image('cloud', 'assets/cloud.png');
+        
         this.game.load.spritesheet('die', 'assets/dice.png', 79, 75);
         this.game.load.image('sheet', 'assets/characterFrame.png');
         this.game.load.image('sheetX', 'assets/characterFrameX.png');
@@ -55,6 +57,12 @@ var loadState = {
         this.game.load.image('witchBackground', 'assets/witchBackground.png');
         this.game.load.image('forestBackground', 'assets/forestBackground.png');
         this.game.load.image('caveBackground', 'assets/caveBackground.png');
+        this.game.load.image('poolBackground', 'assets/poolBackground.png');
+        this.game.load.image('antsBackground', 'assets/antsBackground.png');
+        this.game.load.image('dragonBackground', 'assets/dragonBackground.png');
+        this.game.load.image('stairsBackground', 'assets/stairsBackground.png');
+        this.game.load.image('exitBackground', 'assets/exitBackground.png');
+        
         
 
         
