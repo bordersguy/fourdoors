@@ -16,6 +16,8 @@ var loadState = {
         //Boarditems
         this.game.load.image('board', 'assets/boardgame.png');
         this.game.load.image('cloud', 'assets/cloud.png');
+        this.game.load.image('moon', 'assets/moon.png');
+        this.game.load.image('star', 'assets/star.png');
         
         this.game.load.spritesheet('die', 'assets/dice.png', 79, 75);
         this.game.load.image('sheet', 'assets/characterFrame.png');

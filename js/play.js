@@ -160,8 +160,10 @@ var key4;
 var key5;
 var key6;
 
-
+var dayNight = 1;
 var clouds;
+var stars;
+var moon;
 
 var playState = {
  
@@ -714,11 +716,11 @@ function AddStats(player) {
                 
                 if (player == c1 || player == c2 || player == c3) {
                 
-                    goldText = this.game.add.text(16, 3, gold, goldStyle);
+                    goldText = this.game.add.text(25, 3, gold, goldStyle);
                     goldText.name = "goldText";
-                    attackText = this.game.add.text(9, 46, attack, attackStyle);
+                    attackText = this.game.add.text(9, 48, attack, attackStyle);
                     attackText.name = "attackText";
-                    lifeText = this.game.add.text(16, 88, life, lifeStyle);
+                    lifeText = this.game.add.text(25, 94, life, lifeStyle);
                     lifeText.name = "lifeText";
                     deletePlayer = this.game.add.button(80, -10, 'deleteX', DeletePlayer, this, 2,1,0);
                     packList[i].add(deletePlayer);
@@ -729,11 +731,11 @@ function AddStats(player) {
                 }
                 else {
                 
-                    goldText = this.game.add.text(72, 3, gold, goldStyle);
+                    goldText = this.game.add.text(92, 3, gold, goldStyle);
                     goldText.name = "goldText";
-                    attackText = this.game.add.text(79, 46, attack, attackStyle);
+                    attackText = this.game.add.text(105, 50, attack, attackStyle);
                     attackText.name = "attackText";
-                    lifeText = this.game.add.text(72, 88, life, lifeStyle);
+                    lifeText = this.game.add.text(92, 95, life, lifeStyle);
                     lifeText.name = "lifeText";
                     deletePlayer = this.game.add.button(-20, -10, 'deleteX', DeletePlayer, this, 2,1,0);
                     packList[i].add(deletePlayer);
@@ -742,7 +744,7 @@ function AddStats(player) {
                     packList[i].add(lifeText);
                 }
 
-                playerName = this.game.add.text(10, 120, currentRace + (i + 1).toString(), { font: "20px Arial", fill: "white", align: "center" }, packList[i]); 
+                playerName = this.game.add.text(10, 125, currentRace + (i + 1).toString(), { font: "20px Arial", fill: "white", align: "center" }, packList[i]); 
 
                 deletePlayer.input.priorityID = 10;
                 
@@ -759,12 +761,12 @@ function PickRace(player, number) {
     
        if (player == c1 || player == c2 || player == c3) {
         
-            var x = 55;
+            var x = 65;
             var y = 65;
         }
         else {
         
-            x = 45;
+            x = 65;
             y = 65;
         }
     
@@ -2114,7 +2116,7 @@ function ResetCurrentPlayer () {
     if (currentPlayer > totalPlayers) {
         
         currentPlayer = 1;
-        
+        DayNight();
     }
 }    
 
@@ -2355,3 +2357,33 @@ function DestroyThis (thing) {
     
 }
 
+function DayNight() {
+    
+    dayNight += 1;
+    
+    if (dayNight == 3) {
+        
+        dayNight = 1;
+        
+    }
+    
+    if (dayNight == 2) {
+        
+        this.game.stage.backgroundColor = "#000000";
+        sun.destroy();
+        moon = this.game.add.sprite(5,5, "moon");
+        
+    } else if ( dayNight == 1) {
+        
+        this.game.stage.backgroundColor = "#4488AA";
+        moon.destroy();
+        sun = this.game.add.sprite(5,5, "sun");
+        
+        
+        
+    } 
+    
+    
+    
+    
+}
