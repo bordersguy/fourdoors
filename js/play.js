@@ -164,6 +164,7 @@ var dayNight = 1;
 var clouds;
 var stars;
 var moon;
+var cloudsBack;
 
 var playState = {
  
@@ -229,7 +230,24 @@ create: function () {
     
     
     CloudGenerator();
+    cloudsBack = this.game.add.group();
+        
+    for (var i = 0; i < 30; i++) {
+        
+        
+        
+        var xRandom = getRandomInt(0, this.game.width);
+        var yRandom = getRandomInt(0, this.game.height);
+        var randomScale = (Math.random() * (0.60 - .40) + 0.40).toFixed(2);
+        
+        var backCloud = cloudsBack.create(xRandom, yRandom, "cloud");   
+        backCloud.alpha = .60;
+        backCloud.scale.setTo(randomScale,randomScale);
+        
+        
+    }
     
+    this.game.world.sendToBack(cloudsBack);
     
     //Create Particles
     
@@ -2359,6 +2377,11 @@ function DestroyThis (thing) {
 
 function DayNight() {
     
+    var xRandom;
+    var yRandom;
+    var randomScale;
+    
+    
     dayNight += 1;
     
     if (dayNight == 3) {
@@ -2371,15 +2394,55 @@ function DayNight() {
         
         this.game.stage.backgroundColor = "#000000";
         sun.destroy();
+        cloudsBack.destroy();
         moon = this.game.add.sprite(5,5, "moon");
+        
+        
+        stars = this.game.add.group();
+        
+        for (var i = 0; i < 100; i++) {
+            
+            
+            
+            xRandom = getRandomInt(0, this.game.width);
+            yRandom = getRandomInt(0, this.game.height);
+            
+            randomScale = (Math.random() * (0.30 - .05) + 0.05).toFixed(2);
+            
+            var star = stars.create(xRandom, yRandom, "star");   
+         
+            star.scale.setTo(randomScale,randomScale);
+            
+            
+        }
+        
+      this.game.world.sendToBack(stars);
         
     } else if ( dayNight == 1) {
         
         this.game.stage.backgroundColor = "#4488AA";
         moon.destroy();
         sun = this.game.add.sprite(5,5, "sun");
+        stars.destroy();
         
+        cloudsBack = this.game.add.group();
         
+        for (var i = 0; i < 20; i++) {
+            
+            
+            
+            xRandom = getRandomInt(0, this.game.width);
+            yRandom = getRandomInt(0, this.game.height);
+            randomScale = (Math.random() * (0.60 - .40) + 0.40).toFixed(2);
+            
+            var backCloud = cloudsBack.create(xRandom, yRandom, "cloud");   
+         
+            backCloud.scale.setTo(randomScale,randomScale);
+            
+            
+        }
+        
+        this.game.world.sendToBack(cloudsBack);
         
     } 
     
@@ -2387,3 +2450,4 @@ function DayNight() {
     
     
 }
+
