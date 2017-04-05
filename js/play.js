@@ -1,5 +1,4 @@
 //Bugs:  
-//       ***Okay??*** village farmer doesn't seem to work
 
 //To Do: 
 //       Add Timer to post question choices.
@@ -9,11 +8,11 @@
 //       Create world events      
 //       Add monster images
 //       Add monster side effects
-//       Add night and day
+
 
 //Later:
 //       Music & Sound effects
-//       Add floating clouds that fade away
+
 
 var c1;
 var c2;
@@ -2332,7 +2331,7 @@ function CloudGenerator() {
     
         clouds.forEach(function(cloud) {
             
-            if (cloud.x < 300) {
+            if (cloud.x < -100) {
                 
                 cloudClean.push(cloud);
                 
@@ -2446,10 +2445,10 @@ function DayNight() {
             randomScale = (Math.random() * (0.60 - .40) + 0.40).toFixed(2);
             
             var backCloud = cloudsBack.create(xRandom, yRandom, "cloud");   
-         
+            backCloud.alpha = .60;
             backCloud.scale.setTo(randomScale,randomScale);
             
-             if ((xRandom > 300 && xRandom < 379) || (xRandom < 900 && xRandom > 821)) {
+             if ((xRandom > 300 && xRandom < 379) || (xRandom > 810 && xRandom < 900)) {
             
                 backCloud.angle += 90;
             
