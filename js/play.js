@@ -166,15 +166,20 @@ var stars;
 var moon;
 var cloudsBack;
 
+
 var playState = {
  
 create: function () {
     
     this.game.stage.backgroundColor = "#4488AA";
+    
     sun = this.game.add.sprite(5,5, "sun");
     //Create Game Board
     board = this.game.add.sprite(300,0, 'board');
-    
+    var leftBorder = this.game.add.sprite(board.x - 50, board.y - 64, 'leftBorder');
+    var rightBorder = this.game.add.sprite(board.x + board.width - 10, board.y - 64, 'rightBorder');
+    this.game.world.sendToBack(leftBorder);
+    this.game.world.sendToBack(rightBorder);
     tokenList = this.game.add.group();
     tokenList = [token1, token2, token3, token4, token5, token6];
     
@@ -243,7 +248,11 @@ create: function () {
         var backCloud = cloudsBack.create(xRandom, yRandom, "cloud");   
         backCloud.alpha = .60;
         backCloud.scale.setTo(randomScale,randomScale);
-        
+        if ((xRandom > 300 && xRandom < 379) || (xRandom < 900 && xRandom > 821)) {
+            
+            backCloud.angle += 90;
+            
+        }
         
     }
     
@@ -2347,7 +2356,7 @@ function CloudGenerator() {
         if (clouds.length < 5) {
             
             var yRandom = Math.floor(Math.random() * (this.game.height - 100) + 50);
-            var xRandom = getRandomInt(20, 500);
+            var xRandom = getRandomInt(20, 1000);
             
             var randomScale = getRandomInt(.75,3);
             var cloud = clouds.create(this.game.width + xRandom, yRandom , 'cloud');
@@ -2356,6 +2365,7 @@ function CloudGenerator() {
             cloud.body.gravity.setTo(0, 0);
             cloud.body.velocity.setTo( -10, 0);
             cloud.scale.setTo(randomScale,randomScale);
+            
             cloud.inputEnabled = true;
             cloud.events.onInputDown.add(DestroyThis, this);
         }     
@@ -2439,6 +2449,11 @@ function DayNight() {
          
             backCloud.scale.setTo(randomScale,randomScale);
             
+             if ((xRandom > 300 && xRandom < 379) || (xRandom < 900 && xRandom > 821)) {
+            
+                backCloud.angle += 90;
+            
+            }
             
         }
         
