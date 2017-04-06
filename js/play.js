@@ -1,18 +1,21 @@
 //Bugs:  
 
 //To Do: 
-//       Add Timer to post question choices.
-//       Limit objects to certain classes
-//       finish corner interactions
-//       Add glowing rock & witch & robinhood quest
-//       Create world events      
-//       Add monster images
-//       Add monster side effects
+//      Add Timer to post question choices.
+//      Limit objects to certain classes
+//      finish corner interactions
+//      Add glowing rock & witch & robinhood quest
+//      Create world events      
+//      Add monster images
+//      Add monster side effects
+//      Make pool monster
+//      Make fairy
+//      Create Ant Pet
 
 
 //Later:
-//       Music & Sound effects
-
+//      Music & Sound effects
+//      Make mini game
 
 var c1;
 var c2;
@@ -75,6 +78,7 @@ var tokenList;
 var tokenName;
 
 var dice;
+var rollTime;
 
 var currentRace;
 var getPlayer;
@@ -165,6 +169,8 @@ var stars;
 var moon;
 var cloudsBack;
 
+var teleport;
+
 
 var playState = {
  
@@ -208,7 +214,7 @@ create: function () {
     CreateBoardSpaces();
     CreateInnerBoard();
     
-    //Create Turn Management Button
+    //Create Turn Management Button...this just starts the game and identifies what to do
     turnManagerButton = this.game.add.button(1050, 500, "turnButton", ManageTurn, 2,1,0);
     turnText = this.game.add.text(turnManagerButton.width/2, turnManagerButton.height/2,  "start", { font: "40px Arial", fill: "black", align: "center" }); 
     turnManagerButton.addChild(turnText);
@@ -441,11 +447,22 @@ function RollDie() {
     //timer
     var rollTimer = this.game.time.create(false);
     
-    var rollTime = Math.floor(((Math.random() * 3) + 3) * 1000);
+    rollTime = Math.floor(((Math.random() * 3) + 3) * 1000);
     
     rollTimer.add(rollTime, StopDie, this);
     
     rollTimer.start();
+    
+    if (turnText.text.includes("village") || turnText.text.includes("castle") || turnText.text.includes("witch") || turnText.text.includes("forest")) {
+        
+        StartSun();
+        timer = this.game.time.create(false);
+        
+        timer.add(rollTime, StopSun, this);
+        timer.start();
+        
+        
+    }
 }
 
 function StopDie () {
@@ -683,6 +700,18 @@ function LevelSwitch(where) {
     
             reroll = false;
             break;
+            
+        case "teleport":
+            
+            tokenList[currentPlayer - 1].position.x = boardSpaces[teleport][0];
+            tokenList[currentPlayer - 1].position.y = boardSpaces[teleport][1];
+            cPosSet[currentPlayer - 1] = teleport;
+            
+            ResetTurn();
+    
+            reroll = false;
+            break;
+            
             
         
         
@@ -1169,8 +1198,9 @@ function GoToQuest() {
  
     else {
         
-        backgroundAsset = turnText.text + "Background";
+        //backgroundAsset = turnText.text + "Background";
         timerBackground = this.game.add.sprite(45,200, backgroundAsset);
+        
         question.add(timerBackground);
         
         switch (turnText.text) {
@@ -1178,22 +1208,25 @@ function GoToQuest() {
             case "village":
                 choiceText.setText("Welcome!  Take a look around our village! \nRoll the die.");
                 turn = 18;
-                //VillageResult();
+                CreateSun();
                 break;
                 
             case "witch":
                 choiceText.setText("Do you want some help? \nRoll the die.");
                 turn = 21;
+                CreateSun();
                 break;
             
             case "castle":
                 choiceText.setText("Welcome!  Take a look around the castle! \nRoll the die.");
                 turn = 19;
+                CreateSun();
                 break;
             
             case "forest":
                 choiceText.setText("The forest can be a dangerous place! \nRoll the die.");
                 turn = 20;
+                CreateSun();
                 break;
                 
             case "ants":
@@ -1270,8 +1303,25 @@ function StartActionTimer(action) {
 
 function MakeCave() {
        // backgroundAsset = turnText.text + "Background";
-        cave = this.game.add.sprite(45,200, 'caveBackground');
+        if (dayNight == 1) {
             
+            cave = this.game.add.sprite(45,200, 'caveBackground');
+            
+        } else {
+            
+            cave = this.game.add.sprite(45,200, 'caveBackgroundNight');
+            
+        }
+        
+        CreateSun();
+        StartSun();
+        
+        RollDie();
+        timer = this.game.time.create(false);
+        //var actionTime = Math.floor(((Math.random() * 3) + 3) * 1000);
+        timer.add(rollTime, StopSun, this);
+        timer.start();
+        
         question.add(cave);
         
         
@@ -1283,13 +1333,7 @@ function MakeCave() {
             
             turn = 27;
         }
-        
-        
-        
-        
-        RollDie();
-           
-          
+       
 }
 
 function ManageQuest(choice) {
@@ -1764,13 +1808,14 @@ function PoolResult() {
             break;
             
         case 2:
-            choiceText.setText("You find a door.  \nDo you open it?");
-            //Add open door
+            choiceText.setText("You find a door behind the pool.  \nDo you open it?");
+            Portal();
             break;
             
         case 3:
             choiceText.setText("Oh no! You woke up the Pool Monster!");
-            //Add Pool Monster Fight
+            FightMonster();
+            //Make special pool monster
             break;
             
         case 4:
@@ -1788,7 +1833,7 @@ function PoolResult() {
             
         case 6:
             choiceText.setText("A fairy wants to play a game with you.  \nDo you want to play?");
-            //Fairy Game
+            //Fairy mini-Game
             
             break;
 
@@ -1820,8 +1865,9 @@ function DragonResult() {
             break;
             
         case 4:
-            choiceText.setText("...is happy to see you! \nPick a treasure!");
-            //dragon treasure
+            choiceText.setText("...is happy to see you! \nHave a gift!");
+            CreateItem();
+            DisplayItem(currentItem);
             break;
             
         case 5:
@@ -1833,7 +1879,7 @@ function DragonResult() {
             
         case 6:
             choiceText.setText("...wants to play a game with you!  \nDo you want to play?");
-            //Dragon Game
+            //Dragon mini-Game
             
             break;
 
@@ -1851,7 +1897,7 @@ function AntsResult() {
         
         case 1:
             choiceText.setText("The ants don't like you and take you away!  \nWhere are you?");
-            //Add random spot inner and outer
+            Portal();
             break;
             
         case 2:
@@ -1878,11 +1924,58 @@ function AntsResult() {
             
         case 6:
             choiceText.setText("The ants want to play a game.  \nDo you want to play?");
-            //Dragon Game
+            //Ant mini-Game
             
             break;
 
     }
+    
+    
+}
+
+function Portal() {
+    
+    var event = getComputedStyle(0,4);
+    
+    switch (event) {
+        case 0:
+            choiceText.setText("You find a treasure room!");
+            CreateItem();
+            DisplayItem(currentItem);
+            break;
+            
+        case 1:
+            choiceText.setText("You fall down a hole!  \nWhere are you?");
+            Hole();
+            break;
+            
+        case 2:
+            choiceText.setText("You find a sleeping monster!  \nWhere are you?");
+            FightMonster();
+            break;
+        
+        
+    }
+    
+    
+}
+
+function Hole() {
+    
+    var inOut = getRandomInt(0,2);
+    var area;
+    if (inOut == 0) {
+        
+        area = boardSpaces;
+        
+    } else {
+        
+        area = boardSpacesInner;
+    }
+    
+    teleport = getRandomInt(0, area.length);
+    
+    LevelSwitch("teleport");
     
     
 }
@@ -2168,35 +2261,47 @@ function UpdateTurnText(box) {
     
     if (boardLevel[currentPlayer - 1] == 1) {
         
+        var night;
+        
+        if (dayNight == 1) {
+            
+            night = "";
+            
+        } else {
+            
+            night = "Night"
+            
+        }
+        
         switch (checkSpace) {
             case 1 :
                 turnText.setText("Quest!");
-                backgroundAsset = "roadBackground";
+                backgroundAsset = "roadBackground" + night;
                 break;
                 
             case 0 :
                 turnText.setText("castle");
-                backgroundAsset = "castleBackground";
+                backgroundAsset = "castleBackground" + night;
                 break;
                 
             case 6 :
                 turnText.setText("witch");
-                backgroundAsset = "witchBackground";
+                backgroundAsset = "witchBackground" + night;
                 break;
                 
             case 12 :
                 turnText.setText("forest");
-                backgroundAsset = "forestBackground";
+                backgroundAsset = "forestBackground" + night;
                 break;
                 
             case 15 :
                 turnText.setText("cave");
-                backgroundAsset = "caveBackground";
+                backgroundAsset = "caveBackground" + night;
                 break;
                 
             case 18 :
                 turnText.setText("village");
-                backgroundAsset = "villageBackground";
+                backgroundAsset = "villageBackground" + night;
                 break;
             
        
@@ -2265,9 +2370,10 @@ function RunTimer(doThis) {
     // timerGroup.x = question.x;
     // timerGroup.y = question.y;
     timerBackground = timerGroup.create(45,200, backgroundAsset);
-    sun = this.game.add.sprite(550, 300, "sun");
+    
+    CreateSun();
+    
     StartSun();
-    //question.add(timerBackground);
 
     timer = this.game.time.create(false);
    
@@ -2299,6 +2405,31 @@ function RunDelay(ToDo, arg, timeX) {
     timer.start();
 }
 
+function CreateSun() {
+    
+    var sunX;
+    
+    if (backgroundAsset.includes("cave") || backgroundAsset.includes("castle")) {
+        
+        sunX = 350;
+        
+    } else {
+        
+        sunX = 550;
+        
+    }
+    
+    if (dayNight == 1) {
+        
+        sun = this.game.add.sprite(sunX, 300, "sun");
+            
+    } else {
+        
+        sun = this.game.add.sprite(sunX, 300, "moon");
+        
+    }
+}
+
 function StartSun() {
     
     this.game.physics.enable(sun);
@@ -2306,12 +2437,25 @@ function StartSun() {
     sun.body.gravity.setTo(0, 0);
     sun.body.velocity.setTo( 4, -15);
     
+    
+    
 }
 
 function StopSun() {
     //sun.body.velocity.setTo(0, 0);
     //question.add(sun);
-    var newSun = this.game.add.sprite(sun.x - 300, sun.y, "sun");
+    var newSun;
+    
+    if (dayNight == 1 ) {
+        
+        newSun = this.game.add.sprite(sun.x - 300, sun.y, "sun");    
+        
+    } else {
+        
+        newSun = this.game.add.sprite(sun.x - 300, sun.y, "moon");    
+        
+    }
+    
     question.add(newSun);
     sun.destroy();
     

@@ -66,6 +66,17 @@ var loadState = {
         this.game.load.image('dragonBackground', 'assets/dragonBackground.png');
         this.game.load.image('stairsBackground', 'assets/stairsBackground.png');
         this.game.load.image('exitBackground', 'assets/exitBackground.png');
+        this.game.load.image('roadBackgroundNight', 'assets/roadBackgroundNight.png');
+        this.game.load.image('villageBackgroundNight', 'assets/villageBackgroundNight.png');
+        this.game.load.image('castleBackgroundNight', 'assets/castleBackgroundNight.png');
+        this.game.load.image('witchBackgroundNight', 'assets/witchBackgroundNight.png');
+        this.game.load.image('forestBackgroundNight', 'assets/forestBackgroundNight.png');
+        this.game.load.image('caveBackgroundNight', 'assets/caveBackgroundNight.png');
+        
+        
+        
+        
+        
         
         
 
