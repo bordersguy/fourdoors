@@ -6325,6 +6325,165 @@
          result="composite2"
          id="feComposite7213" />
     </filter>
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4633"
+       id="radialGradient6214"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.9518323,-0.12929588,-0.27637706,1.4433259,-460.13786,316.46946)"
+       cx="351.3313"
+       cy="171.01767"
+       fx="351.3313"
+       fy="171.01767"
+       r="40" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5120"
+       id="radialGradient6216"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(2.6808838,0.10543739,-1.2968697,1.1785413,-1697.5139,821.9929)"
+       cx="861.07788"
+       cy="494.8541"
+       fx="861.07788"
+       fy="494.8541"
+       r="58.18771" />
+    <filter
+       x="-0.15"
+       width="1.3"
+       y="-0.15"
+       height="1.3"
+       inkscape:menu-tooltip="Stone wall texture to use with not too saturated colors"
+       inkscape:menu="Textures"
+       inkscape:label="Stone Wall"
+       style="color-interpolation-filters:sRGB;"
+       id="filter6251">
+      <feTurbulence
+         type="turbulence"
+         numOctaves="5"
+         baseFrequency="0.08 0.175"
+         seed="25"
+         id="feTurbulence6253" />
+      <feColorMatrix
+         result="result5"
+         values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 2 0 "
+         id="feColorMatrix6255" />
+      <feComposite
+         in="SourceGraphic"
+         operator="in"
+         in2="result5"
+         id="feComposite6257" />
+      <feMorphology
+         operator="dilate"
+         radius="0.65"
+         result="result3"
+         id="feMorphology6259" />
+      <feTurbulence
+         numOctaves="7"
+         baseFrequency="0.05 0.09"
+         type="fractalNoise"
+         seed="25"
+         id="feTurbulence6261" />
+      <feGaussianBlur
+         stdDeviation="2"
+         result="result7"
+         id="feGaussianBlur6263" />
+      <feDisplacementMap
+         in="result3"
+         xChannelSelector="R"
+         yChannelSelector="G"
+         scale="5"
+         result="result4"
+         in2="result7"
+         id="feDisplacementMap6265" />
+      <feFlood
+         flood-opacity="1"
+         flood-color="rgb(255,255,255)"
+         id="feFlood6267" />
+      <feComposite
+         k3="0.7"
+         k1="0.7"
+         result="result2"
+         operator="arithmetic"
+         in2="result4"
+         id="feComposite6269" />
+      <feComposite
+         k2="1"
+         in="result2"
+         operator="arithmetic"
+         in2="SourceAlpha"
+         k1="1"
+         result="result6"
+         id="feComposite6271" />
+      <feBlend
+         mode="multiply"
+         in2="result6"
+         in="result6"
+         id="feBlend6273" />
+    </filter>
+    <filter
+       y="-0.15"
+       height="1.3"
+       x="-0.15"
+       width="1.3"
+       inkscape:menu-tooltip="Aquarelle paper effect which can be used for pictures as for objects"
+       inkscape:menu="Textures"
+       inkscape:label="Rough Paper"
+       style="color-interpolation-filters:sRGB;"
+       id="filter6653">
+      <feTurbulence
+         type="fractalNoise"
+         baseFrequency="0.04"
+         numOctaves="5"
+         seed="0"
+         result="result4"
+         id="feTurbulence6655" />
+      <feDisplacementMap
+         in="SourceGraphic"
+         in2="result4"
+         yChannelSelector="G"
+         xChannelSelector="R"
+         scale="10"
+         result="result3"
+         id="feDisplacementMap6657" />
+      <feDiffuseLighting
+         lighting-color="rgb(233,230,215)"
+         diffuseConstant="1"
+         surfaceScale="2"
+         result="result1"
+         in="result4"
+         id="feDiffuseLighting6659">
+        <feDistantLight
+           azimuth="235"
+           elevation="40"
+           id="feDistantLight6661" />
+      </feDiffuseLighting>
+      <feComposite
+         operator="in"
+         in="result3"
+         in2="result1"
+         result="result2"
+         id="feComposite6663" />
+      <feComposite
+         in2="result1"
+         result="result5"
+         operator="arithmetic"
+         k1="1.7"
+         id="feComposite6665" />
+      <feBlend
+         in="result5"
+         in2="result3"
+         mode="normal"
+         id="feBlend6667" />
+    </filter>
+    <filter
+       style="color-interpolation-filters:sRGB;"
+       inkscape:label="Blur"
+       id="filter6762">
+      <feGaussianBlur
+         stdDeviation="16.15 15.6334"
+         result="blur"
+         id="feGaussianBlur6764" />
+    </filter>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -6333,9 +6492,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.35683027"
-     inkscape:cx="503.2485"
-     inkscape:cy="523.82312"
+     inkscape:zoom="0.45096266"
+     inkscape:cx="89.403667"
+     inkscape:cy="-273.89387"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -6367,7 +6526,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -10812,44 +10971,6 @@
          sodipodi:nodetypes="cccc" />
     </g>
     <g
-       id="g5302"
-       transform="matrix(0.34076705,0.75221421,-0.54285912,0.47218479,321.04549,414.1218)"
-       inkscape:export-filename="C:\Users\Administrator\Desktop\boardgame.png"
-       inkscape:export-xdpi="77.080002"
-       inkscape:export-ydpi="77.080002">
-      <path
-         style="fill:#ebebeb;fill-opacity:1;stroke:#000000;stroke-width:0.9375px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         d="m -36.460193,203.17116 -5.966214,-49.05554 15.246989,-1.32582 z"
-         id="path5298"
-         inkscape:connector-curvature="0"
-         sodipodi:nodetypes="cccc" />
-      <path
-         sodipodi:nodetypes="cccc"
-         inkscape:connector-curvature="0"
-         id="path5300"
-         d="m -36.460193,203.17116 -5.966214,-49.05554 15.246989,-1.32582 z"
-         style="fill:#636363;fill-opacity:1;stroke:#000000;stroke-width:0.9375px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;filter:url(#filter5274)" />
-    </g>
-    <g
-       transform="matrix(0.28151178,0.70273349,-0.44846248,0.44112443,305.39305,428.86592)"
-       id="g5308"
-       inkscape:export-filename="C:\Users\Administrator\Desktop\boardgame.png"
-       inkscape:export-xdpi="77.080002"
-       inkscape:export-ydpi="77.080002">
-      <path
-         sodipodi:nodetypes="cccc"
-         inkscape:connector-curvature="0"
-         id="path5304"
-         d="m -36.460193,203.17116 -5.966214,-49.05554 15.246989,-1.32582 z"
-         style="fill:#ebebeb;fill-opacity:1;stroke:#000000;stroke-width:0.9375px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
-      <path
-         style="fill:#636363;fill-opacity:1;stroke:#000000;stroke-width:0.9375px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;filter:url(#filter5274)"
-         d="m -36.460193,203.17116 -5.966214,-49.05554 15.246989,-1.32582 z"
-         id="path5306"
-         inkscape:connector-curvature="0"
-         sodipodi:nodetypes="cccc" />
-    </g>
-    <g
        id="g5388"
        transform="matrix(-0.70054182,-0.31989609,0.13214378,-0.41511363,137.53411,569.90434)"
        inkscape:transform-center-x="-0.72270859"
@@ -10911,27 +11032,6 @@
          id="path5862"
          inkscape:connector-curvature="0"
          sodipodi:nodetypes="cccc" />
-    </g>
-    <g
-       id="g5870"
-       transform="matrix(-0.7700915,0.00717116,-0.05625158,-0.43199197,194.99543,587.07976)"
-       inkscape:transform-center-x="-7.1058804"
-       inkscape:transform-center-y="5.6224048"
-       inkscape:export-filename="C:\Users\Administrator\Desktop\boardgame.png"
-       inkscape:export-xdpi="77.080002"
-       inkscape:export-ydpi="77.080002">
-      <path
-         style="fill:#ebebeb;fill-opacity:1;stroke:#000000;stroke-width:0.9375px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-         d="m -36.460193,203.17116 -5.966214,-49.05554 15.246989,-1.32582 z"
-         id="path5866"
-         inkscape:connector-curvature="0"
-         sodipodi:nodetypes="cccc" />
-      <path
-         sodipodi:nodetypes="cccc"
-         inkscape:connector-curvature="0"
-         id="path5868"
-         d="m -36.460193,203.17116 -5.966214,-49.05554 15.246989,-1.32582 z"
-         style="fill:#636363;fill-opacity:1;stroke:#000000;stroke-width:0.9375px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;filter:url(#filter5274)" />
     </g>
     <path
        inkscape:connector-curvature="0"
@@ -14345,5 +14445,222 @@
        sodipodi:nodetypes="caaaaaaaaaccc"
        inkscape:export-xdpi="77.080002"
        inkscape:export-ydpi="77.080002" />
+    <rect
+       inkscape:export-ydpi="77.080002"
+       inkscape:export-xdpi="77.080002"
+       inkscape:export-filename="C:\Users\Administrator\Desktop\boardgame.png"
+       transform="matrix(5.911051,0.00504551,-0.008141,3.5724209,-1118.05,-295.89574)"
+       inkscape:tile-y0="551.57651"
+       inkscape:tile-x0="83.278996"
+       inkscape:tile-h="99.999999"
+       inkscape:tile-w="99.999999"
+       inkscape:tile-cy="601.57651"
+       inkscape:tile-cx="133.279"
+       y="440.65997"
+       x="138.83527"
+       height="87.970505"
+       width="86.87072"
+       id="rect6113"
+       style="opacity:1;fill:url(#radialGradient6214);fill-opacity:1;stroke:#000000;stroke-width:0.72279394;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter6698)" />
+    <path
+       style="fill:#000000;fill-opacity:0.72195123;stroke:none;stroke-width:1.36067736px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 20.237358,1475.803 c -42.341076,-1.3067 -86.603087,-7.9321 -126.746478,-4.5327 -35.53439,3.009 -72.41132,10.8072 -78.62843,20.1714 -6.91664,10.4176 19.32538,22.6681 53.3022,29.0269 29.60474,5.5407 72.293611,3.789 108.813169,3.7652 24.4104196,-0.016 49.587871,-0.4611 72.318356,-2.6108 26.052692,-2.4641 52.577675,-5.9676 69.850885,-11.4535 16.83362,-5.3462 30.86884,-12.4481 27.87999,-19.3119 -2.13134,-4.8944 -14.71454,-9.9561 -31.35366,-12.5751 -27.316409,-4.2997 -63.681523,-1.4995 -95.436032,-2.4795 z"
+       id="path6283"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="aaaaaaaaaa"
+       inkscape:export-filename="C:\Users\Administrator\Desktop\boardgame.png"
+       inkscape:export-xdpi="77.080002"
+       inkscape:export-ydpi="77.080002" />
+    <ellipse
+       style="opacity:1;fill:#000000;fill-opacity:0.30243907;stroke:none;stroke-width:10;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter6762)"
+       id="path6723"
+       cx="-8.7250299"
+       cy="1429.1019"
+       rx="209.40071"
+       ry="38.238018"
+       transform="matrix(1.276753,0,0,0.96008088,-30.913173,96.829314)" />
+    <ellipse
+       transform="matrix(1.3045193,0,0,0.43015254,-28.008936,827.60138)"
+       ry="38.238018"
+       rx="209.40071"
+       cy="1429.1019"
+       cx="-8.7250299"
+       id="ellipse6791"
+       style="opacity:1;fill:#000000;fill-opacity:0.42439025;stroke:none;stroke-width:10;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter6762)" />
+    <path
+       inkscape:export-ydpi="77.080002"
+       inkscape:export-xdpi="77.080002"
+       inkscape:export-filename="C:\Users\Administrator\Desktop\boardgame.png"
+       sodipodi:nodetypes="aaaaaaaaaa"
+       inkscape:connector-curvature="0"
+       id="path6121"
+       d="m 17.724452,1476.1616 c -42.384436,-1.1976 -86.691773,-7.2697 -126.876282,-4.1541 -35.57077,2.7577 -72.48547,9.9044 -78.70894,18.4868 -6.92372,9.5476 19.34517,20.7749 53.35677,26.6028 29.63507,5.0779 72.367655,3.4726 108.924612,3.4507 24.4354176,-0.015 49.638652,-0.4225 72.392414,-2.3929 26.079371,-2.2581 52.631517,-5.4691 69.922414,-10.4967 16.85087,-4.8999 30.90045,-11.4086 27.90854,-17.6993 -2.13352,-4.4856 -14.72961,-9.1246 -31.38576,-11.5249 -27.344387,-3.9406 -63.746742,-1.3742 -95.533768,-2.2724 z"
+       style="fill:url(#radialGradient6216);fill-opacity:1;stroke:#59c1ca;stroke-width:1.21111417px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    <g
+       inkscape:export-ydpi="77.080002"
+       inkscape:export-xdpi="77.080002"
+       inkscape:export-filename="C:\Users\Administrator\Desktop\boardgame.png"
+       id="g6129"
+       transform="matrix(2.6167523,0.03164929,-0.13785891,1.6660663,-85.230697,1024.542)"
+       style="stroke:#646464;stroke-opacity:1">
+      <path
+         style="fill:#ebebeb;fill-opacity:1;stroke:#646464;stroke-width:0.9375px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="m -36.460193,203.17116 -5.966214,-49.05554 15.246989,-1.32582 z"
+         id="path6131"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cccc" />
+      <path
+         sodipodi:nodetypes="cccc"
+         inkscape:connector-curvature="0"
+         id="path6133"
+         d="m -36.460193,203.17116 -5.966214,-49.05554 15.246989,-1.32582 z"
+         style="fill:#636363;fill-opacity:1;stroke:#646464;stroke-width:0.9375px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;filter:url(#filter5274)" />
+    </g>
+    <g
+       inkscape:export-ydpi="77.080002"
+       inkscape:export-xdpi="77.080002"
+       inkscape:export-filename="C:\Users\Administrator\Desktop\boardgame.png"
+       inkscape:transform-center-y="0.22295208"
+       inkscape:transform-center-x="-9.0026103"
+       transform="matrix(-2.8124375,0.25087037,-0.09533653,-1.2606127,-256.19793,1752.0368)"
+       id="g6147"
+       style="stroke:#646464;stroke-opacity:1">
+      <path
+         sodipodi:nodetypes="cccc"
+         inkscape:connector-curvature="0"
+         id="path6149"
+         d="m -36.460193,203.17116 -5.966214,-49.05554 15.246989,-1.32582 z"
+         style="fill:#ebebeb;fill-opacity:1;stroke:#646464;stroke-width:0.9375px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path
+         style="fill:#636363;fill-opacity:1;stroke:#646464;stroke-width:0.9375px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;filter:url(#filter5274)"
+         d="m -36.460193,203.17116 -5.966214,-49.05554 15.246989,-1.32582 z"
+         id="path6151"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cccc" />
+    </g>
+    <g
+       inkscape:export-ydpi="77.080002"
+       inkscape:export-xdpi="77.080002"
+       inkscape:export-filename="C:\Users\Administrator\Desktop\boardgame.png"
+       id="g6159"
+       transform="matrix(-4.4110105,-0.00326228,0.05591371,-1.5944948,-378.68674,1797.3079)"
+       inkscape:transform-center-x="-10.137155"
+       inkscape:transform-center-y="0.37030553"
+       style="stroke:#646464;stroke-opacity:1">
+      <path
+         style="fill:#ebebeb;fill-opacity:1;stroke:#646464;stroke-width:0.9375px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="m -36.460193,203.17116 -5.966214,-49.05554 15.246989,-1.32582 z"
+         id="path6161"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cccc" />
+      <path
+         sodipodi:nodetypes="cccc"
+         inkscape:connector-curvature="0"
+         id="path6163"
+         d="m -36.460193,203.17116 -5.966214,-49.05554 15.246989,-1.32582 z"
+         style="fill:#636363;fill-opacity:1;stroke:#646464;stroke-width:0.9375px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;filter:url(#filter5274)" />
+    </g>
+    <g
+       inkscape:export-ydpi="77.080002"
+       inkscape:export-xdpi="77.080002"
+       inkscape:export-filename="C:\Users\Administrator\Desktop\boardgame.png"
+       inkscape:transform-center-y="5.6224048"
+       inkscape:transform-center-x="-7.1058804"
+       transform="matrix(-4.5520547,0.02561842,-0.33250629,-1.5432586,36.170399,1789.4354)"
+       id="g6165"
+       style="stroke:#646464;stroke-opacity:1">
+      <path
+         sodipodi:nodetypes="cccc"
+         inkscape:connector-curvature="0"
+         id="path6167"
+         d="m -36.460193,203.17116 -5.966214,-49.05554 15.246989,-1.32582 z"
+         style="fill:#ebebeb;fill-opacity:1;stroke:#646464;stroke-width:0.9375px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path
+         style="fill:#636363;fill-opacity:1;stroke:#646464;stroke-width:0.9375px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;filter:url(#filter5274)"
+         d="m -36.460193,203.17116 -5.966214,-49.05554 15.246989,-1.32582 z"
+         id="path6169"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cccc" />
+    </g>
+    <path
+       inkscape:connector-curvature="0"
+       id="path6725"
+       d="m -308.04325,1561.0116 c 0,0 113.20578,-2.6895 169.97932,-2.8641 54.588972,-0.168 109.06008,2.036 163.641725,1.7476 59.621719,-0.3151 159.220585,4.5822 178.310925,-3.7957 3.14688,-9.7 8.82967,-7.5775 -7.37196,-15.2204 -56.11372,9.7956 -247.223635,-1.0714 -370.84075,-1.5125 -43.20294,-0.1543 -129.612,-0.3964 -129.612,-0.3964 z"
+       style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#491f00;stroke-width:0.72487134px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       sodipodi:nodetypes="caaccacc"
+       inkscape:export-filename="C:\Users\Administrator\Desktop\boardgame.png"
+       inkscape:export-xdpi="77.080002"
+       inkscape:export-ydpi="77.080002" />
+    <path
+       inkscape:export-ydpi="77.080002"
+       inkscape:export-xdpi="77.080002"
+       inkscape:export-filename="C:\Users\Administrator\Desktop\boardgame.png"
+       sodipodi:nodetypes="caaccacc"
+       style="fill:#636363;fill-opacity:1;fill-rule:evenodd;stroke:#491f00;stroke-width:0.26279753px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;filter:url(#filter6653)"
+       d="m 137.65328,436.68654 c 0,0 3.70649,23.04114 4.82303,34.69552 1.07357,11.20594 0.6455,22.58781 1.79508,33.78208 1.25573,12.22795 -0.0753,33.11256 5.55951,36.32939 6.18815,-0.17173 4.94704,1.1754 9.49182,-2.7996 -7.18727,-10.7069 -3.70377,-50.90428 -5.61553,-76.34953 -0.66814,-8.89286 -2.04628,-26.67365 -2.04628,-26.67365 z"
+       id="path6171"
+       inkscape:connector-curvature="0"
+       transform="matrix(0.64201631,-1.5637651,4.8099247,0.13482585,-2496.8482,1715.4723)" />
+    <g
+       transform="matrix(2.6167523,0.03164929,-0.13785891,1.6660663,-105.91871,1046.0821)"
+       id="g6717"
+       inkscape:export-filename="C:\Users\Administrator\Desktop\boardgame.png"
+       inkscape:export-xdpi="77.080002"
+       inkscape:export-ydpi="77.080002"
+       style="stroke:#646464;stroke-opacity:1">
+      <path
+         sodipodi:nodetypes="cccc"
+         inkscape:connector-curvature="0"
+         id="path6719"
+         d="m -36.460193,203.17116 -5.966214,-49.05554 15.246989,-1.32582 z"
+         style="fill:#ebebeb;fill-opacity:1;stroke:#646464;stroke-width:0.9375px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path
+         style="fill:#636363;fill-opacity:1;stroke:#646464;stroke-width:0.9375px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;filter:url(#filter5274)"
+         d="m -36.460193,203.17116 -5.966214,-49.05554 15.246989,-1.32582 z"
+         id="path6721"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cccc" />
+    </g>
+    <path
+       inkscape:export-ydpi="77.080002"
+       inkscape:export-xdpi="77.080002"
+       inkscape:export-filename="C:\Users\Administrator\Desktop\boardgame.png"
+       style="fill:#636363;fill-opacity:1;stroke:none;stroke-width:3.01796484px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;filter:url(#filter6251)"
+       d="m -214.85811,1265.0677 123.47037,2.2299 30.937456,7.5643 50.42256,-4.3054 31.678614,5.243 88.7493,-9.735 72.97557,-3.162 c 0,0 20.42386,-24.5824 10.07151,-29.0272 -10.35232,-4.4448 -395.80629,-5.4577 -395.80629,-5.4577 z"
+       id="path6175"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccccccscc"
+       transform="matrix(1.276753,0,0,0.96008088,-30.913173,96.829314)" />
+    <path
+       sodipodi:nodetypes="cccccccscc"
+       inkscape:connector-curvature="0"
+       id="path6281"
+       d="m -305.2339,1311.3966 157.64116,2.1409 39.49948,7.2624 64.377161,-4.1336 40.4457641,5.0337 113.3109349,-9.3464 93.17177,-3.0357 c 0,0 26.07622,-23.6011 12.85883,-27.8685 -13.21735,-4.2674 -505.34685,-5.2399 -505.34685,-5.2399 z"
+       style="fill:#636363;fill-opacity:0.72195123;stroke:none;stroke-width:3.01796484px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       inkscape:export-filename="C:\Users\Administrator\Desktop\boardgame.png"
+       inkscape:export-xdpi="77.080002"
+       inkscape:export-ydpi="77.080002" />
+    <rect
+       style="opacity:1;fill:none;fill-opacity:1;stroke:#000000;stroke-width:2.4093132;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter6698)"
+       id="rect6287"
+       width="86.87072"
+       height="87.970505"
+       x="138.83527"
+       y="440.65997"
+       inkscape:tile-cx="133.279"
+       inkscape:tile-cy="601.57651"
+       inkscape:tile-w="99.999999"
+       inkscape:tile-h="99.999999"
+       inkscape:tile-x0="83.278996"
+       inkscape:tile-y0="551.57651"
+       transform="matrix(5.911051,0.00504551,-0.008141,3.5724209,-1118.05,-295.89574)"
+       inkscape:export-filename="C:\Users\Administrator\Desktop\boardgame.png"
+       inkscape:export-xdpi="77.080002"
+       inkscape:export-ydpi="77.080002" />
+    <path
+       style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1.10715234px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 121.85996,1278.3069 38.19328,-7.1801 30.23635,3.59 20.68803,7.1801 -49.33299,4.7867 z"
+       id="path6715"
+       inkscape:connector-curvature="0" />
   </g>
 </svg>

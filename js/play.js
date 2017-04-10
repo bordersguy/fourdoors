@@ -1392,7 +1392,7 @@ function ManageQuest(choice) {
 function FightMonster() {
     
     var monsterList = ['dragon', 'zombie', 'ghost', 'troll',
-    'giant snake', 'werewolf', 'thief', 'vampire'];
+    'snake', 'werewolf', 'thief', 'vampire'];
     
     var pickMonster = Math.floor(Math.random() * monsterList.length);
     
@@ -1420,6 +1420,9 @@ function FightMonster() {
     
     choiceText.setText("A " + monster + " is attacking you! \nRoll to fight! \nYou need a " + monsterModifier.toString() + " to win!!!" );
     reroll == false;
+    
+    var enemy = this.game.add.sprite(400, 200, monster);
+    question.add(enemy);
 }
 
 function AttackResult() {

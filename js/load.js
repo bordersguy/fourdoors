@@ -72,6 +72,14 @@ var loadState = {
         this.game.load.image('witchBackgroundNight', 'assets/witchBackgroundNight.png');
         this.game.load.image('forestBackgroundNight', 'assets/forestBackgroundNight.png');
         this.game.load.image('caveBackgroundNight', 'assets/caveBackgroundNight.png');
+        this.game.load.image('dragon', 'assets/dragon.png');
+        this.game.load.image('thief', 'assets/thief.png');
+        this.game.load.image('zombie', 'assets/zombie.png');
+        this.game.load.image('snake', 'assets/snake.png');
+        this.game.load.image('troll', 'assets/troll.png');
+        this.game.load.image('werewolf', 'assets/werewolf.png');
+        this.game.load.image('ghost', 'assets/ghost.png');
+        this.game.load.image('vampire', 'assets/vampire.png');
         
         
         
