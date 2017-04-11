@@ -36,6 +36,7 @@ var loadState = {
         this.game.load.image('monsterButton', 'assets/huntButton.png');
         this.game.load.image('treasureButton', 'assets/treasureButton.png');
         this.game.load.image('restButton', 'assets/restButton.png');
+        this.game.load.image('sleeping', 'assets/sleepingZs.png');
         this.game.load.image('caveButton', 'assets/caveButton.png');
         this.game.load.image('ring', 'assets/ring.png');
         this.game.load.image('wand', 'assets/wand.png');

@@ -190,13 +190,13 @@ create: function () {
     
     
     //Create Character Frames
-    c1 = this.game.add.sprite(100, 50, 'sheet');
-    c2 = this.game.add.sprite(100, 200, 'sheet');
-    c3 = this.game.add.sprite(100, 350, 'sheet');
+    c1 = this.game.add.sprite(100, 30, 'sheet');
+    c2 = this.game.add.sprite(100, 180, 'sheet');
+    c3 = this.game.add.sprite(100, 330, 'sheet');
     
-    c4 = this.game.add.sprite(1000, 50, 'sheetX');
-    c5 = this.game.add.sprite(1000, 200, 'sheetX');
-    c6 = this.game.add.sprite(1000, 350, 'sheetX');
+    c4 = this.game.add.sprite(1000, 30, 'sheet');
+    c5 = this.game.add.sprite(1000, 180, 'sheet');
+    c6 = this.game.add.sprite(1000, 330, 'sheet');
     
     cList = [c1,c2,c3,c4,c5,c6];
     
@@ -215,8 +215,8 @@ create: function () {
     CreateInnerBoard();
     
     //Create Turn Management Button...this just starts the game and identifies what to do
-    turnManagerButton = this.game.add.button(25, 500, "turnButton", ManageTurn, 2,1,0);
-    turnText = this.game.add.text(turnManagerButton.width/2, turnManagerButton.height/2,  "start", { font: "40px Arial", fill: "black", align: "center" }); 
+    turnManagerButton = this.game.add.button(0, 480, "turnButton", ManageTurn, 2,1,0);
+    turnText = this.game.add.text(turnManagerButton.width/2, turnManagerButton.height/2,  "Ready?", { font: "40px Arial", fill: "black", align: "center" }); 
     turnManagerButton.addChild(turnText);
     turnText.anchor.set(0.5, 0.5);
     
@@ -476,7 +476,7 @@ function RollDie() {
             
         }
         
-    } else if (ready == 0) {
+    } else if (ready == 0 && turn == 0) {
         
         turnText.setText("make\nplayers");
         
@@ -798,37 +798,37 @@ function AddStats(player) {
                 var lifeStyle = { font: "25px Impact", fill: "black", 
                 wordWrap: true, align: "center", backgroundColor: "transparent" };
                 
-                if (player == c1 || player == c2 || player == c3) {
+                // if (player == c1 || player == c2 || player == c3) {
                 
-                    goldText = this.game.add.text(25, 3, gold, goldStyle);
-                    goldText.name = "goldText";
-                    attackText = this.game.add.text(9, 48, attack, attackStyle);
-                    attackText.name = "attackText";
-                    lifeText = this.game.add.text(25, 94, life, lifeStyle);
-                    lifeText.name = "lifeText";
-                    deletePlayer = this.game.add.button(80, -10, 'deleteX', DeletePlayer, this, 2,1,0);
-                    packList[i].add(deletePlayer);
-                    packList[i].add(goldText);
-                    packList[i].add(attackText);
-                    packList[i].add(lifeText);
+                goldText = this.game.add.text(6, 3, gold, goldStyle);
+                goldText.name = "goldText";
+                attackText = this.game.add.text(98, 118, attack, attackStyle);
+                attackText.name = "attackText";
+                lifeText = this.game.add.text(7, 118, life, lifeStyle);
+                lifeText.name = "lifeText";
+                deletePlayer = this.game.add.button(80, -10, 'deleteX', DeletePlayer, this, 2,1,0);
+                packList[i].add(deletePlayer);
+                packList[i].add(goldText);
+                packList[i].add(attackText);
+                packList[i].add(lifeText);
                     
-                }
-                else {
+                //}
+                // else {
                 
-                    goldText = this.game.add.text(92, 3, gold, goldStyle);
-                    goldText.name = "goldText";
-                    attackText = this.game.add.text(105, 50, attack, attackStyle);
-                    attackText.name = "attackText";
-                    lifeText = this.game.add.text(92, 95, life, lifeStyle);
-                    lifeText.name = "lifeText";
-                    deletePlayer = this.game.add.button(-20, -10, 'deleteX', DeletePlayer, this, 2,1,0);
-                    packList[i].add(deletePlayer);
-                    packList[i].add(goldText);
-                    packList[i].add(attackText);
-                    packList[i].add(lifeText);
-                }
+                //     goldText = this.game.add.text(92, 3, gold, goldStyle);
+                //     goldText.name = "goldText";
+                //     attackText = this.game.add.text(105, 50, attack, attackStyle);
+                //     attackText.name = "attackText";
+                //     lifeText = this.game.add.text(92, 95, life, lifeStyle);
+                //     lifeText.name = "lifeText";
+                //     deletePlayer = this.game.add.button(-20, -10, 'deleteX', DeletePlayer, this, 2,1,0);
+                //     packList[i].add(deletePlayer);
+                //     packList[i].add(goldText);
+                //     packList[i].add(attackText);
+                //     packList[i].add(lifeText);
+                // }
 
-                playerName = this.game.add.text(10, 125, currentRace + (i + 1).toString(), { font: "20px Arial", fill: "white", align: "center" }, packList[i]); 
+                playerName = this.game.add.text(20, 92, currentRace + " " + (i + 1).toString(), { font: "20px Arial", fill: "black", align: "center" }, packList[i]); 
 
                 deletePlayer.input.priorityID = 10;
                 
@@ -950,7 +950,7 @@ function ShowQuestion() {
         questionText = this.game.add.text(20, 150, getQuestion, { font: "40px Arial", fill: "black", align: "center", wordWrap: true, wordWrapWidth: question.width - 20 });
         questionExplain = this.game.add.text(20, 50, qType, { font: "40px Arial", fill: "blue", align: "center", wordWrap: true, wordWrapWidth: question.width - 20 }); 
         
-        deleteQuestion = this.game.add.button (500, 20, 'deleteX', DeleteQuestion, this, 2,1,0);
+        deleteQuestion = this.game.add.button (520, 15, 'deleteX', DeleteQuestion, this, 2,1,0);
         question.addChild(deleteQuestion);
         
         question.addChild(wrongButton);
@@ -970,7 +970,7 @@ function ShowQuestion() {
             question.width = questionPanel.width;
             questionPanel.addChild(question);
             
-            deleteQuestion = this.game.add.button (500, 20, 'deleteX', DeleteQuestion, this, 2,1,0);
+            deleteQuestion = this.game.add.button (520, 15, 'deleteX', DeleteQuestion, this, 2,1,0);
             question.addChild(deleteQuestion);
             
             GetCorner();
@@ -1199,13 +1199,21 @@ function ShowAnswer(argument) {
 function GoToQuest() {
     
     choiceText = this.game.add.text(50, 50, "Great!  Here's 1 Gold. \nWhat now?", { font: "40px Arial", fill: "green", align: "center", wordWrap: true, wordWrapWidth: question.width - 20 });
-    
+    var restName = packList[currentPlayer - 1].getChildAt(5).text.slice(0, -2);
+
     if (turnText.text === "Quest!") {
         turn = 3;
-        restButton = this.game.add.button(250, 200, "restButton", StartActionTimer, 2,1,0);
+        
+        
+        
+        restButton = this.game.add.button(250, 200, restName, StartActionTimer, 2,1,0);
         monsterButton = this.game.add.button(100, 400, "monsterButton", StartActionTimer, 2,1,0);
-        treasureButton = this.game.add.button(400, 400, "treasureButton", StartActionTimer, 2,1,0);
-    
+        treasureButton = this.game.add.button(380, 375, "treasureButton", StartActionTimer, 2,1,0);
+        
+        restButton.scale.setTo(1.5,1.5);
+        var zees = this.game.add.sprite(55, -20, "sleeping");
+        restButton.addChild(zees);
+        
         question.addChild(restButton);
         question.addChild(monsterButton);
         question.addChild(treasureButton);
@@ -1213,7 +1221,7 @@ function GoToQuest() {
     } else if (turnText.text == "cave" || turnText.text == "exit") {
         
         turn = 3;
-        restButton = this.game.add.button(400, 200, "restButton", StartActionTimer, 2,1,0);
+        restButton = this.game.add.button(400, 200, restName, StartActionTimer, 2,1,0);
         monsterButton = this.game.add.button(100, 400, "monsterButton", StartActionTimer, 2,1,0);
         treasureButton = this.game.add.button(400, 400, "treasureButton", StartActionTimer, 2,1,0);
         caveButton = this.game.add.button(100, 200, "caveButton", StartActionTimer, 2,1,0);
@@ -2094,16 +2102,16 @@ function AddInventory(choice) {
             console.log(question);
             emitterList[0].destroy();
             question.getChildAt(6).destroy();
-            inventory = this.game.add.sprite (75,80, itemObject);
+            inventory = this.game.add.sprite (40,110, itemObject);
             inventory.scale.setTo(.25,.25);
             packList[currentPlayer - 1].add(inventory);
             CreateParticles(itemModifier + 'Particle', inventory, true);
             playerBonus[currentPlayer - 1] = [itemObject, itemModifier];
-            
+            displayItem.destroy();
         } else {
             console.log(question);
             displayItem.destroy();
-            inventory = this.game.add.sprite (75,80, currentItem);
+            inventory = this.game.add.sprite (40,110, currentItem);
             inventory.scale.setTo(.25,.25);
             packList[currentPlayer - 1].add(inventory);
         }
@@ -2123,7 +2131,7 @@ function CreateParticles(particle, object, mini) {
     //StartParticles(emitter, particle);
     if (mini == true) {
         
-        emitterList[currentPlayer] = this.game.add.emitter(getPos.x + getPos.width - 10  , getPos.y + getPos.height, 100);
+        emitterList[currentPlayer] = this.game.add.emitter(getPos.x + getPos.width - 50  , getPos.y + getPos.height - 10, 100);
 
         currentEmitter = emitterList[currentPlayer];
 
