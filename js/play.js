@@ -6,7 +6,6 @@
 //      finish corner interactions
 //      Add glowing rock & witch & robinhood quest
 //      Create world events      
-//      Add monster images
 //      Add monster side effects
 //      Make pool monster
 //      Make fairy
@@ -79,6 +78,7 @@ var tokenName;
 
 var dice;
 var rollTime;
+var ready = 0;
 
 var currentRace;
 var getPlayer;
@@ -203,10 +203,10 @@ create: function () {
     TurnOnCharacters();
 
     //Create Card
-    card = this.game.add.button (75, 500, 'card', ShowQuestion, this, 2,1,0);
+    card = this.game.add.button (950, 500, 'card', ShowQuestion, this, 2,1,0);
     
     //Create Die    
-    dice = this.game.add.sprite(950, 500, 'die');
+    dice = this.game.add.sprite(175, 500, 'die');
     dice.animations.add('roll', [0,1,2,3,4,5], 10, true);
     dice.inputEnabled = true;
     dice.events.onInputDown.add(RollDie, this);
@@ -215,7 +215,7 @@ create: function () {
     CreateInnerBoard();
     
     //Create Turn Management Button...this just starts the game and identifies what to do
-    turnManagerButton = this.game.add.button(1050, 500, "turnButton", ManageTurn, 2,1,0);
+    turnManagerButton = this.game.add.button(25, 500, "turnButton", ManageTurn, 2,1,0);
     turnText = this.game.add.text(turnManagerButton.width/2, turnManagerButton.height/2,  "start", { font: "40px Arial", fill: "black", align: "center" }); 
     turnManagerButton.addChild(turnText);
     turnText.anchor.set(0.5, 0.5);
@@ -442,27 +442,52 @@ function ManageTurn () {
 
 function RollDie() {
     
-    dice.animations.play('roll');
-    
-    //timer
-    var rollTimer = this.game.time.create(false);
-    
-    rollTime = Math.floor(((Math.random() * 3) + 3) * 1000);
-    
-    rollTimer.add(rollTime, StopDie, this);
-    
-    rollTimer.start();
-    
-    if (turnText.text.includes("village") || turnText.text.includes("castle") || turnText.text.includes("witch") || turnText.text.includes("forest")) {
+    for (var i = 0; i < cSet.length; i++) {
         
-        StartSun();
-        timer = this.game.time.create(false);
-        
-        timer.add(rollTime, StopSun, this);
-        timer.start();
-        
+        if (cSet[i] == true) {
+            
+            ready += 1;
+            
+        }
         
     }
+    
+    if (ready > 0 && turn > 0) {
+        
+        dice.animations.play('roll');
+    
+        //timer
+        var rollTimer = this.game.time.create(false);
+        
+        rollTime = Math.floor(((Math.random() * 3) + 3) * 1000);
+        
+        rollTimer.add(rollTime, StopDie, this);
+        
+        rollTimer.start();
+        
+        if (turnText.text.includes("village") || turnText.text.includes("castle") || turnText.text.includes("witch") || turnText.text.includes("forest")) {
+            
+            StartSun();
+            timer = this.game.time.create(false);
+            
+            timer.add(rollTime, StopSun, this);
+            timer.start();
+            
+            
+        }
+        
+    } else if (ready == 0) {
+        
+        turnText.setText("make\nplayers");
+        
+    } else if (ready > 0 && turn == 0) {
+        
+        turnText.setText("Click here\nto start");
+        
+    }
+    
+    ready = 0;
+
 }
 
 function StopDie () {
@@ -735,6 +760,8 @@ function AddStats(player) {
         
         for (var i = 0; i < cSet.length; i++) {
             
+            
+            
             var pName = player.name;
             
             var setPlayer = parseInt(pName.substring(1,2), 10) - 1;
@@ -744,6 +771,8 @@ function AddStats(player) {
                 cSet[i] = true;
                 
                 totalPlayers += 1;
+                
+                turnText.setText(totalPlayers + "\nplayers");
                 
                 player.addChild(packList[i]);
                 
@@ -921,7 +950,7 @@ function ShowQuestion() {
         questionText = this.game.add.text(20, 150, getQuestion, { font: "40px Arial", fill: "black", align: "center", wordWrap: true, wordWrapWidth: question.width - 20 });
         questionExplain = this.game.add.text(20, 50, qType, { font: "40px Arial", fill: "blue", align: "center", wordWrap: true, wordWrapWidth: question.width - 20 }); 
         
-        deleteQuestion = this.game.add.button (500, 525, 'deleteX', DeleteQuestion, this, 2,1,0);
+        deleteQuestion = this.game.add.button (500, 20, 'deleteX', DeleteQuestion, this, 2,1,0);
         question.addChild(deleteQuestion);
         
         question.addChild(wrongButton);
@@ -941,7 +970,7 @@ function ShowQuestion() {
             question.width = questionPanel.width;
             questionPanel.addChild(question);
             
-            deleteQuestion = this.game.add.button (500, 525, 'deleteX', DeleteQuestion, this, 2,1,0);
+            deleteQuestion = this.game.add.button (500, 20, 'deleteX', DeleteQuestion, this, 2,1,0);
             question.addChild(deleteQuestion);
             
             GetCorner();
