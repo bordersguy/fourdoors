@@ -8,9 +8,11 @@
 //      Add glowing rock & witch & robinhood quest
 //      Create world events      
 //      Add monster side effects
+//      Arrange night monsters
 //      Make spiders
 //      Make fairy
 //      Create Ant Pet
+//      Add players turn to card and visual marker 
 
 
 //Later:
@@ -176,11 +178,14 @@ var inOut;
 var choice;
 var noButton;
 var yesButton;
+var arrested = [false, false, false, false, false, false];
 
+var prevOrientation;
 
 var playState = {
  
 create: function () {
+    prevOrientation = this.scale.screenOrientation;
     
     this.game.stage.backgroundColor = "#4488AA";
     
@@ -281,6 +286,18 @@ create: function () {
 update: function() {
     
     
+
+},
+
+preUpdate: function() {
+    
+    if (this.scale.screenOrientation !== prevOrientation) {
+        
+        this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+  
+        this.scale.setScreenSize( true );
+        
+    }
 
 }
   
@@ -434,8 +451,20 @@ function ManageTurn () {
     
     switch (turn) {
         case 0:
-            turnText.setText("roll");
-            turn = 1;
+            if (arrested[currentPlayer - 1] == false) {
+                
+                turnText.setText("roll");
+                turn = 1;    
+                
+            } else {
+                
+                turnText.setText("castle \nprison");
+                turn = 19;
+                arrested[currentPlayer - 1] = false;
+                backgroundAsset = "castleBackground";
+                
+            }
+            
             break;
             
         case 1:
@@ -532,7 +561,12 @@ function DieResult() {
             break;
             
         case 19:
-            CastleResult();
+            if (questionUp == true) {
+                
+                CastleResult();    
+                
+            }
+            
             break;   
             
         case 20:
@@ -728,12 +762,13 @@ function LevelSwitch(where) {
             if (inOut == 0) {
                 
                 level = boardSpaces;
+                boardLevel[currentPlayer - 1] = 1;
                 
                 
             } else {
                 
                 level = boardSpacesInner;
-                
+                boardLevel[currentPlayer - 1] = 2;
             }
             
             tokenList[currentPlayer - 1].position.x = level[teleport][0];
@@ -752,6 +787,8 @@ function LevelSwitch(where) {
             tokenList[currentPlayer - 1].position.x = boardSpacesInner[teleport][0];
             tokenList[currentPlayer - 1].position.y = boardSpacesInner[teleport][1];
             cPosSet[currentPlayer - 1] = teleport;
+            
+            boardLevel[currentPlayer - 1] = 2;
             
             ResetTurn();
     
@@ -984,7 +1021,7 @@ function ShowQuestion() {
    
         } else if (turnText.text == "village" || turnText.text == "castle" || turnText.text == "forest"
             || turnText.text == "witch" || turnText.text == "ants" || turnText.text == "stairs" || 
-            turnText.text == "dragon" || turnText.text == "pool") {
+            turnText.text == "dragon" || turnText.text == "pool" || turnText.text == "castle \nprison") {
     
             questionPanel = this.game.add.sprite(300, 0, 'answersheet');
             question = this.game.add.group();
@@ -1004,6 +1041,11 @@ function ShowQuestion() {
 function GetCorner() {
     
     switch (turnText.text) {
+        
+        case 'castle \nprison':
+            GoToQuest();
+            break;
+        
         case 'castle':
             GoToQuest();
             break;
@@ -1221,7 +1263,7 @@ function ShowAnswer(argument) {
 
 function GoToQuest() {
     
-    choiceText = this.game.add.text(50, 50, "Great!  Here's 1 Gold. \nWhat now?", { font: "40px Arial", fill: "green", align: "center", wordWrap: true, wordWrapWidth: question.width - 20 });
+    choiceText = this.game.add.text(50, 50, "Great!  Here's 1 Gold. \nWhat now?", { font: "40px Arial", fill: "green", align: "center", wordWrap: true, wordWrapWidth: question.width - 50 });
     var restName = packList[currentPlayer - 1].getChildAt(5).text.slice(0, -2);
 
     if (turnText.text === "Quest!") {
@@ -1307,6 +1349,12 @@ function GoToQuest() {
             case "stairs":
                 choiceText.setText("You found the stairs to the 4 Doors.... \nRoll the die.");
                 turn = 26;
+                break;
+                
+            case "castle \nprison":
+                choiceText.setText("You are free.  You may leave  \nnext turn.  Roll the die.");
+                turn = 19;
+                CreateSun();
                 break;
        
         }
@@ -1697,7 +1745,7 @@ function VillageResult() {
     
     
 }
-//Castle: arrest
+//Castle is done...but, need to test arrest
 function CastleResult() {
     console.log("CastleResult");
     var getLife = packList[currentPlayer - 1].getChildAt(4);
@@ -1733,13 +1781,13 @@ function CastleResult() {
             break;
             
         case 5:
-            choiceText.setText("Soldiers think you're a thief.  \nThey arrest you!!");
-            Arrested();
+            choiceText.setText("Soldiers think you're a thief. \nThey arrest you!!");
+            RunDelay(Arrested, "none", 3000);
             turnText.setText("next");
             break;
             
         case 6:
-            choiceText.setText("The King helps you with your adventure.  \nHe shows you a secret way into the mountain!");
+            choiceText.setText("The King wants to help you!.  \nHe shows you a secret way into the mountain!");
             LevelSwitch("teleportInner");
             turnText.setText("next");
             break;
@@ -2169,6 +2217,8 @@ function HelpWitch() {
 
 function Arrested() {
     
+    choiceText.setText("Next turn you must stay here!.  You will make a castle roll only.");
+    arrested[currentPlayer - 1] = true;
 }
 
 function GiveRock() {
@@ -2405,7 +2455,9 @@ function DeletePlayer() {
             
             //Allows for new Character
             cSet[i] = false;
-
+            
+            turnText.setText(totalPlayers + "\nplayers");
+            
             return;
             
         }
