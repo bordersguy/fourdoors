@@ -38,6 +38,10 @@ var loadState = {
         this.game.load.image('restButton', 'assets/restButton.png');
         this.game.load.image('sleeping', 'assets/sleepingZs.png');
         this.game.load.image('caveButton', 'assets/caveButton.png');
+        this.game.load.image('yesButton', 'assets/yesButton.png');
+        this.game.load.image('noButton', 'assets/noButton.png');
+        
+        //Inventory
         this.game.load.image('ring', 'assets/ring.png');
         this.game.load.image('wand', 'assets/wand.png');
         this.game.load.image('boots', 'assets/boots.png');
@@ -55,6 +59,8 @@ var loadState = {
         this.game.load.image('goldParticle', 'assets/goldParticle.png');
         this.game.load.image('noMagicButton', 'assets/noMagic.png');
         this.game.load.image('useMagicButton', 'assets/useMagic.png');
+        
+        //Backgrounds
         this.game.load.image('sun', 'assets/sun.png');
         this.game.load.image('roadBackground', 'assets/roadBackground.png');
         this.game.load.image('villageBackground', 'assets/villageBackground.png');
@@ -73,6 +79,8 @@ var loadState = {
         this.game.load.image('witchBackgroundNight', 'assets/witchBackgroundNight.png');
         this.game.load.image('forestBackgroundNight', 'assets/forestBackgroundNight.png');
         this.game.load.image('caveBackgroundNight', 'assets/caveBackgroundNight.png');
+        
+        //Enemies
         this.game.load.image('dragon', 'assets/dragon.png');
         this.game.load.image('thief', 'assets/thief.png');
         this.game.load.image('zombie', 'assets/zombie.png');
@@ -81,15 +89,7 @@ var loadState = {
         this.game.load.image('werewolf', 'assets/werewolf.png');
         this.game.load.image('ghost', 'assets/ghost.png');
         this.game.load.image('vampire', 'assets/vampire.png');
-        
-        
-        
-        
-        
-        
-        
 
-        
         //Characters
         this.game.load.image('elf', 'assets/elf.png');
         this.game.load.image('hobbit', 'assets/hobbit.png');
