@@ -98,6 +98,8 @@ var loadState = {
         this.game.load.image('warrior', 'assets/warrior.png');
         this.game.load.image('wizard', 'assets/wizard.png');
         this.game.load.image('token', 'assets/token.png');
+        this.game.load.image('frog', 'assets/frog.png');
+        this.game.load.image('questMarker', 'assets/questMarker.png');
     },
     
     create: function () {

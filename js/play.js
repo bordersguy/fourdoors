@@ -1,11 +1,12 @@
 //Bugs:  
 //      On mobile, the game doesn't resize in landscape
+//      Test prison break some more
 
 //To Do: 
 
 //      Limit objects to certain classes
 //      finish corner interactions
-//      Add glowing rock & witch & robinhood quest
+//      Add glowing rock mechanic
 //      Create world events      
 //      Add monster side effects
 //      Arrange night monsters
@@ -13,6 +14,7 @@
 //      Make fairy
 //      Create Ant Pet
 //      Add players turn to card and visual marker 
+//      Does destroying the questMarker from the list reduce the list size?
 
 
 //Later:
@@ -159,7 +161,11 @@ var sun;
 var timer;
 var timerGroup;
 
+//testing keys
+var key0;
+var key9;
 
+//movement testing keys
 var key1;
 var key2;
 var key3;
@@ -179,6 +185,12 @@ var choice;
 var noButton;
 var yesButton;
 var arrested = [false, false, false, false, false, false];
+var isFrog = [false, false, false, false, false, false];
+var frog = false;
+var saveStat = [0,0,0,0,0,0];
+var hasQuest = [[false, "none", 0], [false, "none", 0], [false, "none", 0], [false, "none", 0], [false, "none", 0], [false, "none", 0]];
+var questMarker;
+var questList =[questMarker, questMarker, questMarker, questMarker, questMarker, questMarker];
 
 var prevOrientation;
 
@@ -239,12 +251,18 @@ create: function () {
     key5 = this.game.input.keyboard.addKey(Phaser.Keyboard.FIVE);
     key6 = this.game.input.keyboard.addKey(Phaser.Keyboard.SIX);
     
+    key0 = this.game.input.keyboard.addKey(Phaser.Keyboard.ZERO);
+    key9 = this.game.input.keyboard.addKey(Phaser.Keyboard.NINE);
+    
     key1.onDown.add(KeyMove, this);
     key2.onDown.add(KeyMove, this);
     key3.onDown.add(KeyMove, this);
     key4.onDown.add(KeyMove, this);
     key5.onDown.add(KeyMove, this);
     key6.onDown.add(KeyMove, this);
+    
+    key0.onDown.add(TestThis0, this);
+    key9.onDown.add(TestThis9, this);
     
     clouds = this.game.add.group();
     clouds.enableBody = true;
@@ -303,6 +321,8 @@ preUpdate: function() {
   
 };
 
+//***************Basic Board Management
+
 function KeyMove(number) {
     
     if (questionUp == true) {
@@ -341,6 +361,20 @@ function KeyMove(number) {
             break;
 
     }
+    
+}
+
+function TestThis0() {
+    
+    dieResult = 6;
+    DieResult();
+    console.log(questList);
+}
+function TestThis9() {
+    
+    dieResult = 5;
+    DieResult();
+    
     
 }
 
@@ -451,17 +485,27 @@ function ManageTurn () {
     
     switch (turn) {
         case 0:
-            if (arrested[currentPlayer - 1] == false) {
-                
-                turnText.setText("roll");
-                turn = 1;    
-                
-            } else {
+            if (arrested[currentPlayer - 1] == true) {
                 
                 turnText.setText("castle \nprison");
                 turn = 19;
                 arrested[currentPlayer - 1] = false;
                 backgroundAsset = "castleBackground";
+                 
+                
+            } else if (isFrog[currentPlayer - 1] == true) {
+                
+                frog = true;
+                CreateMovementToken(1);
+                turn = 1;
+                
+                
+            } else {
+                
+                
+                
+                turnText.setText("player " + currentPlayer + "\nroll");
+                turn = 1;   
                 
             }
             
@@ -599,6 +643,10 @@ function DieResult() {
             
         case 27:
             TunnelResult();
+            break;
+            
+        case 28:
+            ManageChallenge();
             break;
 
     }
@@ -891,7 +939,7 @@ function AddStats(player) {
                 deletePlayer.input.priorityID = 10;
                 
                 CreateToken(i);
-                
+                console.log(packList[0]);
                 return;
             }
  
@@ -1084,6 +1132,365 @@ function GetCorner() {
     
 }
 
+function DeletePlayer() {
+
+    getPlayer = parseInt(this.name.substring(1,2), 10) - 1;
+    
+    for (var i = 0; i < packList.length; i++) {
+        
+        if (i == getPlayer ) {
+            
+            totalPlayers -= 1;
+            
+            packList[i].getChildAt(1).destroy();
+            
+            packList[i].forEach(function(child) {
+                 
+                 packList[i].removeChild(packList[i].getChildAt(0));
+                     
+            });
+
+            tokenList[i].destroy(true,false);
+            
+            //Allows for new Character
+            cSet[i] = false;
+            
+            turnText.setText(totalPlayers + "\nplayers");
+            
+            return;
+            
+        }
+    }
+}
+
+function ResetCurrentPlayer () {
+      
+    currentPlayer += 1;
+    
+    if (currentPlayer > totalPlayers) {
+        
+        currentPlayer = 1;
+        DayNight();
+    }
+}    
+
+function UpdateTurnText(box) {
+
+    var checkSpace;
+    
+    if (box != 0 && box != 6 && box != 12 && 
+        box != 18 && box != 15 && boardLevel[currentPlayer - 1] == 1) {
+        
+        checkSpace = 1;
+        
+    }
+    else if (box != 0 && box != 4 && box != 8 && 
+            box != 12 && box != 10 && boardLevel[currentPlayer - 1] == 2) {
+        
+        checkSpace = 1;
+        
+    } else {
+        
+        checkSpace = box;
+    }
+    
+    if (boardLevel[currentPlayer - 1] == 1) {
+        
+        var night;
+        
+        if (dayNight == 1) {
+            
+            night = "";
+            
+        } else {
+            
+            night = "Night"
+            
+        }
+        
+        switch (checkSpace) {
+            case 1 :
+                turnText.setText("Quest!");
+                backgroundAsset = "roadBackground" + night;
+                break;
+                
+            case 0 :
+                turnText.setText("castle");
+                backgroundAsset = "castleBackground" + night;
+                break;
+                
+            case 6 :
+                turnText.setText("witch");
+                backgroundAsset = "witchBackground" + night;
+                break;
+                
+            case 12 :
+                turnText.setText("forest");
+                backgroundAsset = "forestBackground" + night;
+                break;
+                
+            case 15 :
+                turnText.setText("cave");
+                backgroundAsset = "caveBackground" + night;
+                break;
+                
+            case 18 :
+                turnText.setText("village");
+                backgroundAsset = "villageBackground" + night;
+                break;
+            
+       
+        }
+   
+    } else {
+        
+        if (boardLevel[currentPlayer - 1] == 2) {
+        
+        switch (checkSpace) {
+            
+            case 1 :
+                turnText.setText("Quest!");
+                backgroundAsset = "caveBackground";
+                break;
+            
+            case 0 :
+                turnText.setText("stairs");
+                backgroundAsset = "stairsBackground";
+                break;
+                
+            case 4 :
+                turnText.setText("ants");
+                backgroundAsset = "antsBackground";
+                break;
+                
+            case 8 :
+                turnText.setText("dragon");
+                backgroundAsset = "dragonBackground";
+                break;
+                
+             case 10 :
+                turnText.setText("exit");
+                backgroundAsset = "exitBackground";
+                break;
+                
+            case 12 :
+                turnText.setText("pool");
+                backgroundAsset = "poolBackground";
+                break;
+
+            
+       
+        }
+   
+    }
+        
+    }
+
+    
+    
+    
+}
+
+function ResetTurn() {
+    
+    
+
+    isMagic = false;
+    turn = 0;
+    ManageTurn();
+}
+
+function CreateSun() {
+    
+    var sunX;
+    
+    if (backgroundAsset.includes("cave") || backgroundAsset.includes("castle")) {
+        
+        sunX = 350;
+        
+    } else {
+        
+        sunX = 550;
+        
+    }
+    
+    if (dayNight == 1) {
+        
+        sun = this.game.add.sprite(sunX, 300, "sun");
+            
+    } else {
+        
+        sun = this.game.add.sprite(sunX, 300, "moon");
+        
+    }
+}
+
+function StartSun() {
+    
+    this.game.physics.enable(sun);
+    sun.enableBody = true;
+    sun.body.gravity.setTo(0, 0);
+    sun.body.velocity.setTo( 4, -15);
+    
+    
+    
+}
+
+function StopSun() {
+    //sun.body.velocity.setTo(0, 0);
+    //question.add(sun);
+    var newSun;
+    
+    if (dayNight == 1 ) {
+        
+        newSun = this.game.add.sprite(sun.x - 300, sun.y, "sun");    
+        
+    } else {
+        
+        newSun = this.game.add.sprite(sun.x - 300, sun.y, "moon");    
+        
+    }
+    
+    question.add(newSun);
+    sun.destroy();
+    
+}
+
+function CloudGenerator() {
+    
+    if (clouds.length > 0) {
+        
+        var cloudClean = [];
+    
+        clouds.forEach(function(cloud) {
+            
+            if (cloud.x < -100) {
+                
+                cloudClean.push(cloud);
+                
+            }
+        
+        });
+        
+        for (var i = 0; i < cloudClean.length; i++) {
+            
+            cloudClean[i].destroy();
+            
+        }
+        
+        
+    }
+
+    
+    
+    for (var i = 0; i < 5; i++) {
+ 
+        if (clouds.length < 5) {
+            
+            var yRandom = Math.floor(Math.random() * (this.game.height - 100) + 50);
+            var xRandom = getRandomInt(20, 1000);
+            
+            var randomScale = getRandomInt(.75,3);
+            var cloud = clouds.create(this.game.width + xRandom, yRandom , 'cloud');
+            console.log("x = " + this.game.width + " and y = " + yRandom);
+            
+            cloud.body.gravity.setTo(0, 0);
+            cloud.body.velocity.setTo( -10, 0);
+            cloud.scale.setTo(randomScale,randomScale);
+            
+            cloud.inputEnabled = true;
+            cloud.events.onInputDown.add(DestroyThis, this);
+        }     
+        
+    }
+    console.log("CLA is " + clouds.length);
+
+    
+    
+
+}
+
+function DayNight() {
+    
+    var xRandom;
+    var yRandom;
+    var randomScale;
+    
+    
+    dayNight += 1;
+    
+    if (dayNight == 3) {
+        
+        dayNight = 1;
+        
+    }
+    
+    if (dayNight == 2) {
+        
+        this.game.stage.backgroundColor = "#000000";
+        sun.destroy();
+        cloudsBack.destroy();
+        moon = this.game.add.sprite(5,5, "moon");
+        
+        
+        stars = this.game.add.group();
+        
+        for (var i = 0; i < 100; i++) {
+            
+            
+            
+            xRandom = getRandomInt(0, this.game.width);
+            yRandom = getRandomInt(0, this.game.height);
+            
+            randomScale = (Math.random() * (0.30 - .05) + 0.05).toFixed(2);
+            
+            var star = stars.create(xRandom, yRandom, "star");   
+         
+            star.scale.setTo(randomScale,randomScale);
+            
+            
+        }
+        
+      this.game.world.sendToBack(stars);
+        
+    } else if ( dayNight == 1) {
+        
+        this.game.stage.backgroundColor = "#4488AA";
+        moon.destroy();
+        sun = this.game.add.sprite(5,5, "sun");
+        stars.destroy();
+        
+        cloudsBack = this.game.add.group();
+        
+        for (var i = 0; i < 20; i++) {
+            
+            
+            
+            xRandom = getRandomInt(0, this.game.width);
+            yRandom = getRandomInt(0, this.game.height);
+            randomScale = (Math.random() * (0.60 - .40) + 0.40).toFixed(2);
+            
+            var backCloud = cloudsBack.create(xRandom, yRandom, "cloud");   
+            backCloud.alpha = .60;
+            backCloud.scale.setTo(randomScale,randomScale);
+            
+             if ((xRandom > 300 && xRandom < 379) || (xRandom > 810 && xRandom < 900)) {
+            
+                backCloud.angle += 90;
+            
+            }
+            
+        }
+        
+        this.game.world.sendToBack(cloudsBack);
+        
+    } 
+    
+    
+    
+    
+}
+
 //***********Question & Puzzle**************
 
 function GetQuestion() {
@@ -1260,6 +1667,8 @@ function ShowAnswer(argument) {
     question.addChild(showAnswer);
     
 }
+
+//*************Basic Card Interactions
 
 function GoToQuest() {
     
@@ -1502,6 +1911,8 @@ function FightMonster() {
     var monsterList = ['dragon', 'zombie', 'ghost', 'troll',
     'snake', 'werewolf', 'thief', 'vampire'];
     
+    
+    
     var pickMonster = Math.floor(Math.random() * monsterList.length);
     
     if (reroll == false) {
@@ -1511,7 +1922,6 @@ function FightMonster() {
  
     }
 
-    
     CheckInventory("sword", "strength");
 
     if (hasItem && hasBonus) {
@@ -1525,8 +1935,16 @@ function FightMonster() {
         monsterModifier -= 1;
     }
     
+    if (frog == true) {
+        monsterModifier = 6;
+        choiceText.setText("A " + monster + " is attacking you! \nRoll to fight! \nYou need a " + monsterModifier.toString() + " to win!!!" );
+        
+    } else {
+        
+        choiceText.setText("A " + monster + " is attacking you! \nRoll to fight! \nYou need a " + monsterModifier.toString() + " to win!!!" );    
+        
+    }
     
-    choiceText.setText("A " + monster + " is attacking you! \nRoll to fight! \nYou need a " + monsterModifier.toString() + " to win!!!" );
     reroll == false;
     
     var enemy = this.game.add.sprite(400, 200, monster);
@@ -1557,7 +1975,7 @@ function AttackResult() {
             
             choiceText.setText("Uggghh! The " + monster + " won. \nYour shield saved 1 life.");                
             turn = 3;
-            turnText.setText("next");
+            turnText.setText("turn \nover");
             return;
         } else if (hasBonus) {
             
@@ -1570,7 +1988,7 @@ function AttackResult() {
             choiceText.setText("Uggghh! The " + monster + " won. \nLose 1 life.");
             getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
             turn = 3;
-            turnText.setText("next");
+            turnText.setText("turn \nover");
         }
         
        
@@ -1579,7 +1997,18 @@ function AttackResult() {
         choiceText.setText("You won!!  \nGain 1 attack!");
         getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 1).toString());
         turn = 3;
-        turnText.setText("next");
+        
+        if (hasQuest[currentPlayer - 1][0] == "witch") {
+            
+            turnText.setText("Mission");
+            RunDelay(ManageChallenge, "none", 3000);
+            
+        } else {
+            
+            turnText.setText("turn \nover");
+            
+        }
+        
     }
     
     
@@ -1625,6 +2054,243 @@ function UseMagic(magic) {
     
     
 }
+
+function CreateItem() {
+    
+    var giveBonus = Math.floor(Math.random() * 10 + 1);
+    
+    //sword is plus 1 in a fight, ring is nothing, shield will save a life in a fight once then break,
+    //potion is bonus dependent, wand is bonus dependent, boots are bonus dependent.
+    treasureType = ['sword', 'ring', 'shield', 'potion', 'wand', 'boots'];
+    //gold is worth 2 gold, life adds 2 life(while wearing), strength adds 1 strength while wearing
+    //luck lets you reroll once(anything) then its gone, speed lets you reroll movement twice then magic is gone.
+    bonusType = ['gold', 'life', 'luck', 'speed', 'strength'];
+
+    
+
+    if (giveBonus > 4) {
+        
+        treasureType = ['sword', 'ring', 'shield', 'potion', 'wand', 'boots'];
+        itemObject = treasureType[getRandomInt(0, treasureType.length)];
+        itemModifier = bonusType[getRandomInt(0, bonusType.length)];
+        currentItem = itemObject + " of " + itemModifier;
+        isMagic = true;
+        
+    } else {
+        
+        treasureType = ['sword', 'shield', 'boots'];
+        itemObject = treasureType[getRandomInt(0, treasureType.length)];
+        itemModifier = "none";
+        currentItem = itemObject;
+        isMagic = false;
+    }   
+
+}
+
+function DisplayItem(item) {
+    
+    displayItem = this.game.add.sprite(225 ,275, item);
+    displayItem.name = "displayItem" + item;
+    
+    if (item != "coin") {
+        
+        garbageButton = this.game.add.button(50, 510, 'garbage', AddInventory, this, 2,1,0);
+        keepButton = this.game.add.button(300, 510, 'take', AddInventory, this, 2,1,0);
+        
+        question.addChild(keepButton);
+        question.addChild(garbageButton);
+            
+    }
+
+    question.addChild(displayItem);
+    
+    console.log(question);
+    
+    if (isMagic == true) {
+        
+        CreateParticles(itemModifier + "Particle", displayItem, false);
+            
+    }
+}
+
+function AddInventory(choice) {
+
+    if (choice == garbageButton) {
+        
+        if (isMagic == true) {
+            
+            emitterList[0].destroy();    
+            question.getChildAt(6).destroy();
+            
+        } else {
+            
+            question.getChildAt(5).destroy();
+            
+        }
+  
+    } else {
+
+        DeleteInventory();
+
+        
+        if (isMagic == true) {
+            console.log(question);
+            emitterList[0].destroy();
+            question.getChildAt(6).destroy();
+            inventory = this.game.add.sprite (40,110, itemObject);
+            inventory.scale.setTo(.25,.25);
+            packList[currentPlayer - 1].add(inventory);
+            CreateParticles(itemModifier + 'Particle', inventory, true);
+            playerBonus[currentPlayer - 1] = [itemObject, itemModifier];
+            displayItem.destroy();
+        } else {
+            console.log(question);
+            displayItem.destroy();
+            inventory = this.game.add.sprite (40,110, currentItem);
+            inventory.scale.setTo(.25,.25);
+            packList[currentPlayer - 1].add(inventory);
+        }
+    }
+    
+    
+    garbageButton.destroy();
+    keepButton.destroy();
+    turnText.setText("turn \nover");
+    
+}
+
+function CreateParticles(particle, object, mini) {
+    
+    var getPos = cList[currentPlayer - 1];
+    var currentEmitter;
+    //StartParticles(emitter, particle);
+    if (mini == true) {
+        
+        emitterList[currentPlayer] = this.game.add.emitter(getPos.x + getPos.width - 50  , getPos.y + getPos.height - 10, 100);
+
+        currentEmitter = emitterList[currentPlayer];
+
+        currentEmitter.maxParticleScale = .35;
+        currentEmitter.minParticleScale = 0.15;
+        
+        currentEmitter.makeParticles(particle);
+
+
+        currentEmitter.gravity = -200;
+
+        currentEmitter.start(false, 500, 100);
+        
+        
+    } else {
+        emitterList[0] = this.game.add.emitter(600, object.world.y + object.height, 100);
+        
+        currentEmitter = emitterList[0];
+        
+        currentEmitter.maxParticleScale = 1.0;
+        currentEmitter.minParticleScale = 0.5;
+        
+        currentEmitter.makeParticles(particle);
+
+
+        currentEmitter.gravity = -200;
+
+        currentEmitter.start(false, 1000, 100);
+        
+    }
+    
+    
+
+    
+}
+
+function CheckInventory(item, modify) {
+    
+    console.log("inventory Checked");
+    
+    var treasure = playerBonus[currentPlayer - 1][0];
+    var bonus = playerBonus[currentPlayer - 1][1];
+    
+    console.log(item + " and " + treasure);
+    console.log(modify + " and " + bonus);
+    
+    if (item == treasure) {
+        
+        hasItem = true;
+        
+    } else {
+        
+        hasItem = false;
+        
+    }
+    
+    if (bonus == modify) {
+        
+        hasBonus = true;
+        
+    } else {
+        
+        hasBonus = false;
+    }
+        
+            
+   
+    
+
+}
+
+function DeleteInventory() {
+    
+    if (packList[currentPlayer - 1].length > 6) {
+            
+        packList[currentPlayer - 1].getChildAt(6).destroy();
+        
+        emitterList[currentPlayer].destroy();    
+    }
+    
+}
+
+function DeleteQuestion() {
+    
+    CloudGenerator();
+    
+    if (typeof displayItem !== "undefined") {
+        
+        if (isMagic == true) {
+   
+            emitterList[0].destroy();
+        }    
+        
+    }
+
+    questionPanel.destroy();
+    questionUp = false;
+    
+    if (frog == true) {
+        
+        var getAttack = packList[currentPlayer - 1].getChildAt(3);
+        var getRace = packList[currentPlayer - 1].getChildAt(5).text.slice(0, -2);
+        
+         isFrog[currentPlayer - 1] = false;
+        packList[currentPlayer - 1].getChildAt(0).loadTexture(getRace);
+        tokenList[currentPlayer - 1].loadTexture(getRace);
+        getAttack = getAttack.setText(saveStat[currentPlayer - 1].toString());
+        
+        frog = false;
+    }
+    
+    
+    if (reroll == false) {
+        
+        ResetCurrentPlayer();
+ 
+    }
+
+    ResetTurn();
+}
+
+
+//*******************Corner Interactions
+
 //Add tunnel results
 function TunnelResult() {
     console.log("TR is okay");
@@ -1745,7 +2411,7 @@ function VillageResult() {
     
     
 }
-//Castle is done...but, need to test arrest
+//Castle is done
 function CastleResult() {
     console.log("CastleResult");
     var getLife = packList[currentPlayer - 1].getChildAt(4);
@@ -1758,7 +2424,7 @@ function CastleResult() {
         case 1:
             choiceText.setText("You eat at a delicious restaurant.  \nGain 1 life.");
             getLife = getLife.setText((parseInt(getLife.text, 10) + 1).toString());
-            turnText.setText("next");
+            turnText.setText("turn \nover");
             break;
             
         case 2:
@@ -1771,37 +2437,43 @@ function CastleResult() {
         case 3:
             choiceText.setText("While you are having fun, a thief steals 1 gold.");
             getGold = getGold.setText((parseInt(getGold.text, 10) - 1).toString());
-            turnText.setText("next");
+            turnText.setText("turn \nover");
             break;
             
         case 4:
             choiceText.setText("You train with some soldiers.  \nGain 1 strength.");
             getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 1).toString());
-            turnText.setText("next");
+            turnText.setText("turn \nover");
             break;
             
         case 5:
             choiceText.setText("Soldiers think you're a thief. \nThey arrest you!!");
             RunDelay(Arrested, "none", 3000);
-            turnText.setText("next");
+            
             break;
             
         case 6:
             choiceText.setText("The King wants to help you!.  \nHe shows you a secret way into the mountain!");
             LevelSwitch("teleportInner");
-            turnText.setText("next");
+            turnText.setText("turn \nover");
             break;
 
     }
     
     
 }
-//Witch: witch quest, frog
+//Witch is done
 function WitchResult() {
     console.log("WitchResult");
     var getLife = packList[currentPlayer - 1].getChildAt(4);
     var getAttack = packList[currentPlayer - 1].getChildAt(3);
     var getGold = packList[currentPlayer - 1].getChildAt(2);
+    
+    if (hasQuest[currentPlayer  -1][0] == true && dieResult == 6) {
+        
+        dieResult = getRandomInt(0,5);
+        
+    }
     
     
     switch (dieResult) {
@@ -1809,43 +2481,43 @@ function WitchResult() {
         case 1:
             choiceText.setText("The witch heals you.  \nGain 1 life.");
             getLife = getLife.setText((parseInt(getLife.text, 10) + 1).toString());
-            turnText.setText("X");
+            turnText.setText("turn \nover");
             
             break;
             
         case 2:
             choiceText.setText("She says, 'Good Luck!' and then \nteleports you inside the mountain!");
             LevelSwitch("teleportInner");
-            turnText.setText("X");
+            turnText.setText("turn \nover");
             
             break;
             
         case 3:
             choiceText.setText("The witch makes you stronger!  \nGain 1 strength.");
             getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 1).toString());
-            turnText.setText("X");
+            turnText.setText("turn \nover");
             
             break;
             
         case 4:
-            choiceText.setText("You train with some soldiers.  \nGain 1 strength.");
+            choiceText.setText("She makes you drink a potion.  \nGain 1 strength.");
             getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 1).toString());
-            turnText.setText("X");
+            turnText.setText("turn \nover");
             
             break;
             
         case 5:
-            choiceText.setText("She says, 'Maybe you can help me.'  \nDo you help the witch?");
-            choice = "helpwitch";
-            Choice();
-            turnText.setText("X");
+            choiceText.setText("She says, 'Ooops!'  \nShe turns you into a frog.  You'll be okay after 1 turn.");
+            FrogChange();
+            turnText.setText("turn \nover");
             
             break;
             
         case 6:
-            choiceText.setText("She says, 'Ooops!'  \nShe turns you into a frog.");
-            FrogChange();
-            turnText.setText("X");
+            choiceText.setText("She says, 'Maybe you can help me.'  \nDo you help the witch?");
+            choice = "helpwitch";
+            Choice();
+
             
             break;
 
@@ -1853,7 +2525,7 @@ function WitchResult() {
     
     
 }
-//Forest: spider, treasure chest, robin hood
+//Forest: spider, treasure chest
 function ForestResult() {
     
     var getLife = packList[currentPlayer - 1].getChildAt(4);
@@ -1864,9 +2536,9 @@ function ForestResult() {
     switch (dieResult) {
         
         case 1:
-            choiceText.setText("You find some fruit!.  \nGain 1 life.");
+            choiceText.setText("You find some special fruit!.  \nGain 1 life.");
             getLife = getLife.setText((parseInt(getLife.text, 10) + 1).toString());
-            turnText.setText("next");
+            turnText.setText("turn \over");
             break;
             
         case 2:
@@ -1874,32 +2546,34 @@ function ForestResult() {
             getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
             turn = 1;
             //reroll = true;
+            turnText.setText("turn \over");
             break;
             
         case 3:
             choiceText.setText("Oh no! A monster found you!");
             FightMonster();
-            turnText.setText("next");
+            //turnText.setText("next");
             break;
             
         case 4:
-            choiceText.setText("You find an old treasure chest.  \nDo you open it?.");
-            Choice();
-            choice = "treasurechest";
-            turnText.setText("next");
+            choiceText.setText("Giant spiders attack you!  \nCan you defeat them all!");
+            GiantSpider();
+            //turnText.setText("next");
             break;
             
         case 5:
-            choiceText.setText("You meet a group of thieves.  \nThey ask you for help!!");
+            choiceText.setText("You find an old treasure chest.  \nDo you open it?.");
             Choice();
-            choice = "robinhood";
-            turnText.setText("next");
+            choice = "treasurechest";
+            turnText.setText("turn \over");
             break;
             
         case 6:
-            choiceText.setText("Giant spiders attack you!  \nCan you defeat them all!");
-            GiantSpider();
-            turnText.setText("next");
+            choiceText.setText("You meet a group of thieves.  \nThey ask you for help!!");
+            choice = "robinhood";
+            Choice();
+
+
             break;
 
     }
@@ -2103,48 +2777,43 @@ function Hole() {
 
 function Choice() {
     
-    var activate;
-    
-  
     switch (choice) {
         case "helpwitch":
-            activate = HelpWitch();
-            ActivateChoice(activate);
+            ActivateChoice(HelpWitch);
             break;
             
         case "robinhood":
-            activate = RobinHood();
-            ActivateChoice(activate);
+            ActivateChoice(RobinHood);
             break;
             
         case "frog":
-            activate = FrogChange();
-            ActivateChoice(activate);
+            
+            ActivateChoice(FrogChange);
             break;
             
         case "treasurechest":
-            activate = TreasureChest();
-            ActivateChoice(activate);
+            
+            ActivateChoice(TreasureChest);
             break;
             
         case "giverock":
-            activate = GiveRock();
-            ActivateChoice(activate);
+            
+            ActivateChoice(GiveRock);
             break;
             
         case "fairygame":
-            activate = FairyGame();
-            ActivateChoice(activate);
+            
+            ActivateChoice(FairyGame);
             break;
             
         case "dragongame":
-            activate = DragonGame();
-            ActivateChoice(activate);
+            
+            ActivateChoice(DragonGame);
             break;
             
         case "antsgame":
-            activate = DragonGame();
-            ActivateChoice(activate);
+            
+            ActivateChoice(AntsGame);
             break;
         
     }
@@ -2163,8 +2832,73 @@ function ActivateChoice(doThis) {
     
 }
 
+function ManageChallenge() {
+    
+    var getLife = packList[currentPlayer - 1].getChildAt(4);
+    var getAttack = packList[currentPlayer - 1].getChildAt(3);
+    var getGold = packList[currentPlayer - 1].getChildAt(2);
+    
+    switch (hasQuest[currentPlayer - 1][1]) {
+        case 'witch':
+            
+            if (hasQuest[currentPlayer -1][2] == 0) {
+                
+                choiceText.setText("One more zombie to go.");
+                hasQuest[currentPlayer - 1][2] += 1;
+                
+            } else {
+                
+                hasQuest[currentPlayer - 1][2] = 0;
+                hasQuest[currentPlayer - 1][0] = false;
+                hasQuest[currentPlayer - 1][1] = "none";
+                choiceText.setText("Nice!  The witch is happy and gives you 1 gold, 1 life, and 1 strength!");
+                getLife = getLife.setText((parseInt(getLife.text, 10) + 1).toString());
+                getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 1).toString());
+                getGold = getGold.setText((parseInt(getGold.text, 10) + 1).toString());
+                
+                questList[currentPlayer - 1].destroy();
+            }
+            break;
+            
+            
+        case 'robinhood':
+            
+            if (dieResult < 3) {
+                
+                choiceText.setText("Awww...the guards catch you!  Lose 1 life.");
+                getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
+                
+            } else {
+                
+                hasQuest[currentPlayer - 1][0] = false;
+                hasQuest[currentPlayer - 1][1] = "none";
+                choiceText.setText("Nice!  The thieves are happy! Gain 5 gold");
+                getGold = getGold.setText((parseInt(getGold.text, 10) + 5).toString());
+                
+                questList[currentPlayer - 1].destroy();
+            }
+            
+            
+            break;
+
+    }
+    
+    
+}
+
 function FrogChange() {
-    // body...
+    
+    var getAttack = packList[currentPlayer - 1].getChildAt(3);
+    
+    saveStat[currentPlayer - 1] = parseInt(getAttack,10);
+    getAttack = getAttack.setText("0");
+    packList[currentPlayer - 1].getChildAt(0).loadTexture('frog');
+    tokenList[currentPlayer - 1].loadTexture('frog');
+    isFrog[currentPlayer - 1] = true;
+    
+    
+    
+    
 }
 
 function TreasureChest() {
@@ -2173,8 +2907,29 @@ function TreasureChest() {
     
 }
 
-function RobinHood() {
+function RobinHood(yesNo) {
+    var getGold = packList[currentPlayer - 1].getChildAt(2);
     
+    if (yesNo == yesButton) {
+        
+        choiceText.setText("I'm good...like Robin Hood. Get my friend out of the castle prison and I'll reward you!");
+        
+        hasQuest[currentPlayer - 1][0] = true;
+        hasQuest[currentPlayer - 1][1] = "robinhood";
+        
+        questList[currentPlayer - 1] = this.game.add.sprite(cList[currentPlayer - 1].x, cList[currentPlayer - 1].y +20, "questMarker");
+        
+    }else {
+        
+        choiceText.setText("Well, that's okay. \nI'll still give you a gold.");
+        getGold = getGold.setText((parseInt(getGold.text, 10) + 1).toString());
+    }
+    
+    
+    noButton.destroy();
+    yesButton.destroy();
+    
+    turnText.setText("turn \nover");
     
     
     
@@ -2202,6 +2957,10 @@ function DragonGame() {
     //Create Telepathy Game here
 }
 
+function AntsGame() {
+    //Create Telepathy Game here
+}
+
 function PoolMonster() {
     // body...
 }
@@ -2211,404 +2970,83 @@ function FairyGame() {
     
 }
 
-function HelpWitch() {
-    // body...
+function HelpWitch(yesNo) {
+    
+    var getGold = packList[currentPlayer - 1].getChildAt(2);
+    
+    if (yesNo == yesButton) {
+        
+    choiceText.setText("There are too many zombies! \nKill 2 zombies and I'll give you a nice present.");
+    
+    hasQuest[currentPlayer - 1][0] = true;
+    hasQuest[currentPlayer - 1][1] = "witch";
+    
+    questList[currentPlayer - 1] = this.game.add.sprite(cList[currentPlayer - 1].x, cList[currentPlayer - 1].y +20, "questMarker");
+        
+    }else {
+        
+        choiceText.setText("Well, that's okay. \nI'll still give you a gold.");
+        getGold = getGold.setText((parseInt(getGold.text, 10) + 1).toString());
+    }
+    
+    
+    noButton.destroy();
+    yesButton.destroy();
+    
+    turnText.setText("turn \nover");
 }
 
 function Arrested() {
     
     choiceText.setText("Next turn you must stay here!.  You will make a castle roll only.");
     arrested[currentPlayer - 1] = true;
+    
+    if (hasQuest[currentPlayer - 1][1] == "robinhood") {
+            
+            turnText.setText("Mission");
+            RunDelay(PrisonBreak, "none", 3000);
+            
+        }
+}
+
+function PrisonBreak() {
+    
+    choiceText.setText("You find the forest thief.  Do you try to escape with him?");
+    
+    ActivateChoice(PrisonBreakResult);
+    
+    
+}
+
+function PrisonBreakResult(yesNo) {
+    
+    if (yesNo == yesButton) {
+        
+        choiceText.setText("Roll the die to escape!");
+        turn = 28;
+        
+    } else {
+        
+        choiceText.setText("The forest thief looks sad.");
+        turnText.setText("turn \nover");
+        
+    }
+    
+    yesButton.destroy();
+    noButton.destroy();
+    
+    
+    
+    
 }
 
 function GiveRock() {
     
 }
 
-function CreateItem() {
-    
-    var giveBonus = Math.floor(Math.random() * 10 + 1);
-    
-    //sword is plus 1 in a fight, ring is nothing, shield will save a life in a fight once then break,
-    //potion is bonus dependent, wand is bonus dependent, boots are bonus dependent.
-    treasureType = ['sword', 'ring', 'shield', 'potion', 'wand', 'boots'];
-    //gold is worth 2 gold, life adds 2 life(while wearing), strength adds 1 strength while wearing
-    //luck lets you reroll once(anything) then its gone, speed lets you reroll movement twice then magic is gone.
-    bonusType = ['gold', 'life', 'luck', 'speed', 'strength'];
 
-    
+//***************Tools
 
-    if (giveBonus > 4) {
-        
-        treasureType = ['sword', 'ring', 'shield', 'potion', 'wand', 'boots'];
-        itemObject = treasureType[getRandomInt(0, treasureType.length)];
-        itemModifier = bonusType[getRandomInt(0, bonusType.length)];
-        currentItem = itemObject + " of " + itemModifier;
-        isMagic = true;
-        
-    } else {
-        
-        treasureType = ['sword', 'shield', 'boots'];
-        itemObject = treasureType[getRandomInt(0, treasureType.length)];
-        itemModifier = "none";
-        currentItem = itemObject;
-        isMagic = false;
-    }   
-
-}
-
-function DisplayItem(item) {
-    
-    displayItem = this.game.add.sprite(225 ,275, item);
-    displayItem.name = "displayItem" + item;
-    
-    if (item != "coin") {
-        
-        garbageButton = this.game.add.button(50, 510, 'garbage', AddInventory, this, 2,1,0);
-        keepButton = this.game.add.button(300, 510, 'take', AddInventory, this, 2,1,0);
-        
-        question.addChild(keepButton);
-        question.addChild(garbageButton);
-            
-    }
-
-    question.addChild(displayItem);
-    
-    console.log(question);
-    
-    if (isMagic == true) {
-        
-        CreateParticles(itemModifier + "Particle", displayItem, false);
-            
-    }
-}
-
-function AddInventory(choice) {
-
-    if (choice == garbageButton) {
-        
-        if (isMagic == true) {
-            
-            emitterList[0].destroy();    
-            question.getChildAt(6).destroy();
-            
-        } else {
-            
-            question.getChildAt(5).destroy();
-            
-        }
-  
-    } else {
-
-        DeleteInventory();
-
-        
-        if (isMagic == true) {
-            console.log(question);
-            emitterList[0].destroy();
-            question.getChildAt(6).destroy();
-            inventory = this.game.add.sprite (40,110, itemObject);
-            inventory.scale.setTo(.25,.25);
-            packList[currentPlayer - 1].add(inventory);
-            CreateParticles(itemModifier + 'Particle', inventory, true);
-            playerBonus[currentPlayer - 1] = [itemObject, itemModifier];
-            displayItem.destroy();
-        } else {
-            console.log(question);
-            displayItem.destroy();
-            inventory = this.game.add.sprite (40,110, currentItem);
-            inventory.scale.setTo(.25,.25);
-            packList[currentPlayer - 1].add(inventory);
-        }
-    }
-    
-    
-    garbageButton.destroy();
-    keepButton.destroy();
-    turnText.setText("next");
-    
-}
-
-function CreateParticles(particle, object, mini) {
-    
-    var getPos = cList[currentPlayer - 1];
-    var currentEmitter;
-    //StartParticles(emitter, particle);
-    if (mini == true) {
-        
-        emitterList[currentPlayer] = this.game.add.emitter(getPos.x + getPos.width - 50  , getPos.y + getPos.height - 10, 100);
-
-        currentEmitter = emitterList[currentPlayer];
-
-        currentEmitter.maxParticleScale = .35;
-        currentEmitter.minParticleScale = 0.15;
-        
-        currentEmitter.makeParticles(particle);
-
-
-        currentEmitter.gravity = -200;
-
-        currentEmitter.start(false, 500, 100);
-        
-        
-    } else {
-        emitterList[0] = this.game.add.emitter(600, object.world.y + object.height, 100);
-        
-        currentEmitter = emitterList[0];
-        
-        currentEmitter.maxParticleScale = 1.0;
-        currentEmitter.minParticleScale = 0.5;
-        
-        currentEmitter.makeParticles(particle);
-
-
-        currentEmitter.gravity = -200;
-
-        currentEmitter.start(false, 1000, 100);
-        
-    }
-    
-    
-
-    
-}
-
-function CheckInventory(item, modify) {
-    
-    console.log("inventory Checked");
-    
-    var treasure = playerBonus[currentPlayer - 1][0];
-    var bonus = playerBonus[currentPlayer - 1][1];
-    
-    console.log(item + " and " + treasure);
-    console.log(modify + " and " + bonus);
-    
-    if (item == treasure) {
-        
-        hasItem = true;
-        
-    } else {
-        
-        hasItem = false;
-        
-    }
-    
-    if (bonus == modify) {
-        
-        hasBonus = true;
-        
-    } else {
-        
-        hasBonus = false;
-    }
-        
-            
-   
-    
-
-}
-
-function DeleteQuestion() {
-    
-    CloudGenerator();
-    
-    if (typeof displayItem !== "undefined") {
-        
-        if (isMagic == true) {
-   
-            emitterList[0].destroy();
-        }    
-        
-    }
-
-    questionPanel.destroy();
-    questionUp = false;
-    
-    if (reroll == false) {
-        
-        ResetCurrentPlayer();
- 
-    }
-
-    ResetTurn();
-}
-
-function DeletePlayer() {
-
-    getPlayer = parseInt(this.name.substring(1,2), 10) - 1;
-    
-    for (var i = 0; i < packList.length; i++) {
-        
-        if (i == getPlayer ) {
-            
-            totalPlayers -= 1;
-            
-            packList[i].getChildAt(1).destroy();
-            
-            packList[i].forEach(function(child) {
-                 
-                 packList[i].removeChild(packList[i].getChildAt(0));
-                     
-            });
-
-            tokenList[i].destroy(true,false);
-            
-            //Allows for new Character
-            cSet[i] = false;
-            
-            turnText.setText(totalPlayers + "\nplayers");
-            
-            return;
-            
-        }
-    }
-}
-
-function DeleteInventory() {
-    
-    if (packList[currentPlayer - 1].length > 6) {
-            
-        packList[currentPlayer - 1].getChildAt(6).destroy();
-        
-        emitterList[currentPlayer].destroy();    
-    }
-    
-}
-  
-function ResetCurrentPlayer () {
-        
-    currentPlayer += 1;
-    
-    if (currentPlayer > totalPlayers) {
-        
-        currentPlayer = 1;
-        DayNight();
-    }
-}    
-
-function UpdateTurnText(box) {
-
-    var checkSpace;
-    
-    if (box != 0 && box != 6 && box != 12 && 
-        box != 18 && box != 15 && boardLevel[currentPlayer - 1] == 1) {
-        
-        checkSpace = 1;
-        
-    }
-    else if (box != 0 && box != 4 && box != 8 && 
-            box != 12 && box != 10 && boardLevel[currentPlayer - 1] == 2) {
-        
-        checkSpace = 1;
-        
-    } else {
-        
-        checkSpace = box;
-    }
-    
-    if (boardLevel[currentPlayer - 1] == 1) {
-        
-        var night;
-        
-        if (dayNight == 1) {
-            
-            night = "";
-            
-        } else {
-            
-            night = "Night"
-            
-        }
-        
-        switch (checkSpace) {
-            case 1 :
-                turnText.setText("Quest!");
-                backgroundAsset = "roadBackground" + night;
-                break;
-                
-            case 0 :
-                turnText.setText("castle");
-                backgroundAsset = "castleBackground" + night;
-                break;
-                
-            case 6 :
-                turnText.setText("witch");
-                backgroundAsset = "witchBackground" + night;
-                break;
-                
-            case 12 :
-                turnText.setText("forest");
-                backgroundAsset = "forestBackground" + night;
-                break;
-                
-            case 15 :
-                turnText.setText("cave");
-                backgroundAsset = "caveBackground" + night;
-                break;
-                
-            case 18 :
-                turnText.setText("village");
-                backgroundAsset = "villageBackground" + night;
-                break;
-            
-       
-        }
-   
-    } else {
-        
-        if (boardLevel[currentPlayer - 1] == 2) {
-        
-        switch (checkSpace) {
-            
-            case 1 :
-                turnText.setText("Quest!");
-                backgroundAsset = "caveBackground";
-                break;
-            
-            case 0 :
-                turnText.setText("stairs");
-                backgroundAsset = "stairsBackground";
-                break;
-                
-            case 4 :
-                turnText.setText("ants");
-                backgroundAsset = "antsBackground";
-                break;
-                
-            case 8 :
-                turnText.setText("dragon");
-                backgroundAsset = "dragonBackground";
-                break;
-                
-             case 10 :
-                turnText.setText("exit");
-                backgroundAsset = "exitBackground";
-                break;
-                
-            case 12 :
-                turnText.setText("pool");
-                backgroundAsset = "poolBackground";
-                break;
-
-            
-       
-        }
-   
-    }
-        
-    }
-
-    
-    
-    
-}
-
-function ResetTurn() {
-    
-    isMagic = false;
-    turn = 0;
-    ManageTurn();
-}
 
 function RunTimer(doThis) {
     
@@ -2652,120 +3090,10 @@ function RunDelay(ToDo, arg, timeX) {
     timer.start();
 }
 
-function CreateSun() {
-    
-    var sunX;
-    
-    if (backgroundAsset.includes("cave") || backgroundAsset.includes("castle")) {
-        
-        sunX = 350;
-        
-    } else {
-        
-        sunX = 550;
-        
-    }
-    
-    if (dayNight == 1) {
-        
-        sun = this.game.add.sprite(sunX, 300, "sun");
-            
-    } else {
-        
-        sun = this.game.add.sprite(sunX, 300, "moon");
-        
-    }
-}
-
-function StartSun() {
-    
-    this.game.physics.enable(sun);
-    sun.enableBody = true;
-    sun.body.gravity.setTo(0, 0);
-    sun.body.velocity.setTo( 4, -15);
-    
-    
-    
-}
-
-function StopSun() {
-    //sun.body.velocity.setTo(0, 0);
-    //question.add(sun);
-    var newSun;
-    
-    if (dayNight == 1 ) {
-        
-        newSun = this.game.add.sprite(sun.x - 300, sun.y, "sun");    
-        
-    } else {
-        
-        newSun = this.game.add.sprite(sun.x - 300, sun.y, "moon");    
-        
-    }
-    
-    question.add(newSun);
-    sun.destroy();
-    
-}
-
 function getRandomInt(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min)) + min;
-}
-
-function CloudGenerator() {
-    
-    if (clouds.length > 0) {
-        
-        var cloudClean = [];
-    
-        clouds.forEach(function(cloud) {
-            
-            if (cloud.x < -100) {
-                
-                cloudClean.push(cloud);
-                
-            }
-        
-        });
-        
-        for (var i = 0; i < cloudClean.length; i++) {
-            
-            cloudClean[i].destroy();
-            
-        }
-        
-        
-    }
-
-    
-    
-    for (var i = 0; i < 5; i++) {
- 
-        if (clouds.length < 5) {
-            
-            var yRandom = Math.floor(Math.random() * (this.game.height - 100) + 50);
-            var xRandom = getRandomInt(20, 1000);
-            
-            var randomScale = getRandomInt(.75,3);
-            var cloud = clouds.create(this.game.width + xRandom, yRandom , 'cloud');
-            console.log("x = " + this.game.width + " and y = " + yRandom);
-            
-            cloud.body.gravity.setTo(0, 0);
-            cloud.body.velocity.setTo( -10, 0);
-            cloud.scale.setTo(randomScale,randomScale);
-            
-            cloud.inputEnabled = true;
-            cloud.events.onInputDown.add(DestroyThis, this);
-        }     
-        
-    }
-    console.log("CLA is " + clouds.length);
-
-    
-    
-
 }
 
 function DestroyThis (thing) {
@@ -2775,84 +3103,5 @@ function DestroyThis (thing) {
     
 }
 
-function DayNight() {
-    
-    var xRandom;
-    var yRandom;
-    var randomScale;
-    
-    
-    dayNight += 1;
-    
-    if (dayNight == 3) {
-        
-        dayNight = 1;
-        
-    }
-    
-    if (dayNight == 2) {
-        
-        this.game.stage.backgroundColor = "#000000";
-        sun.destroy();
-        cloudsBack.destroy();
-        moon = this.game.add.sprite(5,5, "moon");
-        
-        
-        stars = this.game.add.group();
-        
-        for (var i = 0; i < 100; i++) {
-            
-            
-            
-            xRandom = getRandomInt(0, this.game.width);
-            yRandom = getRandomInt(0, this.game.height);
-            
-            randomScale = (Math.random() * (0.30 - .05) + 0.05).toFixed(2);
-            
-            var star = stars.create(xRandom, yRandom, "star");   
-         
-            star.scale.setTo(randomScale,randomScale);
-            
-            
-        }
-        
-      this.game.world.sendToBack(stars);
-        
-    } else if ( dayNight == 1) {
-        
-        this.game.stage.backgroundColor = "#4488AA";
-        moon.destroy();
-        sun = this.game.add.sprite(5,5, "sun");
-        stars.destroy();
-        
-        cloudsBack = this.game.add.group();
-        
-        for (var i = 0; i < 20; i++) {
-            
-            
-            
-            xRandom = getRandomInt(0, this.game.width);
-            yRandom = getRandomInt(0, this.game.height);
-            randomScale = (Math.random() * (0.60 - .40) + 0.40).toFixed(2);
-            
-            var backCloud = cloudsBack.create(xRandom, yRandom, "cloud");   
-            backCloud.alpha = .60;
-            backCloud.scale.setTo(randomScale,randomScale);
-            
-             if ((xRandom > 300 && xRandom < 379) || (xRandom > 810 && xRandom < 900)) {
-            
-                backCloud.angle += 90;
-            
-            }
-            
-        }
-        
-        this.game.world.sendToBack(cloudsBack);
-        
-    } 
-    
-    
-    
-    
-}
+
 
