@@ -1,6 +1,7 @@
 //Bugs:  
 //      On mobile, the game doesn't resize in landscape
 //      Test prison break some more
+//      sun doesn't always get deleted
 
 //To Do: 
 
@@ -544,6 +545,13 @@ function RollDie() {
         
         rollTimer.start();
         
+        if (questionUp == true) {
+            
+            deleteQuestion.input.enabled = false;
+            
+        }
+        
+        
         if (turnText.text.includes("village") || turnText.text.includes("castle") || turnText.text.includes("witch") || turnText.text.includes("forest")) {
             
             StartSun();
@@ -575,6 +583,12 @@ function StopDie () {
     dieResult = dice.animations.currentAnim.frame + 1;
     
     DieResult();
+    
+    if (questionUp == true) {
+    
+        deleteQuestion.input.enabled = true;    
+        
+    }
     
 }
 
@@ -1332,6 +1346,7 @@ function StartSun() {
     sun.body.gravity.setTo(0, 0);
     sun.body.velocity.setTo( 4, -15);
     
+    deleteQuestion.input.enabled = false;
     
     
 }
@@ -1353,7 +1368,10 @@ function StopSun() {
     
     question.add(newSun);
     sun.destroy();
+    console.log("stop sun before dq");
     
+    deleteQuestion.input.enabled = true;
+    console.log("stop sun after dq");
 }
 
 function CloudGenerator() {
