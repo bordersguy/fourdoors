@@ -11,7 +11,6 @@
 //      Create world events      
 //      Add monster side effects
 //      Arrange night monsters
-//      Make spiders
 //      Make fairy
 //      Create Ant Pet
 //      Add players turn to card and visual marker 
@@ -192,6 +191,10 @@ var saveStat = [0,0,0,0,0,0];
 var hasQuest = [[false, "none", 0], [false, "none", 0], [false, "none", 0], [false, "none", 0], [false, "none", 0], [false, "none", 0]];
 var questMarker;
 var questList =[questMarker, questMarker, questMarker, questMarker, questMarker, questMarker];
+var specialMonster = 'none';
+var monsterCount = 0;
+var monsters = [];
+
 
 //var prevOrientation;
 
@@ -367,9 +370,9 @@ function KeyMove(number) {
 
 function TestThis0() {
     
-    dieResult = 6;
+    dieResult = 4;
     DieResult();
-    console.log(questList);
+    
 }
 function TestThis9() {
     
@@ -466,7 +469,7 @@ function CreateInnerBoard () {
             
         }
         
-        console.log("i is " + i + " " +  boardSpacesInner[i][0], boardSpacesInner[i][1]);
+        
         
         
         spaceMaker += 1;
@@ -481,7 +484,7 @@ function CreateInnerBoard () {
 }
 
 function ManageTurn () {
-    console.log("turn on MT = " + turn);
+    
     turnManagerButton.inputEnabled = false;
     
     switch (turn) {
@@ -668,9 +671,7 @@ function DieResult() {
 }
 
 function CreateMovementToken(moves) {
-    
-    console.log (boardLevel[currentPlayer - 1]);
-    
+   
     if (boardLevel[currentPlayer - 1] == 1) {
         
         if (cSet[currentPlayer - 1]) {
@@ -794,7 +795,7 @@ function LevelSwitch(where) {
     switch (where) {
         
         case "in10":
-            console.log("LS in is okay");
+            
             tokenList[currentPlayer - 1].position.x = boardSpacesInner[10][0];
             tokenList[currentPlayer - 1].position.y = boardSpacesInner[10][1];
             cPosSet[currentPlayer - 1] = 10;
@@ -806,7 +807,7 @@ function LevelSwitch(where) {
             
         case "out15":
             
-            console.log("LS out is okay");
+            
             tokenList[currentPlayer - 1].position.x = boardSpaces[15][0];
             tokenList[currentPlayer - 1].position.y = boardSpaces[15][1];
             cPosSet[currentPlayer - 1] = 15;
@@ -953,7 +954,7 @@ function AddStats(player) {
                 deletePlayer.input.priorityID = 10;
                 
                 CreateToken(i);
-                console.log(packList[0]);
+                
                 return;
             }
  
@@ -1368,10 +1369,10 @@ function StopSun() {
     
     question.add(newSun);
     sun.destroy();
-    console.log("stop sun before dq");
+    
     
     deleteQuestion.input.enabled = true;
-    console.log("stop sun after dq");
+    
 }
 
 function CloudGenerator() {
@@ -1410,7 +1411,7 @@ function CloudGenerator() {
             
             var randomScale = getRandomInt(.75,3);
             var cloud = clouds.create(this.game.width + xRandom, yRandom , 'cloud');
-            console.log("x = " + this.game.width + " and y = " + yRandom);
+           
             
             cloud.body.gravity.setTo(0, 0);
             cloud.body.velocity.setTo( -10, 0);
@@ -1421,7 +1422,7 @@ function CloudGenerator() {
         }     
         
     }
-    console.log("CLA is " + clouds.length);
+    
 
     
     
@@ -1929,15 +1930,30 @@ function FightMonster() {
     var monsterList = ['dragon', 'zombie', 'ghost', 'troll',
     'snake', 'werewolf', 'thief', 'vampire'];
     
+    var pickMonster;
+    
+    if (specialMonster == "none") {
+        
+        pickMonster = Math.floor(Math.random() * monsterList.length);    
+        
+    } else {
+        
+        pickMonster = specialMonster;
+        
+        
+    }
     
     
-    var pickMonster = Math.floor(Math.random() * monsterList.length);
-    
-    if (reroll == false) {
+    if (reroll == false && specialMonster == "none") {
 
         monster = monsterList[pickMonster];
         monsterModifier = getRandomInt(2,4);
  
+    } else if (reroll == false && specialMonster != "none") {
+        
+        monster = specialMonster;
+        monsterModifier = getRandomInt(2,4);
+        
     }
 
     CheckInventory("sword", "strength");
@@ -1987,13 +2003,14 @@ function AttackResult() {
             
             choiceText.setText("Uggghh! The " + monster + " won. \nYour shield saved 1 life.  \nDo you want to roll again?");    
             CreateMagicButtons();
-            
+            specialMonster = "none";
             return;
         } else if (hasItem){
             
             choiceText.setText("Uggghh! The " + monster + " won. \nYour shield saved 1 life.");                
             turn = 3;
             turnText.setText("turn \nover");
+            specialMonster = "none";
             return;
         } else if (hasBonus) {
             
@@ -2007,25 +2024,61 @@ function AttackResult() {
             getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
             turn = 3;
             turnText.setText("turn \nover");
+            specialMonster = "none";
         }
         
        
     }
     else {
-        choiceText.setText("You won!!  \nGain 1 attack!");
-        getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 1).toString());
-        turn = 3;
         
-        if (hasQuest[currentPlayer - 1][0] == "witch") {
+        if (specialMonster == "none") {
             
-            turnText.setText("Mission");
-            RunDelay(ManageChallenge, "none", 3000);
+            choiceText.setText("You won!!  \nGain 1 attack!");
+            getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 1).toString());
+            turn = 3;
+            
+            if (hasQuest[currentPlayer - 1][0] == "witch") {
+                
+                turnText.setText("Mission");
+                RunDelay(ManageChallenge, "none", 3000);
+                specialMonster = "none";
+                
+            } else {
+                
+                turnText.setText("turn \nover");
+                specialMonster = "none"
+            }
             
         } else {
             
-            turnText.setText("turn \nover");
+            switch (specialMonster) {
+                case 'spider':
+                    if (monsterCount > 0) {
+                        
+                        choiceText.setText("That's one, but there's " + monsterCount + " more!");
+                        monsterCount -= 1;
+                        RunDelay(FightMonster, "none", 3000);
+                        
+                        
+                        
+                    } else {
+                        
+                        choiceText.setText("Wow!  You got them all!  You get 3 attack!");
+                        getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 3).toString());
+                        specialMonster = "none";
+                        turn = 3;
+                        turnText.setText("turn \nover");
+                    }
+                    
+                    break;
+                    
+                
+            }
+            
             
         }
+        
+        
         
     }
     
@@ -2122,7 +2175,7 @@ function DisplayItem(item) {
 
     question.addChild(displayItem);
     
-    console.log(question);
+    
     
     if (isMagic == true) {
         
@@ -2152,7 +2205,7 @@ function AddInventory(choice) {
 
         
         if (isMagic == true) {
-            console.log(question);
+           
             emitterList[0].destroy();
             question.getChildAt(6).destroy();
             inventory = this.game.add.sprite (40,110, itemObject);
@@ -2162,7 +2215,7 @@ function AddInventory(choice) {
             playerBonus[currentPlayer - 1] = [itemObject, itemModifier];
             displayItem.destroy();
         } else {
-            console.log(question);
+            
             displayItem.destroy();
             inventory = this.game.add.sprite (40,110, currentItem);
             inventory.scale.setTo(.25,.25);
@@ -2222,15 +2275,10 @@ function CreateParticles(particle, object, mini) {
 }
 
 function CheckInventory(item, modify) {
-    
-    console.log("inventory Checked");
-    
+ 
     var treasure = playerBonus[currentPlayer - 1][0];
     var bonus = playerBonus[currentPlayer - 1][1];
-    
-    console.log(item + " and " + treasure);
-    console.log(modify + " and " + bonus);
-    
+
     if (item == treasure) {
         
         hasItem = true;
@@ -2311,7 +2359,7 @@ function DeleteQuestion() {
 
 //Add tunnel results
 function TunnelResult() {
-    console.log("TR is okay");
+    
     
     if (turn == 22) {
         
@@ -2357,7 +2405,7 @@ function TreasureHunt() {
     } else {
         CreateItem();
         var article;
-        console.log(itemObject.slice(-1));
+        
         if (itemObject.slice(-1) == "s") {
             
             article = "some";
@@ -2380,7 +2428,7 @@ function TreasureHunt() {
 }
 //village is done
 function VillageResult() {
-    console.log("VillageResult");
+    
     var getLife = packList[currentPlayer - 1].getChildAt(4);
     var getGold = packList[currentPlayer - 1].getChildAt(2);
     
@@ -2431,7 +2479,7 @@ function VillageResult() {
 }
 //Castle is done
 function CastleResult() {
-    console.log("CastleResult");
+    
     var getLife = packList[currentPlayer - 1].getChildAt(4);
     var getAttack = packList[currentPlayer - 1].getChildAt(3);
     var getGold = packList[currentPlayer - 1].getChildAt(2);
@@ -2482,7 +2530,7 @@ function CastleResult() {
 }
 //Witch is done
 function WitchResult() {
-    console.log("WitchResult");
+    
     var getLife = packList[currentPlayer - 1].getChildAt(4);
     var getAttack = packList[currentPlayer - 1].getChildAt(3);
     var getGold = packList[currentPlayer - 1].getChildAt(2);
@@ -2575,8 +2623,7 @@ function ForestResult() {
             
         case 4:
             choiceText.setText("Giant spiders attack you!  \nCan you defeat them all!");
-            GiantSpider();
-            //turnText.setText("next");
+            RunDelay(GiantSpider,"none", 3000);
             break;
             
         case 5:
@@ -2600,7 +2647,7 @@ function ForestResult() {
 }
 //Pool: pool monster && fairygame
 function PoolResult() {
-    console.log("PoolResult");
+    
     var getLife = packList[currentPlayer - 1].getChildAt(4);
     var getGold = packList[currentPlayer - 1].getChildAt(2);
     
@@ -2652,7 +2699,7 @@ function PoolResult() {
 }
 //Dragon: fight dragon, rock, dragon game
 function DragonResult() {
-    console.log("DragonResult");
+    
     var getLife = packList[currentPlayer - 1].getChildAt(4);
     var getGold = packList[currentPlayer - 1].getChildAt(2);
     
@@ -2700,7 +2747,7 @@ function DragonResult() {
 }
 //Ants: fight ants, rock
 function AntsResult() {
-    console.log("AntsResult");
+    
     var getLife = packList[currentPlayer - 1].getChildAt(4);
     var getGold = packList[currentPlayer - 1].getChildAt(2);
     
@@ -2954,8 +3001,18 @@ function RobinHood(yesNo) {
 }
 
 function GiantSpider() {
+    turn = 4;
+    monsterCount = getRandomInt(3,5);
+    specialMonster = "spider";
+    FightMonster();
     
+    var smallSpider = this.game.add.sprite(200, -100, "spiderFront");
     
+    // for (var i = 0; i < monsterCount - 1; i++) {
+        
+    //     var spider = this.game.add.sprite()
+        
+    // }
     
 }
 

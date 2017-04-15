@@ -89,6 +89,8 @@ var loadState = {
         this.game.load.image('werewolf', 'assets/werewolf.png');
         this.game.load.image('ghost', 'assets/ghost.png');
         this.game.load.image('vampire', 'assets/vampire.png');
+        this.game.load.image('spiderFront', 'assets/spiderFront.png');
+        this.game.load.image('spider', 'assets/spiderSide.png');
 
         //Characters
         this.game.load.image('elf', 'assets/elf.png');
