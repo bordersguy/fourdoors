@@ -276,9 +276,7 @@ create: function () {
     cloudsBack = this.game.add.group();
         
     for (var i = 0; i < 30; i++) {
-        
-        
-        
+ 
         var xRandom = getRandomInt(0, this.game.width);
         var yRandom = getRandomInt(0, this.game.height);
         var randomScale = (Math.random() * (0.60 - .40) + 0.40).toFixed(2);
@@ -303,15 +301,15 @@ create: function () {
     this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
   
     this.scale.setScreenSize( true );
-},
+}
 
-update: function() {
+// update: function() {
     
     
 
-},
+// }
 
-preUpdate: function() {
+//preUpdate: function() {
     
     // if (this.scale.screenOrientation !== prevOrientation) {
         
@@ -321,7 +319,7 @@ preUpdate: function() {
         
     // }
 
-}
+//}
   
 };
 
@@ -550,7 +548,7 @@ function RollDie() {
         
         if (questionUp == true) {
             
-           // deleteQuestion.input.enabled = false;
+           deleteQuestion.input.enabled = false;
             
         }
         
@@ -589,7 +587,7 @@ function StopDie () {
     
     if (questionUp == true) {
     
-        //deleteQuestion.input.enabled = true;    
+        deleteQuestion.input.enabled = true;    
         
     }
     
@@ -1344,15 +1342,14 @@ function StartSun() {
     
     if (specialMonster == "none") {
         
-        
-    this.game.physics.enable(sun);
-    sun.enableBody = true;
-    sun.body.gravity.setTo(0, 0);
-    sun.body.velocity.setTo( 4, -15);
+        this.game.physics.enable(sun);
+        sun.enableBody = true;
+        sun.body.gravity.setTo(0, 0);
+        sun.body.velocity.setTo( 4, -15);
         
     }
     
-    //deleteQuestion.input.enabled = false;
+    deleteQuestion.input.enabled = false;
     
     
 }
@@ -1376,7 +1373,7 @@ function StopSun() {
     sun.destroy();
     
     
-    //deleteQuestion.input.enabled = true;
+    deleteQuestion.input.enabled = true;
     
 }
 
@@ -1888,9 +1885,7 @@ function ManageQuest(choice) {
         case restButton:
             
             var resting = Math.floor(Math.random() * 10 + 1);
-           
-           
-            
+
             if (resting == 1) {
                 
                 getGold = getGold.setText((parseInt(getGold.text, 10) - 1).toString());
@@ -2078,19 +2073,9 @@ function AttackResult() {
                     }
                     
                     break;
-                    
-                
             }
-            
-            
         }
-        
-        
-        
     }
-    
-    
-    
 }
 
 function CreateMagicButtons () {
