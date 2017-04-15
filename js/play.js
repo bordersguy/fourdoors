@@ -193,7 +193,7 @@ var questMarker;
 var questList =[questMarker, questMarker, questMarker, questMarker, questMarker, questMarker];
 var specialMonster = 'none';
 var monsterCount = 0;
-var monsters = [];
+var monsters;
 
 
 //var prevOrientation;
@@ -550,7 +550,7 @@ function RollDie() {
         
         if (questionUp == true) {
             
-            deleteQuestion.input.enabled = false;
+           // deleteQuestion.input.enabled = false;
             
         }
         
@@ -589,7 +589,7 @@ function StopDie () {
     
     if (questionUp == true) {
     
-        deleteQuestion.input.enabled = true;    
+        //deleteQuestion.input.enabled = true;    
         
     }
     
@@ -1342,12 +1342,17 @@ function CreateSun() {
 
 function StartSun() {
     
+    if (specialMonster == "none") {
+        
+        
     this.game.physics.enable(sun);
     sun.enableBody = true;
     sun.body.gravity.setTo(0, 0);
     sun.body.velocity.setTo( 4, -15);
+        
+    }
     
-    deleteQuestion.input.enabled = false;
+    //deleteQuestion.input.enabled = false;
     
     
 }
@@ -1371,7 +1376,7 @@ function StopSun() {
     sun.destroy();
     
     
-    deleteQuestion.input.enabled = true;
+    //deleteQuestion.input.enabled = true;
     
 }
 
@@ -2053,12 +2058,14 @@ function AttackResult() {
             
             switch (specialMonster) {
                 case 'spider':
+                    monsterCount -= 1;
+                    
                     if (monsterCount > 0) {
                         
                         choiceText.setText("That's one, but there's " + monsterCount + " more!");
-                        monsterCount -= 1;
-                        RunDelay(FightMonster, "none", 3000);
                         
+                        RunDelay(FightMonster, "none", 3000);
+                        monsters.getChildAt(0).destroy();
                         
                         
                     } else {
@@ -2591,7 +2598,7 @@ function WitchResult() {
     
     
 }
-//Forest: spider, treasure chest
+//Forest: treasure chest
 function ForestResult() {
     
     var getLife = packList[currentPlayer - 1].getChildAt(4);
@@ -3006,13 +3013,19 @@ function GiantSpider() {
     specialMonster = "spider";
     FightMonster();
     
-    var smallSpider = this.game.add.sprite(200, -100, "spiderFront");
-    
-    // for (var i = 0; i < monsterCount - 1; i++) {
+    monsters = this.game.add.group();
+    question.add(monsters);
+    var smallSpider;
+    var spiderX = 0;
+    var spiderY = -100;
+    for (var i = 0; i < monsterCount - 1; i++) {
         
-    //     var spider = this.game.add.sprite()
+        smallSpider = this.game.add.sprite(spiderX, spiderY, "spiderFront");
         
-    // }
+        spiderX += getRandomInt(75,100);
+        spiderY = -100 - getRandomInt(0, -60);
+        monsters.add(smallSpider);
+    }
     
 }
 
