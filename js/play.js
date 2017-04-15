@@ -193,12 +193,12 @@ var hasQuest = [[false, "none", 0], [false, "none", 0], [false, "none", 0], [fal
 var questMarker;
 var questList =[questMarker, questMarker, questMarker, questMarker, questMarker, questMarker];
 
-var prevOrientation;
+//var prevOrientation;
 
 var playState = {
  
 create: function () {
-    prevOrientation = this.scale.screenOrientation;
+    //prevOrientation = this.scale.screenOrientation;
     
     this.game.stage.backgroundColor = "#4488AA";
     
@@ -310,13 +310,13 @@ update: function() {
 
 preUpdate: function() {
     
-    if (this.scale.screenOrientation !== prevOrientation) {
+    // if (this.scale.screenOrientation !== prevOrientation) {
         
-        this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+    //     this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
   
-        this.scale.setScreenSize( true );
+    //     this.scale.setScreenSize( true );
         
-    }
+    // }
 
 }
   
