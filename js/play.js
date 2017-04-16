@@ -2,25 +2,27 @@
 //      On mobile, the game doesn't resize in landscape
 //      Test prison break some more
 //      sun doesn't always get deleted
+//      Can still get quest after having one in the forest
 
 //To Do: 
 
+//      Add tunnel results
 //      Limit objects to certain classes
-//      finish corner interactions
+//      finish inner corners
 //      Add glowing rock mechanic
 //      Create world events      
 //      Add monster side effects
-//      Arrange night monsters
 //      Make fairy
 //      Create Ant Pet
 //      Add players turn to card and visual marker 
-//      Does destroying the questMarker from the list reduce the list size?
+//      Add four door results
 
 
 //Later:
 //      Music & Sound effects
 //      Make mini game
 //      Polish 
+//      question input
 
 var c1;
 var c2;
@@ -158,6 +160,7 @@ var cave;
 var timerBackground;
 var backgroundAsset;
 var sun;
+var newSun;
 var timer;
 var timerGroup;
 
@@ -173,7 +176,7 @@ var key4;
 var key5;
 var key6;
 
-var dayNight = 1;
+var dayNight = 1;//day = 1 & night = 2
 var clouds;
 var stars;
 var moon;
@@ -194,6 +197,7 @@ var questList =[questMarker, questMarker, questMarker, questMarker, questMarker,
 var specialMonster = 'none';
 var monsterCount = 0;
 var monsters;
+var treasureChest;
 
 
 //var prevOrientation;
@@ -629,7 +633,8 @@ function DieResult() {
             break;   
             
         case 20:
-            ForestResult();
+            RunDelay(ForestResult, "none", 500);
+            
             break;     
             
         case 21:
@@ -662,6 +667,10 @@ function DieResult() {
             
         case 28:
             ManageChallenge();
+            break;
+            
+        case 29:
+            TreasureResult();
             break;
 
     }
@@ -1306,7 +1315,7 @@ function UpdateTurnText(box) {
 
 function ResetTurn() {
     
-    
+    specialMonster = "none";
 
     isMagic = false;
     turn = 0;
@@ -1357,7 +1366,7 @@ function StartSun() {
 function StopSun() {
     //sun.body.velocity.setTo(0, 0);
     //question.add(sun);
-    var newSun;
+    
     
     if (dayNight == 1 ) {
         
@@ -1372,6 +1381,11 @@ function StopSun() {
     question.add(newSun);
     sun.destroy();
     
+    if (turn == 29) {
+        
+        this.game.world.sendToBack(newSun);
+        
+    }
     
     deleteQuestion.input.enabled = true;
     
@@ -1926,10 +1940,19 @@ function ManageQuest(choice) {
 }
 
 function FightMonster() {
+    var monsterList;
     
-    var monsterList = ['dragon', 'zombie', 'ghost', 'troll',
-    'snake', 'werewolf', 'thief', 'vampire'];
+    if (dayNight == 1) {
     
+        monsterList = ['dragon', 'troll',
+        'snake', 'thief', 'spider'];
+        
+    } else {
+ 
+        monsterList = ['zombie', 'ghost', 
+        'werewolf', 'thief', 'vampire'];
+        
+    }
     var pickMonster;
     
     if (specialMonster == "none") {
@@ -1972,6 +1995,12 @@ function FightMonster() {
     if (frog == true) {
         monsterModifier = 6;
         choiceText.setText("A " + monster + " is attacking you! \nRoll to fight! \nYou need a " + monsterModifier.toString() + " to win!!!" );
+        
+    } else if (specialMonster == "troll") {
+        
+        monsterModifier = 6;
+        choiceText.setText("A " + monster + " is attacking you! \nRoll to fight! \nYou need a " + monsterModifier.toString() + " to win!!!" );
+        
         
     } else {
         
@@ -2071,6 +2100,17 @@ function AttackResult() {
                         turn = 3;
                         turnText.setText("turn \nover");
                     }
+                    
+                    break;
+                    
+                case 'troll':
+                    
+                        choiceText.setText("Wow!  You won!  You get 1 attack and you're in the mountain!");
+                        getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 1).toString());
+                        specialMonster = "none";
+                        turn = 3;
+                        turnText.setText("turn \nover");
+                    
                     
                     break;
             }
@@ -2351,19 +2391,137 @@ function DeleteQuestion() {
 
 //Add tunnel results
 function TunnelResult() {
-    
-    
+    var getLife = packList[currentPlayer - 1].getChildAt(4);
+    var getAttack = packList[currentPlayer - 1].getChildAt(3);
+    var getGold = packList[currentPlayer - 1].getChildAt(2);
+    var enemy;
+    var goldAmount;
     if (turn == 22) {
         
-    choiceText.setText("You found a way in!");
-    boardLevel[currentPlayer - 1] = 2;
-    LevelSwitch("in10");
+        switch (dieResult) {
+            case 1:
+                choiceText.setText("You found a secret way in!");
+                boardLevel[currentPlayer - 1] = 2;
+                LevelSwitch("in10");
+                turnText.setText("turn \nover");
+                break;
+                
+            case 2:
+                enemy = this.game.add.sprite(400, 200, "troll");
+                question.add(enemy);
+                goldAmount = parseInt(getGold.text, 10);
+                if (goldAmount > 5) {
+                    
+                    choiceText.setText("A big troll says,'Give me 5 gold and you can come in.");
+                    choice = "paytroll";
+                    Choice();
+                    
+                } else {
+                    
+                    choiceText.setText("A big troll says, 'You need 5 gold to pass! Go away!'");
+                    turnText.setText("turn \nover");
+                }
+                
+                break;
+            
+            case 3:
+                enemy = this.game.add.sprite(400, 200, "troll");
+                question.add(enemy);
+                choiceText.setText("A big troll says,'I feel like fighting!  Get Ready!!");
+                RunDelay(FightTroll, "none", 3000);
+                break;
+                
+            case 4:
+                enemy = this.game.add.sprite(400, 200, "troll");
+                question.add(enemy);
+                goldAmount = parseInt(getGold.text, 10);
+                if (goldAmount > 5) {
+                    
+                    choiceText.setText("A big troll says,'Give me 5 gold and you can come in.");
+                    choice = "paytroll";
+                    Choice();
+                    
+                } else {
+                    
+                    choiceText.setText("A big troll says, 'You need 5 gold to pass! Go away!'");
+                    turnText.setText("turn \nover");
+                }
+                
+                break;
+                
+            case 5:
+                enemy = this.game.add.sprite(400, 200, "troll");
+                question.add(enemy);
+                choiceText.setText("A big troll says,'I feel like fighting!  Get Ready!!");
+                RunDelay(FightTroll, "none", 3000);
+                break;
+                
+            case 6:
+                enemy = this.game.add.sprite(400, 200, "troll");
+                question.add(enemy);
+                goldAmount = parseInt(getGold.text, 10);
+                if (goldAmount > 5) {
+                    
+                    choiceText.setText("A big troll says,'Give me 5 gold and you can come in.");
+                    choice = "paytroll";
+                    Choice();
+                    
+                } else {
+                    
+                    choiceText.setText("A big troll says, 'You need 5 gold to pass! Go away!'");
+                    turnText.setText("turn \nover");
+                }
+                
+                break;
+         
+        }
+    
         
     }   else {
         
-        choiceText.setText("You found a way out!");
+        choiceText.setText("Going out is always easy!");
         boardLevel[currentPlayer - 1] = 1;
         LevelSwitch("out15");
+        
+        // switch (dieResult) {
+        //     case 1:
+        //         choiceText.setText("Going out is always easy!");
+        //         boardLevel[currentPlayer - 1] = 1;
+        //         LevelSwitch("out15");
+        //         break;
+                
+        //     case 2:
+        //         choiceText.setText("You found a way out!");
+        //         boardLevel[currentPlayer - 1] = 1;
+        //         LevelSwitch("out15");
+        //         break;
+            
+        //     case 3:
+        //         choiceText.setText("You found a way out!");
+        //         boardLevel[currentPlayer - 1] = 1;
+        //         LevelSwitch("out15");
+        //         break;
+                
+        //     case 4:
+        //         choiceText.setText("You found a way out!");
+        //         boardLevel[currentPlayer - 1] = 1;
+        //         LevelSwitch("out15");
+        //         break;
+                
+        //     case 5:
+        //         choiceText.setText("You found a way out!");
+        //         boardLevel[currentPlayer - 1] = 1;
+        //         LevelSwitch("out15");
+        //         break;
+                
+        //     case 6:
+        //         choiceText.setText("You found a way in!");
+        //         boardLevel[currentPlayer - 1] = 2;
+        //         LevelSwitch("in10");
+        //         break;
+         
+        
+       
         
     }
 
@@ -2620,9 +2778,12 @@ function ForestResult() {
             
         case 5:
             choiceText.setText("You find an old treasure chest.  \nDo you open it?.");
-            Choice();
             choice = "treasurechest";
-            turnText.setText("turn \over");
+            Choice();
+            treasureChest = this.game.add.sprite(200, 200, "treasureClosed");
+            question.add(treasureChest);
+            //sun.destroy();
+            //turnText.setText("turn \over");
             break;
             
         case 6:
@@ -2843,10 +3004,10 @@ function Choice() {
             ActivateChoice(RobinHood);
             break;
             
-        case "frog":
+        // case "frog":
             
-            ActivateChoice(FrogChange);
-            break;
+        //     ActivateChoice(FrogChange);
+        //     break;
             
         case "treasurechest":
             
@@ -2873,6 +3034,10 @@ function Choice() {
             ActivateChoice(AntsGame);
             break;
         
+        case "paytroll":
+            
+            ActivateChoice(PayTroll);
+            break;
     }
     
     
@@ -2960,6 +3125,44 @@ function FrogChange() {
 
 function TreasureChest() {
     
+    yesButton.destroy();
+    noButton.destroy();
+    
+    choiceText.setText("Let's see what's inside!\nRoll the die!");
+    turn = 29;
+    
+    
+    
+}
+
+function TreasureResult() {
+    
+    var getLife = packList[currentPlayer - 1].getChildAt(4);
+    var getAttack = packList[currentPlayer - 1].getChildAt(3);
+    var getGold = packList[currentPlayer - 1].getChildAt(2);
+    
+    if (dieResult > 4) {
+        treasureChest.loadTexture("treasureReally");
+        
+        choiceText.setText("Great!  You found 3 gold!");
+        getGold = getGold.setText((parseInt(getGold.text, 10) + 3).toString());
+        turnText.setText("turn \nover");
+    } else if (dieResult == 3) {
+        treasureChest.loadTexture("treasureThief");
+        choiceText.setText("There was a thief hiding here!  He steals 1 gold and runs away!");
+        getGold = getGold.setText((parseInt(getGold.text, 10) - 3).toString());
+        turnText.setText("turn \nover");
+    } else if (dieResult == 2) {
+        treasureChest.loadTexture("treasurePoison");
+        choiceText.setText("Uggh! It's a trap!  Poison gas comes out and you lose 1 life!")
+        getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
+        turnText.setText("turn \nover");
+    } else {
+        treasureChest.loadTexture("treasureEmpty");
+        choiceText.setText("You get nothing! It's empty!");
+        turnText.setText("turn \nover");
+        
+    }
     
     
 }
@@ -3117,6 +3320,33 @@ function GiveRock() {
     
 }
 
+function PayTroll(yesNo) {
+    
+    var getLife = packList[currentPlayer - 1].getChildAt(4);
+    var getAttack = packList[currentPlayer - 1].getChildAt(3);
+    var getGold = packList[currentPlayer - 1].getChildAt(2);
+    
+    if (yesNo == yesButton) {
+        getGold = getGold.setText((parseInt(getGold.text, 10) - 5).toString());
+        choiceText.setText("The troll says, 'Thank you, come again!' \nYou're in the mountain!  ");
+        turnText.setText("turn \nover");
+        boardLevel[currentPlayer - 1] = 2;
+        LevelSwitch("in10");
+        
+    } else {
+        
+        choiceText.setText("The troll says, 'Don't waste my time!");
+        turnText.setText("turn \nover");
+    }
+    
+    
+}
+
+function FightTroll() {
+    turn = 4;
+    specialMonster = "troll";
+    FightMonster();
+}
 
 //***************Tools
 

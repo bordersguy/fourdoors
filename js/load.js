@@ -102,6 +102,13 @@ var loadState = {
         this.game.load.image('token', 'assets/token.png');
         this.game.load.image('frog', 'assets/frog.png');
         this.game.load.image('questMarker', 'assets/questMarker.png');
+        
+        //TreasureChests
+        this.game.load.image('treasureReally', 'assets/treasureReally.png');
+        this.game.load.image('treasureClosed', 'assets/treasureClosed.png');
+        this.game.load.image('treasureEmpty', 'assets/treasureEmpty.png');
+        this.game.load.image('treasurePoison', 'assets/treasurePoison.png');
+        this.game.load.image('treasureThief', 'assets/treasureThief.png');
     },
     
     create: function () {
