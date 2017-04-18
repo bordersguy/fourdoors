@@ -198,6 +198,7 @@ var specialMonster = 'none';
 var monsterCount = 0;
 var monsters;
 var treasureChest;
+var bubbles;
 
 
 //var prevOrientation;
@@ -378,7 +379,7 @@ function TestThis0() {
 }
 function TestThis9() {
     
-    dieResult = 5;
+    dieResult = 6;
     DieResult();
     
     
@@ -1539,7 +1540,6 @@ function GetQuestion() {
 function CreateQuestion(puzzle) {
     
     var pickPuzzle = Math.floor(Math.random() * 5);
-    //var pickPuzzle = 4;
     var deconstructed;
     var toDelete;
     var startPoint;
@@ -1547,6 +1547,12 @@ function CreateQuestion(puzzle) {
     var sentenceLength;
     var newOrder;
     
+    
+    if (turn == 30) {
+        
+        pickPuzzle = 10;
+        
+    }
     
     
     switch(pickPuzzle) {
@@ -1603,7 +1609,7 @@ function CreateQuestion(puzzle) {
             break;
             
             
-            case 3:
+        case 3:
             qType = "Scramble Words";
             getQuestion = "My favorite food is cheese pizza!";
             answer = getQuestion;
@@ -1626,26 +1632,95 @@ function CreateQuestion(puzzle) {
             getQuestion = newOrder.join(" ");
             break;
             
-            case 4:
+        case 4:
             qType = "Make a sentence";
             getQuestion = "grade";
             answer = "Your teacher will say if you are correct.";
 
             break;
+            
+            
+        case 10:
+            qType = "Bubble Words";
+            getQuestion = "favorite";
+            answer = getQuestion;
+
+            var vocabLength = getQuestion.length;
+            bubbles = this.game.add.group();
+            var letterText;
+             
+            bubbles.enableBody = true;
+             
+            ShuffleWord(answer);
+             
+            answer = shuffledWord;
+             
+            for (var i = 0; i < vocabLength; i++) {
+                
+                var bubble = bubbles.create((i * 70) + 300, 500, 'bubble');
+                bubble.body.gravity.setTo(0,0);
+                bubble.body.bounce.setTo(0.7 + Math.random() * 0.2, 0.7 + Math.random() * 0.2);
+             
+                var style = { font: "32px Arial", fill: "black", 
+                wordWrap: true, wordWrapWidth: bubble.width,
+                align: "center", backgroundColor: "transparent" };
+                
+                
+                
+                if (answer.charAt(i) == 'I')
+                {
+                     letterText = this.game.add.text(20, 9, "I", style );
+                }
+                else
+                {
+                     letterText = this.game.add.text(11, 9, answer.charAt(i), style );
+                }
+                
+                bubble.addChild(letterText);
+        
+            }
+            
+            
+            bubbles.forEach(function (child) {
+            
+                var velocityX = getRandomInt(-3, 3);
+                var velocityY = getRandomInt(-10, -20);
+            
+                child.body.velocity.setTo(velocityX, velocityY);
+        
+            });
+            
+            wrongButton = this.game.add.button(100, 525, 'wrong', CheckAnswer, this, 2,1,0);
+            correctButton = this.game.add.button(400, 525, 'correct', CheckAnswer, this, 2,1,0);
+            revealButton = this.game.add.button(250, 525, 'reveal', ShowAnswer, this, 2,1,0);
+            
+            question.add(wrongButton);
+            question.add(correctButton);
+            question.add(revealButton);
+            //question.add(bubbles);
+            RunDelay(PopBubble, "none", 3000);
+            
+            break;
+            
+ 
         
     }
     
 }
 
 function ShuffleWord (word){
+    
     shuffledWord = '';
     var charIndex = 0;
     word = word.split('');
+    
     while(word.length > 0){
+        
         charIndex = word.length * Math.random() << 0;
         shuffledWord += word[charIndex];
         word.splice(charIndex,1);
     }
+    
     return shuffledWord;
 }
 
@@ -1653,44 +1728,69 @@ function CheckAnswer(result) {
 
     var getGold = packList[currentPlayer - 1].getChildAt(2);
     var getLife = packList[currentPlayer - 1].getChildAt(4);
-    
+    var adjustGold;  
     wrongButton.inputEnabled = false;
     correctButton.inputEnabled = false;
     
+    
+    if (turn == 30) {
+         
+        adjustGold = 2;
+        bubbles.destroy();
+             
+            
+    } else {
+      
+        adjustGold = 1;
+        
+    }
+    
     //ADD RESULT OF LIFE = 0 WHEN ADDING DEATH CODE
     if (result == wrongButton) {
-        turnText.setText("Next");
+        turnText.setText("turn \nover");
         if (parseInt(getGold.text, 10) >= 1) {
             
-            getGold = getGold.setText((parseInt(getGold.text, 10) - 1).toString());
-            questionExplain.setText("Sorry, you lose 1 gold."); 
+            getGold = getGold.setText((parseInt(getGold.text, 10) - adjustGold).toString());
+            questionExplain.setText("Sorry, you lose " + adjustGold.toString() + " gold."); 
 
         }
         else {
             
-            getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
-            questionExplain.setText("Sorry.  Oh no! You have no gold! \nLose 1 life.");
-        }
-    }
-    else {
+            getLife = getLife.setText((parseInt(getLife.text, 10) - adjustGold).toString());
+            questionExplain.setText("Sorry.  Oh no! You have no gold! \nLose " + adjustGold.toString() + " life.");
+       }
+       
+    }   else {
         
-        getGold = getGold.setText((parseInt(getGold.text, 10) + 1).toString());
-
-        var allKids = 0;
+            getGold = getGold.setText((parseInt(getGold.text, 10) + adjustGold).toString());
         
-        question.forEach(function(child) {
-
-                allKids += 1;
+             if (turn == 30) {
+            
+            choiceText.setText("Congratulations!  Here's " + adjustGold + " gold!");
+            turnText.setText("turn \nover");
+                
+            } else {
+                
+                var allKids = 0;
+            
+                question.forEach(function(child) {
     
-            });
-
-        for (var i = 0; i < allKids - 1; i++) {
+                    allKids += 1;
+        
+                });
+    
+                for (var i = 0; i < allKids - 1; i++) {
+                
+                    question.getChildAt(1).destroy();
+                
+                }
             
-            question.getChildAt(1).destroy();
+       
+            GoToQuest();
             
         }
         
-        GoToQuest();
+       
 
     }
 
@@ -1939,6 +2039,54 @@ function ManageQuest(choice) {
     
 }
 
+function TreasureHunt() {
+
+    var getGold = packList[currentPlayer - 1].getChildAt(2);
+    
+    var treasureFound = getRandomInt(1,10);
+    
+    if (treasureFound == 1) {
+        
+        choiceText.setText("You looked all day!  \nSorry, but, you found nothing.");
+        
+    } else if (treasureFound == 2){
+        
+        choiceText.setText("No treasure....but you did \nfind 1 Gold.");
+        getGold = getGold.setText((parseInt(getGold.text, 10) + 1).toString());
+        DisplayItem("coin");
+        
+    } else if (treasureFound == 3) {
+        
+        turn = 4;
+        RunDelay(FightMonster, "none", 3000);
+        choiceText.setText("Uh oh...you found a monster!");
+        
+        
+    } else {
+        CreateItem();
+        var article;
+        
+        if (itemObject.slice(-1) == "s") {
+            
+            article = "some";
+            
+        } else {
+            article = "a";
+        }
+
+        if (isMagic == true)  {
+            
+            choiceText.setText("Wow! You found " + article + "\n" + currentItem + "!");    
+            
+        } else {
+            
+            choiceText.setText("You found " + article + "\n" + currentItem + "!");
+        }
+        
+        DisplayItem(itemObject);
+    }
+}
+
 function FightMonster() {
     var monsterList;
     
@@ -1993,24 +2141,41 @@ function FightMonster() {
     }
     
     if (frog == true) {
-        monsterModifier = 6;
-        choiceText.setText("A " + monster + " is attacking you! \nRoll to fight! \nYou need a " + monsterModifier.toString() + " to win!!!" );
+        monsterModifier = 5;
+        choiceText.setText("A " + monster + " is attacking you! \nRoll to fight! \nYou need a " + (monsterModifier + 1).toString() + " to win!!!" );
         
     } else if (specialMonster == "troll") {
         
-        monsterModifier = 6;
-        choiceText.setText("A " + monster + " is attacking you! \nRoll to fight! \nYou need a " + monsterModifier.toString() + " to win!!!" );
+        monsterModifier = 5;
+        choiceText.setText("The " + monster + " is attacking you! \nRoll to fight! \nYou need a " + (monsterModifier + 1).toString() + " to win!!!" );
+        
+        
+    } else if (specialMonster == "kraken") {
+        
+        monsterModifier = 5;
+        choiceText.setText("The " + monster + " is attacking you! \nRoll to fight! \nYou need a " + (monsterModifier + 1).toString() + " to win!!!" );
         
         
     } else {
         
-        choiceText.setText("A " + monster + " is attacking you! \nRoll to fight! \nYou need a " + monsterModifier.toString() + " to win!!!" );    
+        choiceText.setText("A " + monster + " is attacking you! \nRoll to fight! \nYou need a " + (monsterModifier + 1).toString() + " to win!!!" );    
         
     }
     
     reroll == false;
     
-    var enemy = this.game.add.sprite(400, 200, monster);
+    var enemy
+    
+    if (specialMonster == "kraken") {
+        
+        enemy = this.game.add.sprite(200, 200, monster);    
+        
+    } else {
+    
+        enemy = this.game.add.sprite(400, 200, monster);    
+        
+    }
+    
     question.add(enemy);
 }
 
@@ -2387,9 +2552,9 @@ function DeleteQuestion() {
 }
 
 
-//*******************Corner Interactions
+//*******************Corners
 
-//Add tunnel results
+//Tunnel is done
 function TunnelResult() {
     var getLife = packList[currentPlayer - 1].getChildAt(4);
     var getAttack = packList[currentPlayer - 1].getChildAt(3);
@@ -2525,56 +2690,6 @@ function TunnelResult() {
         
     }
 
-}
-
-function TreasureHunt() {
-    
-    
-    
-    var getGold = packList[currentPlayer - 1].getChildAt(2);
-    
-    var treasureFound = getRandomInt(1,10);
-    
-    if (treasureFound == 1) {
-        
-        choiceText.setText("You looked all day!  \nSorry, but, you found nothing.");
-        
-    } else if (treasureFound == 2){
-        
-        choiceText.setText("No treasure....but you did \nfind 1 Gold.");
-        getGold = getGold.setText((parseInt(getGold.text, 10) + 1).toString());
-        DisplayItem("coin");
-        
-    } else if (treasureFound == 3) {
-        
-        turn = 4;
-        RunDelay(FightMonster, "none", 3000);
-        choiceText.setText("Uh oh...you found a monster!");
-        
-        
-    } else {
-        CreateItem();
-        var article;
-        
-        if (itemObject.slice(-1) == "s") {
-            
-            article = "some";
-            
-        } else {
-            article = "a";
-        }
-
-        if (isMagic == true)  {
-            
-            choiceText.setText("Wow! You found " + article + "\n" + currentItem + "!");    
-            
-        } else {
-            
-            choiceText.setText("You found " + article + "\n" + currentItem + "!");
-        }
-        
-        DisplayItem(itemObject);
-    }
 }
 //village is done
 function VillageResult() {
@@ -2741,14 +2856,11 @@ function WitchResult() {
     
     
 }
-//Forest: treasure chest
+//Forest is done
 function ForestResult() {
     
     var getLife = packList[currentPlayer - 1].getChildAt(4);
-    var getAttack = packList[currentPlayer - 1].getChildAt(3);
-    var getGold = packList[currentPlayer - 1].getChildAt(2);
-    
-    
+
     switch (dieResult) {
         
         case 1:
@@ -2761,14 +2873,12 @@ function ForestResult() {
             choiceText.setText("You get lost and eat nothing!  \nLose 1 life.");
             getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
             turn = 1;
-            //reroll = true;
             turnText.setText("turn \over");
             break;
             
         case 3:
             choiceText.setText("Oh no! A monster found you!");
             FightMonster();
-            //turnText.setText("next");
             break;
             
         case 4:
@@ -2782,23 +2892,19 @@ function ForestResult() {
             Choice();
             treasureChest = this.game.add.sprite(200, 200, "treasureClosed");
             question.add(treasureChest);
-            //sun.destroy();
-            //turnText.setText("turn \over");
             break;
             
         case 6:
             choiceText.setText("You meet a group of thieves.  \nThey ask you for help!!");
             choice = "robinhood";
             Choice();
-
-
             break;
 
     }
     
     
 }
-//Pool: pool monster && fairygame
+//Pool: fairygame
 function PoolResult() {
     
     var getLife = packList[currentPlayer - 1].getChildAt(4);
@@ -2819,10 +2925,8 @@ function PoolResult() {
             break;
             
         case 3:
-            choiceText.setText("Oh no! You woke up the Pool Monster!");
-            turn = 4;
-            PoolMonster();
-            
+            choiceText.setText("Oh no! You woke up the Kraken!");
+            RunDelay(PoolMonster, "none", 3000);
             break;
             
         case 4:
@@ -2840,10 +2944,10 @@ function PoolResult() {
             
         case 6:
             choiceText.setText("A fairy wants to play a game with you.  \nDo you want to play?");
+            var gameFairy = this.game.add.sprite(400, 200, "fairy");
+            question.add(gameFairy);
             choice = "fairygame";
             Choice();
-            
-            
             break;
 
     }
@@ -2946,6 +3050,7 @@ function AntsResult() {
     
 }
 
+//Corner Management
 function Portal() {
     
     var event = getComputedStyle(0,4);
@@ -3108,6 +3213,7 @@ function ManageChallenge() {
     
 }
 
+//*******************Corners Interactions
 function FrogChange() {
     
     var getAttack = packList[currentPlayer - 1].getChildAt(3);
@@ -3238,10 +3344,54 @@ function AntsGame() {
 }
 
 function PoolMonster() {
-    // body...
+    
+    turn = 4;
+    specialMonster = "kraken";
+    FightMonster();
+    
 }
 
-function FairyGame() {
+function FairyGame(yesNo) {
+    
+    if (yesNo == noButton) {
+        
+        choiceText.setText("Awww!  Okay!  See you next time!");
+        turnText.setText("turn \nover");
+
+    } else {
+        
+        choiceText.setText("Yeah!  What word do you see?");
+        RunDelay(PlayFairyGame, "none", 3000);
+    }
+    
+    yesButton.destroy();
+    noButton.destroy();
+    
+}
+
+function PlayFairyGame() {
+
+    turn = 30;
+    GetQuestion();
+ 
+}
+
+function PopBubble() {
+    
+    if (bubbles.length > 0) {
+        
+        var pop = getRandomInt(0, bubbles.length);
+        
+        bubbles.getChildAt(pop).destroy();
+        
+        if (bubbles.length !== 0) {
+            
+            var popTime = getRandomInt(2, 4) * 1000;
+            
+            
+            RunDelay(PopBubble, "none", popTime);
+        }
+    }
     
     
 }

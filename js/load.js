@@ -40,6 +40,8 @@ var loadState = {
         this.game.load.image('caveButton', 'assets/caveButton.png');
         this.game.load.image('yesButton', 'assets/yesButton.png');
         this.game.load.image('noButton', 'assets/noButton.png');
+        this.game.load.image('bubble', 'assets/bubble.png');
+        
         
         //Inventory
         this.game.load.image('ring', 'assets/ring.png');
@@ -80,7 +82,7 @@ var loadState = {
         this.game.load.image('forestBackgroundNight', 'assets/forestBackgroundNight.png');
         this.game.load.image('caveBackgroundNight', 'assets/caveBackgroundNight.png');
         
-        //Enemies
+        //NPC's
         this.game.load.image('dragon', 'assets/dragon.png');
         this.game.load.image('thief', 'assets/thief.png');
         this.game.load.image('zombie', 'assets/zombie.png');
@@ -91,6 +93,8 @@ var loadState = {
         this.game.load.image('vampire', 'assets/vampire.png');
         this.game.load.image('spiderFront', 'assets/spiderFront.png');
         this.game.load.image('spider', 'assets/spiderSide.png');
+        this.game.load.image('kraken', 'assets/poolMonster.png');
+        this.game.load.image('fairy', 'assets/fairy.png');
 
         //Characters
         this.game.load.image('elf', 'assets/elf.png');
