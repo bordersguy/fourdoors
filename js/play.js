@@ -3,10 +3,9 @@
 //      Test prison break some more
 //      sun doesn't always get deleted
 //      Can still get quest after having one in the forest
+//      Dragon gift is broken
 
 //To Do: 
-
-//      Add tunnel results
 //      Limit objects to certain classes
 //      finish inner corners
 //      Add glowing rock mechanic
@@ -16,6 +15,7 @@
 //      Create Ant Pet
 //      Add players turn to card and visual marker 
 //      Add four door results
+//      Add victory point for beating the Kraken, Ropasci, Spiders, and Ants
 
 
 //Later:
@@ -199,6 +199,11 @@ var monsterCount = 0;
 var monsters;
 var treasureChest;
 var bubbles;
+
+var rpsButton;
+var doOverButton;
+var defeatButton;
+var victoryButton;
 
 
 //var prevOrientation;
@@ -1273,7 +1278,7 @@ function UpdateTurnText(box) {
             
             case 1 :
                 turnText.setText("Quest!");
-                backgroundAsset = "caveBackground";
+                backgroundAsset = "innerBackground";
                 break;
             
             case 0 :
@@ -1812,9 +1817,7 @@ function GoToQuest() {
 
     if (turnText.text === "Quest!") {
         turn = 3;
-        
-        
-        
+
         restButton = this.game.add.button(250, 200, restName, StartActionTimer, 2,1,0);
         monsterButton = this.game.add.button(100, 400, "monsterButton", StartActionTimer, 2,1,0);
         treasureButton = this.game.add.button(380, 375, "treasureButton", StartActionTimer, 2,1,0);
@@ -1881,7 +1884,7 @@ function GoToQuest() {
                 break;
                 
             case "dragon":
-                choiceText.setText("The dragon stands up and.... \nRoll the die.");
+                choiceText.setText("The Ropasci Dragon stands up and.... \nRoll the die.");
                 turn = 24;
                 break;
     
@@ -1900,6 +1903,8 @@ function GoToQuest() {
                 turn = 19;
                 CreateSun();
                 break;
+                
+            
        
         }
         
@@ -2153,7 +2158,13 @@ function FightMonster() {
     } else if (specialMonster == "kraken") {
         
         monsterModifier = 5;
-        choiceText.setText("The " + monster + " is attacking you! \nRoll to fight! \nYou need a " + (monsterModifier + 1).toString() + " to win!!!" );
+        choiceText.setText("The Kraken is attacking you! \nRoll to fight! \nYou need a " + (monsterModifier + 1).toString() + " to win!!!" );
+        
+        
+    }  else if (specialMonster == "ropasci") {
+        
+        monsterModifier = 5;
+        choiceText.setText("The Ropasci Dragon is attacking you! \nRoll to fight! \nYou need a " + (monsterModifier + 1).toString() + " to win!!!" );
         
         
     } else {
@@ -2164,11 +2175,15 @@ function FightMonster() {
     
     reroll == false;
     
-    var enemy
+    var enemy;
     
     if (specialMonster == "kraken") {
         
-        enemy = this.game.add.sprite(200, 200, monster);    
+        enemy = this.game.add.sprite(150, 200, monster);    
+        
+    } else if (specialMonster == "ropasci") {
+        
+        enemy = this.game.add.sprite(150, 200, "dragon");    
         
     } else {
     
@@ -2904,7 +2919,7 @@ function ForestResult() {
     
     
 }
-//Pool: fairygame
+//Pool is done
 function PoolResult() {
     
     var getLife = packList[currentPlayer - 1].getChildAt(4);
@@ -2954,7 +2969,7 @@ function PoolResult() {
     
     
 }
-//Dragon: fight dragon, rock, dragon game
+//Ropasci Cave: rock
 function DragonResult() {
     
     var getLife = packList[currentPlayer - 1].getChildAt(4);
@@ -2964,7 +2979,8 @@ function DragonResult() {
         
         case 1:
             choiceText.setText("...is hungry!!  \nGet ready!");
-            FightDragon();
+            RunDelay(FightDragon, "none", 3000);
+           
             break;
             
         case 2:
@@ -3325,6 +3341,10 @@ function GiantSpider() {
 
 function FightDragon() {
     
+    turn = 4;
+    specialMonster = "ropasci";
+    FightMonster();
+    
 }
 
 function FightAnts() {
@@ -3335,8 +3355,117 @@ function PetAnt() {
     // body...
 }
 
-function DragonGame() {
-    //Create Telepathy Game here
+function DragonGame(yesNo) {
+     
+     if (yesNo == noButton) {
+        
+        choiceText.setText("Awww!  Okay!  See you next time!");
+        turnText.setText("turn \nover");
+
+    } else {
+        
+        choiceText.setText("Let's play Rock-Paper-Scissors!  ");
+        RunDelay(PlayDragonGame, "none", 3000);
+    }
+    
+    yesButton.destroy();
+    noButton.destroy();
+}
+
+function PlayDragonGame() {
+    
+    choiceText.setText("Stand up!  Let's say it together, 'Rock, Scissors, Paper!'");
+    rpsButton = this.game.add.button(100, 525, 'rpsButton', RPSReveal, this, 2,1,0);
+    
+    question.add(rpsButton);
+}
+
+function RPSReveal() {
+    
+    var rpsResult = getRandomInt(1, 4);
+    var rpsImage;
+    
+    switch (rpsResult) {
+        case 1:
+            rpsImage = "dragonRock";
+            break;
+        
+        case 2:
+            rpsImage = "dragonPaper";
+            break;
+            
+        case 3:
+            rpsImage = "dragonScissor";
+            break;
+        
+        
+    }
+    
+    var rpsMonster = this.game.add.sprite(200, 200, rpsImage);
+    
+    question.add(rpsMonster);
+    rpsButton.destroy();
+    
+    
+    defeatButton = this.game.add.button(50, 510, 'defeatButton', RPSResult, this, 2,1,0);
+    victoryButton = this.game.add.button(400, 510, 'victoryButton', RPSResult, this, 2,1,0);
+    doOverButton = this.game.add.button(250, 510, 'doOverButton', DoOverRPS, this, 2,1,0);
+    
+    question.add(defeatButton);
+    question.add(victoryButton);
+    question.add(doOverButton);
+}
+
+function RPSResult(winLose) {
+    
+    var getLife = packList[currentPlayer - 1].getChildAt(4);
+    var getGold = packList[currentPlayer - 1].getChildAt(2);
+    
+    
+    if (winLose == victoryButton) {
+        
+        choiceText.setText("You beat me!  Here's 3 gold!");
+        getGold = getGold.setText((parseInt(getGold.text, 10) + 3).toString());
+        
+    } else {
+        
+        
+        var gold = parseInt(getGold, 10);
+        
+        if (gold > 3) {
+            
+            choiceText.setText("Oops!  You lost.  Give me 3 gold!");
+            getGold = getGold.setText((parseInt(getGold.text, 10) - 3).toString());
+            
+        } else {
+            
+            choiceText.setText("You lost! I'll take your " + gold + " and 1 life!!");
+            getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
+            getGold = getGold.setText((parseInt(getGold.text, 10) - gold).toString());
+            
+            
+        }
+        
+        
+    }
+    
+    defeatButton.destroy();
+    victoryButton.destroy();
+
+    doOverButton.destroy();
+    
+    
+}
+
+function DoOverRPS() {
+    
+    defeatButton.destroy();
+    victoryButton.destroy();
+    doOverButton.destroy()
+    
+    PlayDragonGame();
+    
+    
 }
 
 function AntsGame() {
@@ -3509,21 +3638,27 @@ function RunTimer(doThis) {
     // timerGroup.y = question.y;
     timerBackground = timerGroup.create(45,200, backgroundAsset);
     
-    CreateSun();
-    
-    StartSun();
-
-    timer = this.game.time.create(false);
+    if (boardLevel[currentPlayer -  1] == 2) {
+        
+        //add torch animation later
+        
+    } else {
+        
+        CreateSun();
+        
+        StartSun();
+     
+        timer.add(actionTime, StopSun, this);
    
+    }
     
+    timer = this.game.time.create(false);
+       
     var actionTime = Math.floor(((Math.random() * 3) + 3) * 1000);
     
-    timer.add(actionTime, StopSun, this);
-    
     timer.add(actionTime, ManageQuest, this, doThis);
-
-    timer.start();
     
+    timer.start();
 }
 
 function RunDelay(ToDo, arg, timeX) {

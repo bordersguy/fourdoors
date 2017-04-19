@@ -41,6 +41,11 @@ var loadState = {
         this.game.load.image('yesButton', 'assets/yesButton.png');
         this.game.load.image('noButton', 'assets/noButton.png');
         this.game.load.image('bubble', 'assets/bubble.png');
+        this.game.load.image('doOverButton', 'assets/doOverButton.png');
+        this.game.load.image('victoryButton', 'assets/victoryButton.png');
+        this.game.load.image('defeatButton', 'assets/defeatButton.png');
+        this.game.load.image('rpsButton', 'assets/rpsButton.png');
+        
         
         
         //Inventory
@@ -81,6 +86,7 @@ var loadState = {
         this.game.load.image('witchBackgroundNight', 'assets/witchBackgroundNight.png');
         this.game.load.image('forestBackgroundNight', 'assets/forestBackgroundNight.png');
         this.game.load.image('caveBackgroundNight', 'assets/caveBackgroundNight.png');
+        this.game.load.image('innerBackground', 'assets/innerBackground.png');
         
         //NPC's
         this.game.load.image('dragon', 'assets/dragon.png');
@@ -95,7 +101,9 @@ var loadState = {
         this.game.load.image('spider', 'assets/spiderSide.png');
         this.game.load.image('kraken', 'assets/poolMonster.png');
         this.game.load.image('fairy', 'assets/fairy.png');
-
+        this.game.load.image('dragonRock', 'assets/dragonRock.png');
+        this.game.load.image('dragonPaper', 'assets/dragonPaper.png');
+        this.game.load.image('dragonScissor', 'assets/dragonScissor.png');
         //Characters
         this.game.load.image('elf', 'assets/elf.png');
         this.game.load.image('hobbit', 'assets/hobbit.png');
