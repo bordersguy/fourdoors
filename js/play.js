@@ -204,6 +204,7 @@ var rpsButton;
 var doOverButton;
 var defeatButton;
 var victoryButton;
+var rpsMonster;
 
 
 //var prevOrientation;
@@ -1884,7 +1885,7 @@ function GoToQuest() {
                 break;
                 
             case "dragon":
-                choiceText.setText("The Ropasci Dragon stands up and.... \nRoll the die.");
+                choiceText.setText("The Ropasci Monster stands up and.... \nRoll the die.");
                 turn = 24;
                 break;
     
@@ -3382,6 +3383,8 @@ function PlayDragonGame() {
 
 function RPSReveal() {
     
+    choiceText.setText("Did you win?");
+    
     var rpsResult = getRandomInt(1, 4);
     var rpsImage;
     
@@ -3401,7 +3404,7 @@ function RPSReveal() {
         
     }
     
-    var rpsMonster = this.game.add.sprite(200, 200, rpsImage);
+    rpsMonster = this.game.add.sprite(200, 200, rpsImage);
     
     question.add(rpsMonster);
     rpsButton.destroy();
@@ -3461,7 +3464,8 @@ function DoOverRPS() {
     
     defeatButton.destroy();
     victoryButton.destroy();
-    doOverButton.destroy()
+    doOverButton.destroy();
+    rpsMonster.destroy();
     
     PlayDragonGame();
     
