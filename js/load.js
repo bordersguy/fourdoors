@@ -104,6 +104,8 @@ var loadState = {
         this.game.load.image('dragonRock', 'assets/dragonRock.png');
         this.game.load.image('dragonPaper', 'assets/dragonPaper.png');
         this.game.load.image('dragonScissor', 'assets/dragonScissor.png');
+        this.game.load.image('ant', 'assets/antFight.png');
+        
         //Characters
         this.game.load.image('elf', 'assets/elf.png');
         this.game.load.image('hobbit', 'assets/hobbit.png');

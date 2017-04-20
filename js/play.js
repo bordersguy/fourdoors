@@ -1,9 +1,9 @@
 //Bugs:  
 //      On mobile, the game doesn't resize in landscape
 //      Test prison break some more
-//      sun doesn't always get deleted
+//      sun doesn't always get deleted....but, i think this is because of my key testing
 //      Can still get quest after having one in the forest
-//      Dragon gift is broken
+
 
 //To Do: 
 //      Limit objects to certain classes
@@ -11,16 +11,14 @@
 //      Add glowing rock mechanic
 //      Create world events      
 //      Add monster side effects
-//      Make fairy
 //      Create Ant Pet
 //      Add players turn to card and visual marker 
 //      Add four door results
 //      Add victory point for beating the Kraken, Ropasci, Spiders, and Ants
-
+//      Fix grammar and feel of spider and ant fights
 
 //Later:
 //      Music & Sound effects
-//      Make mini game
 //      Polish 
 //      question input
 
@@ -379,7 +377,7 @@ function KeyMove(number) {
 
 function TestThis0() {
     
-    dieResult = 4;
+    dieResult = 3;
     DieResult();
     
 }
@@ -2099,7 +2097,7 @@ function FightMonster() {
     if (dayNight == 1) {
     
         monsterList = ['dragon', 'troll',
-        'snake', 'thief', 'spider'];
+        'snake', 'thief', 'spider', 'ant'];
         
     } else {
  
@@ -2294,6 +2292,28 @@ function AttackResult() {
                     
                     
                     break;
+                    
+                case 'ant':
+                    monsterCount -= 1;
+                    
+                    if (monsterCount > 0) {
+                        
+                        choiceText.setText("That's one, but there's " + monsterCount + " more!");
+                        
+                        RunDelay(FightMonster, "none", 3000);
+                        monsters.getChildAt(0).destroy();
+                        
+                        
+                    } else {
+                        
+                        choiceText.setText("Wow!  You got them all!  You get 3 attack!");
+                        getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 3).toString());
+                        specialMonster = "none";
+                        turn = 3;
+                        turnText.setText("turn \nover");
+                    }
+                    
+                    break;
             }
         }
     }
@@ -2420,7 +2440,8 @@ function AddInventory(choice) {
         if (isMagic == true) {
            
             emitterList[0].destroy();
-            question.getChildAt(6).destroy();
+            //question.getChildAt(6).destroy();
+            displayItem.destroy();
             inventory = this.game.add.sprite (40,110, itemObject);
             inventory.scale.setTo(.25,.25);
             packList[currentPlayer - 1].add(inventory);
@@ -2998,7 +3019,7 @@ function DragonResult() {
         case 4:
             choiceText.setText("...is happy to see you! \nHave a gift!");
             CreateItem();
-            DisplayItem(currentItem);
+            DisplayItem(itemObject);
             break;
             
         case 5:
@@ -3349,7 +3370,29 @@ function FightDragon() {
 }
 
 function FightAnts() {
-    // body...
+    
+    turn = 4;
+    monsterCount = getRandomInt(3,5);
+    specialMonster = "ant";
+    FightMonster();
+    
+    monsters = this.game.add.group();
+    question.add(monsters);
+    
+    var smallAnt;
+    var spiderX = 0;
+    var spiderY = -100;
+    
+    for (var i = 0; i < monsterCount - 1; i++) {
+        
+        smallAnt = this.game.add.sprite(spiderX, spiderY, "ant");
+        
+        smallAnt.scale.setTo(.35, .35);
+    
+        spiderX += getRandomInt(75,100);
+        spiderY = 200 - getRandomInt(0, -60);
+        monsters.add(smallAnt);
+    }
 }
 
 function PetAnt() {
@@ -3641,6 +3684,8 @@ function RunTimer(doThis) {
     // timerGroup.x = question.x;
     // timerGroup.y = question.y;
     timerBackground = timerGroup.create(45,200, backgroundAsset);
+    timer = this.game.time.create(false);
+    var actionTime = Math.floor(((Math.random() * 3) + 3) * 1000);
     
     if (boardLevel[currentPlayer -  1] == 2) {
         
@@ -3655,11 +3700,7 @@ function RunTimer(doThis) {
         timer.add(actionTime, StopSun, this);
    
     }
-    
-    timer = this.game.time.create(false);
-       
-    var actionTime = Math.floor(((Math.random() * 3) + 3) * 1000);
-    
+
     timer.add(actionTime, ManageQuest, this, doThis);
     
     timer.start();
