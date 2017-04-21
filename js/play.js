@@ -16,6 +16,7 @@
 //      Add four door results
 //      Add victory point for beating the Kraken, Ropasci, Spiders, and Ants
 //      Fix grammar and feel of spider and ant fights
+//      Add penalty for entering mountain too early
 
 //Later:
 //      Music & Sound effects
@@ -106,7 +107,9 @@ var updatePos;
 
 var questionPanel;
 var questionText;
-var getQuestion = "What's your favorite color?";
+var getQuestion;
+var vocabularyList;
+var questionList;
 var qType;
 var questionExplain;
 var answer;
@@ -204,6 +207,14 @@ var defeatButton;
 var victoryButton;
 var rpsMonster;
 
+var sentenceGroup;
+
+var hasPet = [false, false, false, false, false, false];
+var petAnt;
+
+
+var petList = [petAnt, petAnt, petAnt, petAnt, petAnt, petAnt];
+
 
 //var prevOrientation;
 
@@ -273,9 +284,7 @@ create: function () {
     key4.onDown.add(KeyMove, this);
     key5.onDown.add(KeyMove, this);
     key6.onDown.add(KeyMove, this);
-    
-    key0.onDown.add(TestThis0, this);
-    key9.onDown.add(TestThis9, this);
+
     
     clouds = this.game.add.group();
     clouds.enableBody = true;
@@ -302,6 +311,8 @@ create: function () {
     }
     
     this.game.world.sendToBack(cloudsBack);
+    
+    
     
     //Create Particles
     
@@ -336,12 +347,9 @@ create: function () {
 
 function KeyMove(number) {
     
-    if (questionUp == true) {
-                
-        DeleteQuestion();    
-    }
-    
-    switch (number) {
+    if (questionUp == false) {
+        
+        switch (number) {
         case key1:
             CreateMovementToken(1);
             break;
@@ -371,20 +379,47 @@ function KeyMove(number) {
             CreateMovementToken(6);
             break;
 
+    }    
+          
+    } else { 
+        
+        switch (number) {
+            case key1:
+                dieResult = 1;
+                DieResult();
+                break;
+                
+            case key2:
+                dieResult = 2;
+                DieResult();
+                break;
+                
+            case key3:
+                dieResult = 3;
+                DieResult();
+                break;
+                
+            case key4:
+                dieResult = 4;
+                DieResult();
+                break;
+                
+            case key5:
+                dieResult =5;
+            DieResult();
+                break;
+                
+            case key6:
+                dieResult = 6;
+                DieResult();
+                break;
+
+        }
+        
+        
     }
     
-}
-
-function TestThis0() {
     
-    dieResult = 3;
-    DieResult();
-    
-}
-function TestThis9() {
-    
-    dieResult = 6;
-    DieResult();
     
     
 }
@@ -1535,7 +1570,15 @@ function DayNight() {
 
 function GetQuestion() {
 
-    getQuestion = "What's your favorite color?";
+    questionList = ["What's your favorite color?",
+                   "What grade are you in?",
+                   "May I go to the bathroom?",
+                   "Can you come to my party?",
+                   "My favorite food is cheese pizza!"];
+                   
+    vocabularyList = ["beautiful", "nickname", "second", "headache", "stomachache",
+                      "medicine", "always", "because", "interesting", "February",
+                      "practice", "January", "August"];
     
     CreateQuestion(getQuestion);
 
@@ -1556,6 +1599,10 @@ function CreateQuestion(puzzle) {
         
         pickPuzzle = 10;
         
+    } else if (turn == 31) {
+        
+        pickPuzzle = 11;
+        
     }
     
     
@@ -1564,9 +1611,11 @@ function CreateQuestion(puzzle) {
         case 0:
             
             qType = "Fill in the Blank";
-            getQuestion = "My favorite food is cheese pizza!";
-            answer = getQuestion;
-            deconstructed = getQuestion.split(" ");
+            
+            answer = questionList[getRandomInt(0, questionList.length)];
+            
+            
+            deconstructed = answer.split(" ");
             toDelete = Math.round(deconstructed.length/2);
             startPoint = Math.floor(Math.random() * (toDelete + 1));
        
@@ -1583,15 +1632,14 @@ function CreateQuestion(puzzle) {
             
         case 1:
             qType = "Answer the Question";
-            getQuestion = "What's your name?";
-            answer = "My name is ______ .";
-            deconstructed = getQuestion.split(" ");
-          
+            getQuestion = questionList[getRandomInt(0, questionList.length)];
+            answer = "Your teacher will check your answer.";
+
             break;
         
         case 2:
             qType = "Sentence Scramble";
-            getQuestion = "My favorite food is cheese pizza!";
+            getQuestion = questionList[getRandomInt(0, questionList.length)];
             answer = getQuestion;
             deconstructed = getQuestion.split(" ");
             newOrder = [];
@@ -1615,7 +1663,7 @@ function CreateQuestion(puzzle) {
             
         case 3:
             qType = "Scramble Words";
-            getQuestion = "My favorite food is cheese pizza!";
+            getQuestion = questionList[getRandomInt(0, questionList.length)];
             answer = getQuestion;
             deconstructed = getQuestion.split(" ");
             newOrder = [];
@@ -1638,7 +1686,7 @@ function CreateQuestion(puzzle) {
             
         case 4:
             qType = "Make a sentence";
-            getQuestion = "grade";
+            getQuestion = vocabularyList[getRandomInt(0, vocabularyList.length)];
             answer = "Your teacher will say if you are correct.";
 
             break;
@@ -1646,7 +1694,7 @@ function CreateQuestion(puzzle) {
             
         case 10:
             qType = "Bubble Words";
-            getQuestion = "favorite";
+            getQuestion = vocabularyList[getRandomInt(0, vocabularyList.length)];
             answer = getQuestion;
 
             var vocabLength = getQuestion.length;
@@ -1706,8 +1754,41 @@ function CreateQuestion(puzzle) {
             
             break;
             
- 
-        
+        case 11:
+            qType = "Telepathy Game";
+            
+            var sentenceY = 250;
+            
+            var antChoice = getRandomInt(0,4);
+            answer = questionList[antChoice];
+            
+            var style = { font: "32px Arial", fill: "white", wordWrapWidth: "300px", 
+                wordWrap: true, align: "center", backgroundColor: "white" };
+            
+            sentenceGroup = this.game.add.group();
+            
+              for (var i = 0; i < 4; i++) {
+                
+                
+                getQuestion = questionList[i];    
+                
+                var sentenceAnt = this.game.add.text(350, sentenceY, getQuestion, style );
+                
+                sentenceGroup.add(sentenceAnt);
+                
+                sentenceY += 50;
+            }
+            
+            wrongButton = this.game.add.button(100, 525, 'wrong', CheckAnswer, this, 2,1,0);
+            correctButton = this.game.add.button(400, 525, 'correct', CheckAnswer, this, 2,1,0);
+            revealButton = this.game.add.button(250, 525, 'reveal', ShowAnswer, this, 2,1,0);
+            
+            question.add(wrongButton);
+            question.add(correctButton);
+            question.add(revealButton);
+
+            break;
+
     }
     
 }
@@ -1733,6 +1814,7 @@ function CheckAnswer(result) {
     var getGold = packList[currentPlayer - 1].getChildAt(2);
     var getLife = packList[currentPlayer - 1].getChildAt(4);
     var adjustGold;  
+    
     wrongButton.inputEnabled = false;
     correctButton.inputEnabled = false;
     
@@ -1743,6 +1825,13 @@ function CheckAnswer(result) {
         bubbles.destroy();
              
             
+    } else if (turn == 31) {
+      
+        adjustGold = 2;
+        sentenceGroup.destroy();
+        showAnswer.inputEnabled = false;
+      
+        
     } else {
       
         adjustGold = 1;
@@ -1768,7 +1857,7 @@ function CheckAnswer(result) {
         
             getGold = getGold.setText((parseInt(getGold.text, 10) + adjustGold).toString());
         
-             if (turn == 30) {
+             if (turn == 30 || turn == 31) {
             
             choiceText.setText("Congratulations!  Here's " + adjustGold + " gold!");
             turnText.setText("turn \nover");
@@ -1802,7 +1891,19 @@ function CheckAnswer(result) {
 
 function ShowAnswer(argument) {
     
-    showAnswer = this.game.add.text(20, 250, answer, { font: "40px Arial", fill: "green", align: "center", wordWrap: true, wordWrapWidth: question.width - 20 }); 
+    var answerY = 250;
+    
+    if (turn == 31) {
+        
+        answerY = 150;
+        
+    } else {
+        
+        answerY = 250;
+        
+    }
+    
+    showAnswer = this.game.add.text(20, answerY, answer, { font: "40px Arial", fill: "blue", align: "center", wordWrap: true, wordWrapWidth: question.width - 20 }); 
     question.addChild(showAnswer);
     
 }
@@ -2130,7 +2231,13 @@ function FightMonster() {
         monsterModifier = getRandomInt(2,4);
         
     }
-
+    
+    if (hasPet[currentPlayer - 1] == true) {
+        
+        monsterModifier -= 1;
+        
+    }
+    
     CheckInventory("sword", "strength");
 
     if (hasItem && hasBonus) {
@@ -2203,120 +2310,132 @@ function AttackResult() {
         choiceText.setText("Try again! \nRoll Again!!");
         return;
         
-    } else if (dieResult < monsterModifier) {
-        
-        CheckInventory("shield", "luck" );
-        
-        if (hasItem && hasBonus) {
+        } else if (dieResult < monsterModifier) {
             
-            choiceText.setText("Uggghh! The " + monster + " won. \nYour shield saved 1 life.  \nDo you want to roll again?");    
-            CreateMagicButtons();
-            specialMonster = "none";
-            return;
-        } else if (hasItem){
-            
-            choiceText.setText("Uggghh! The " + monster + " won. \nYour shield saved 1 life.");                
-            turn = 3;
-            turnText.setText("turn \nover");
-            specialMonster = "none";
-            return;
-        } else if (hasBonus) {
-            
-            choiceText.setText("Uggghh! The " + monster + " won. \nDo you want to roll again?");                
-            CreateMagicButtons();
-            
-            return;
-        } else {
-            
-            choiceText.setText("Uggghh! The " + monster + " won. \nLose 1 life.");
-            getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
-            turn = 3;
-            turnText.setText("turn \nover");
-            specialMonster = "none";
-        }
-        
-       
-    }
-    else {
-        
-        if (specialMonster == "none") {
-            
-            choiceText.setText("You won!!  \nGain 1 attack!");
-            getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 1).toString());
-            turn = 3;
-            
-            if (hasQuest[currentPlayer - 1][0] == "witch") {
+            if (hasPet[currentPlayer - 1] == true) {
                 
-                turnText.setText("Mission");
-                RunDelay(ManageChallenge, "none", 3000);
-                specialMonster = "none";
+                choiceText.setText("Oh no!  You lost...and, your ant died protecting your life!");
+                hasPet[currentPlayer - 1] = false;
+                petList[currentPlayer - 1].destroy();
                 
             } else {
                 
-                turnText.setText("turn \nover");
-                specialMonster = "none"
+                 CheckInventory("shield", "luck" );
+            
+                if (hasItem && hasBonus) {
+                    
+                    choiceText.setText("Uggghh! The " + monster + " won. \nYour shield can save 1 life.  \nDo you want to roll again?");    
+                    CreateMagicButtons();
+                    specialMonster = "none";
+                    return;
+                } else if (hasItem){
+                    
+                    choiceText.setText("Uggghh! The " + monster + " won. \nYour shield saved 1 life.");                
+                    turn = 3;
+                    turnText.setText("turn \nover");
+                    specialMonster = "none";
+                    return;
+                } else if (hasBonus) {
+                    
+                    choiceText.setText("Uggghh! The " + monster + " won. \nDo you want to roll again?");                
+                    CreateMagicButtons();
+                    
+                    return;
+                } else {
+                    
+                    choiceText.setText("Uggghh! The " + monster + " won. \nLose 1 life.");
+                    getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
+                    turn = 3;
+                    turnText.setText("turn \nover");
+                    specialMonster = "none";
+                }
+                    
             }
             
-        } else {
+           
             
-            switch (specialMonster) {
-                case 'spider':
-                    monsterCount -= 1;
+           
+        }
+        else {
+            
+            if (specialMonster == "none") {
+                
+                choiceText.setText("You won!!  \nGain 1 attack!");
+                getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 1).toString());
+                turn = 3;
+                
+                if (hasQuest[currentPlayer - 1][0] == "witch") {
                     
-                    if (monsterCount > 0) {
-                        
-                        choiceText.setText("That's one, but there's " + monsterCount + " more!");
-                        
-                        RunDelay(FightMonster, "none", 3000);
-                        monsters.getChildAt(0).destroy();
-                        
-                        
-                    } else {
-                        
-                        choiceText.setText("Wow!  You got them all!  You get 3 attack!");
-                        getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 3).toString());
-                        specialMonster = "none";
-                        turn = 3;
-                        turnText.setText("turn \nover");
-                    }
+                    turnText.setText("Mission");
+                    RunDelay(ManageChallenge, "none", 3000);
+                    specialMonster = "none";
                     
-                    break;
+                } else {
                     
-                case 'troll':
-                    
-                        choiceText.setText("Wow!  You won!  You get 1 attack and you're in the mountain!");
-                        getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 1).toString());
-                        specialMonster = "none";
-                        turn = 3;
-                        turnText.setText("turn \nover");
-                    
-                    
-                    break;
-                    
-                case 'ant':
-                    monsterCount -= 1;
-                    
-                    if (monsterCount > 0) {
+                    turnText.setText("turn \nover");
+                    specialMonster = "none"
+                }
+                
+            } else {
+                
+                switch (specialMonster) {
+                    case 'spider':
+                        monsterCount -= 1;
                         
-                        choiceText.setText("That's one, but there's " + monsterCount + " more!");
+                        if (monsterCount > 0) {
+                            
+                            choiceText.setText("That's one, but there's " + monsterCount + " more!");
+                            
+                            RunDelay(FightMonster, "none", 3000);
+                            monsters.getChildAt(0).destroy();
+                            
+                            
+                        } else {
+                            
+                            choiceText.setText("Wow!  You got them all!  You get 3 attack!");
+                            getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 3).toString());
+                            specialMonster = "none";
+                            turn = 3;
+                            turnText.setText("turn \nover");
+                        }
                         
-                        RunDelay(FightMonster, "none", 3000);
-                        monsters.getChildAt(0).destroy();
+                        break;
+                        
+                    case 'troll':
+                        
+                            choiceText.setText("Wow!  You won!  You get 1 attack and you're in the mountain!");
+                            getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 1).toString());
+                            specialMonster = "none";
+                            turn = 3;
+                            turnText.setText("turn \nover");
                         
                         
-                    } else {
+                        break;
                         
-                        choiceText.setText("Wow!  You got them all!  You get 3 attack!");
-                        getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 3).toString());
-                        specialMonster = "none";
-                        turn = 3;
-                        turnText.setText("turn \nover");
-                    }
-                    
-                    break;
+                    case 'ant':
+                        monsterCount -= 1;
+                        
+                        if (monsterCount > 0) {
+                            
+                            choiceText.setText("That's one, but there's " + monsterCount + " more!");
+                            
+                            RunDelay(FightMonster, "none", 3000);
+                            monsters.getChildAt(0).destroy();
+                            
+                            
+                        } else {
+                            
+                            choiceText.setText("Wow!  You got them all!  You get 3 attack!");
+                            getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 3).toString());
+                            specialMonster = "none";
+                            turn = 3;
+                            turnText.setText("turn \nover");
+                        }
+                        
+                        break;
+                }
             }
         }
-    }
 }
 
 function CreateMagicButtons () {
@@ -3040,7 +3159,7 @@ function DragonResult() {
     
     
 }
-//Ants: fight ants, rock
+//Ants:  rock
 function AntsResult() {
     
     var getLife = packList[currentPlayer - 1].getChildAt(4);
@@ -3065,8 +3184,19 @@ function AntsResult() {
             break;
             
         case 4:
-            choiceText.setText("One ant really likes you! \nYou have a pet!");
-            PetAnt();
+            
+            if (hasPet[currentPlayer - 1] == false) {
+                
+                choiceText.setText("One ant really likes you! You have a pet! It's like a sword and shield.");
+                PetAnt();    
+                
+            } else {
+                
+                dieResult = getRandomInt(0, 4);
+                AntsResult();
+                
+            }
+            
             break;
             
         case 5:
@@ -3078,6 +3208,8 @@ function AntsResult() {
             
         case 6:
             choiceText.setText("The ants want to play a game.  \nDo you want to play?");
+            var gameAnt = this.game.add.sprite(400, 200, "ant");
+            question.add(gameAnt);
             choice = "antsgame";
             Choice();
             
@@ -3396,7 +3528,19 @@ function FightAnts() {
 }
 
 function PetAnt() {
-    // body...
+   
+   
+   hasPet[currentPlayer - 1] = true;
+   
+   var antPosX = cList[currentPlayer - 1].x + cList[currentPlayer - 1].width;
+   var antPosY = cList[currentPlayer - 1].y + (cList[currentPlayer - 1].height/2);
+   
+   petAnt = this.game.add.sprite(antPosX , antPosY, "ant");
+   petAnt.scale.setTo(.15,.15);
+   
+   petList[currentPlayer - 1] = petAnt;
+   
+   
 }
 
 function DragonGame(yesNo) {
@@ -3515,8 +3659,30 @@ function DoOverRPS() {
     
 }
 
-function AntsGame() {
-    //Create Telepathy Game here
+function AntsGame(yesNo) {
+    
+    if (yesNo == noButton) {
+        
+        choiceText.setText("Awww!  Okay!  See you next time!");
+        turnText.setText("turn \nover");
+
+    } else {
+        
+        choiceText.setText("Let's play the Telepathy Game!");
+        RunDelay(PlayAntsGame, "none", 3000);
+    }
+    
+    yesButton.destroy();
+    noButton.destroy();
+}
+
+function PlayAntsGame() {
+    
+    choiceText.setText("I'm thinking of a sentence.  Which one is it?");
+    
+    turn = 31;
+    GetQuestion();
+    
 }
 
 function PoolMonster() {
