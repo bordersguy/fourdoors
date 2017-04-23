@@ -36,6 +36,7 @@ var loadState = {
         this.game.load.image('monsterButton', 'assets/huntButton.png');
         this.game.load.image('treasureButton', 'assets/treasureButton.png');
         this.game.load.image('restButton', 'assets/restButton.png');
+        this.game.load.image('stairsButton', 'assets/stairsButton.png');
         this.game.load.image('sleeping', 'assets/sleepingZs.png');
         this.game.load.image('caveButton', 'assets/caveButton.png');
         this.game.load.image('yesButton', 'assets/yesButton.png');
@@ -45,6 +46,10 @@ var loadState = {
         this.game.load.image('victoryButton', 'assets/victoryButton.png');
         this.game.load.image('defeatButton', 'assets/defeatButton.png');
         this.game.load.image('rpsButton', 'assets/rpsButton.png');
+        this.game.load.image('blueDoorButton', 'assets/blueDoorButton.png');
+        this.game.load.image('greenDoorButton', 'assets/greenDoorButton.png');
+        this.game.load.image('redDoorButton', 'assets/redDoorButton.png');
+        this.game.load.image('yellowDoorButton', 'assets/yellowDoorButton.png');
         
         
         
@@ -56,7 +61,10 @@ var loadState = {
         this.game.load.image('sword', 'assets/sword.png');
         this.game.load.image('shield', 'assets/shield.png');
         this.game.load.image('coin', 'assets/coin.png');
-        this.game.load.image('rock', 'assets/rock.png');
+        this.game.load.image('rockBlue', 'assets/rockBlue.png');
+        this.game.load.image('rockGreen', 'assets/rockGreen.png');
+        this.game.load.image('rockYellow', 'assets/rockYellow.png');
+        this.game.load.image('rockRed', 'assets/rockRed.png');
         this.game.load.image('garbage', 'assets/garbageButton.png');
         this.game.load.image('take', 'assets/takeButton.png');
         this.game.load.image('lifeParticle', 'assets/lifeParticle.png');
@@ -105,6 +113,7 @@ var loadState = {
         this.game.load.image('dragonPaper', 'assets/dragonPaper.png');
         this.game.load.image('dragonScissor', 'assets/dragonScissor.png');
         this.game.load.image('ant', 'assets/antFight.png');
+        this.game.load.image('watcher', 'assets/watcher.png');
         
         //Characters
         this.game.load.image('elf', 'assets/elf.png');

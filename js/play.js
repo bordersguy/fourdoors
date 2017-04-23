@@ -123,6 +123,7 @@ var restButton;
 var treasureButton;
 var monsterButton;
 var caveButton;
+var stairsButton;
 var choiceText;
 var questionUp = false;
 
@@ -211,9 +212,19 @@ var sentenceGroup;
 
 var hasPet = [false, false, false, false, false, false];
 var petAnt;
-
-
 var petList = [petAnt, petAnt, petAnt, petAnt, petAnt, petAnt];
+
+var hasRock = ["none", "none", "none", "none", "none", "none"];
+
+//var stairs;
+var payButton;
+var rockButton;
+var fightButton;
+
+var blueDoorButton;
+var greenDoorButton;
+var redDoorButton;
+var yellowDoorButton;
 
 
 //var prevOrientation;
@@ -712,6 +723,10 @@ function DieResult() {
         case 29:
             TreasureResult();
             break;
+            
+        // case 32:
+        //     StairsResult();
+        //     break;
 
     }
     
@@ -1101,7 +1116,8 @@ function ShowQuestion() {
     
     if (questionUp == false) {
         
-        if (turnText.text == "Quest!" || turnText.text == "cave" || turnText.text == "exit") {
+        if (turnText.text == "Quest!" || turnText.text == "cave" || turnText.text == "exit" || 
+        turnText.text == "stairs") {
         
             
         questionPanel = this.game.add.sprite(300, 0, 'answersheet');
@@ -1130,8 +1146,8 @@ function ShowQuestion() {
         questionUp = true;
    
         } else if (turnText.text == "village" || turnText.text == "castle" || turnText.text == "forest"
-            || turnText.text == "witch" || turnText.text == "ants" || turnText.text == "stairs" || 
-            turnText.text == "dragon" || turnText.text == "pool" || turnText.text == "castle \nprison") {
+            || turnText.text == "witch" || turnText.text == "ants" || turnText.text == "dragon" || 
+            turnText.text == "pool" || turnText.text == "castle \nprison") {
     
             questionPanel = this.game.add.sprite(300, 0, 'answersheet');
             question = this.game.add.group();
@@ -1340,17 +1356,11 @@ function UpdateTurnText(box) {
                 backgroundAsset = "poolBackground";
                 break;
 
-            
-       
         }
    
     }
         
     }
-
-    
-    
-    
 }
 
 function ResetTurn() {
@@ -1452,12 +1462,9 @@ function CloudGenerator() {
             cloudClean[i].destroy();
             
         }
-        
-        
+      
     }
 
-    
-    
     for (var i = 0; i < 5; i++) {
  
         if (clouds.length < 5) {
@@ -1478,11 +1485,6 @@ function CloudGenerator() {
         }     
         
     }
-    
-
-    
-    
-
 }
 
 function DayNight() {
@@ -1942,12 +1944,26 @@ function GoToQuest() {
         question.addChild(monsterButton);
         question.addChild(treasureButton);
         question.addChild(caveButton);
- 
-    }
- 
-    else {
         
-        //backgroundAsset = turnText.text + "Background";
+        
+ 
+    } else if (turnText.text == "stairs") {
+        
+        turn = 3;
+        restButton = this.game.add.button(400, 200, restName, StartActionTimer, 2,1,0);
+        monsterButton = this.game.add.button(100, 400, "monsterButton", StartActionTimer, 2,1,0);
+        treasureButton = this.game.add.button(400, 400, "treasureButton", StartActionTimer, 2,1,0);
+        stairsButton = this.game.add.button(100, 200, "stairsButton", StartActionTimer, 2,1,0);
+        
+        question.addChild(restButton);
+        question.addChild(monsterButton);
+        question.addChild(treasureButton);
+        question.addChild(stairsButton);
+        
+        
+  
+    } else {
+
         timerBackground = this.game.add.sprite(45,200, backgroundAsset);
         
         question.add(timerBackground);
@@ -1992,27 +2008,15 @@ function GoToQuest() {
                 choiceText.setText("You found a bright blue pool.... \nRoll the die.");
                 turn = 25;
                 break;
-                
-            case "stairs":
-                choiceText.setText("You found the stairs to the 4 Doors.... \nRoll the die.");
-                turn = 26;
-                break;
-                
+
             case "castle \nprison":
                 choiceText.setText("You are free.  You may leave  \nnext turn.  Roll the die.");
                 turn = 19;
                 CreateSun();
                 break;
-                
-            
-       
         }
-        
-        
-        
     }
 
-    
     question.addChild(choiceText);
 }
 
@@ -2042,7 +2046,13 @@ function StartActionTimer(action) {
             buttons = 4;
             MakeCave();
             
-        
+        case stairsButton:
+            
+            choiceText.setText("You walk up the stairs...");
+            buttons = 4;
+            
+            RunDelay(MakeStairs, "none", 200);
+            RunDelay(MakeFourDoors, "none", 3000);
             break;
             
         
@@ -2056,6 +2066,12 @@ function StartActionTimer(action) {
     
     
     
+}
+
+function MakeStairs() {
+    backgroundAsset = "innerBackground";
+    timerBackground = this.game.add.sprite(45,200, backgroundAsset);
+    question.addChild(timerBackground);
 }
 
 function MakeCave() {
@@ -2091,6 +2107,119 @@ function MakeCave() {
             turn = 27;
         }
        
+}
+
+function MakeFourDoors() {
+
+    var getAttack = packList[currentPlayer - 1].getChildAt(3);
+    var getGold = packList[currentPlayer - 1].getChildAt(2);
+
+    turn = 32;
+        
+    choiceText.setText("Hello. If you want to open an door you must...");
+
+    if (parseInt(getAttack.text, 10) >= 12) {
+        
+        fightButton = this.game.add.button(100, 400, "monsterButton", StairsResult, this, 2,1,0);
+        question.addChild(fightButton);
+            
+    }
+    
+    if (parseInt(getGold.text,10) >= 12) {
+        
+        payButton = this.game.add.button(400, 400, "coin", StairsResult, this, 2,1,0);    
+        question.addChild(payButton);
+            
+    }
+    
+    if (hasRock[currentPlayer - 1] != "none") {
+        
+        rockButton = this.game.add.button(400, 200, "greenRockButton", StairsResult, this, 2,1,0);
+        question.addChild(rockButton);
+                
+    }
+    
+    if (parseInt(getAttack.text, 10) < 12 && parseInt(getGold.text, 10) < 12 && hasRock[currentPlayer - 1] == "none") {
+        console.log("hey nothing!!");
+        choiceText.setText("I'm sorry...you are not ready!");
+        turnText.setText(" turn \nover");
+        
+    }
+    
+    console.log("hey i'm at the end!!");
+}
+
+function StairsResult(choice) {
+
+    var getGold = packList[currentPlayer - 1].getChildAt(2);
+    
+    if (choice == payButton) {
+        
+        choiceText.setText("Thank You!!  Open any door you want!");
+        getGold = getGold.setText((parseInt(getGold.text, 10) - 12).toString());
+        CreateDoors("any");
+        
+    } else if (choice == fightButton) {
+        
+        choiceText.setText("Okay!  I love a good fight! \nGet Ready!");
+        turn = 4;
+        RunDelay(FightMonster, "none", 3000);
+        specialMonster = "watcher";
+        
+    } else {
+        
+        choiceText.setText("Yeah, a rock! Thanks! You can only open the door that matches your rock");
+        CreateDoors("rock");
+        DeleteInventory();
+    }
+    
+    fightButton.destroy();
+    payButton.destroy();
+    rockButton.destroy();
+
+}
+
+function CreateDoors(doors) {
+    
+    blueDoorButton = this.game.add.button(400, 200, "blueDoorButton", DoorResult, this, 2,1,0);
+    greenDoorButton = this.game.add.button(100, 400, "greenDoorButton", DoorResult, this, 2,1,0);
+    redDoorButton = this.game.add.button(400, 400, "redDoorButton", DoorResult, this, 2,1,0);
+    yellowDoorButton = this.game.add.button(100, 200, "yellowDoorButton", DoorResult, this, 2,1,0);
+    
+    question.addChild(blueDoorButton);
+    question.addChild(greenDoorButton);
+    question.addChild(redDoorButton);
+    question.addChild(yellowDoorButton);
+ 
+}
+
+function DoorResult(door) {
+    
+    if (door == blueDoorButton) {
+        
+        
+    } else if (door == greenDoorButton) {
+        
+        
+        
+    } else if (door == redDoorButton) {
+        
+        
+    } else {
+        
+        
+        
+    }
+    
+    blueDoorButton.destroy();
+    greenDoorButton.destroy();
+    redDoorButton.destroy();
+    yellowDoorButton.destroy();
+        
+        
+    
+    
+    
 }
 
 function ManageQuest(choice) {
@@ -2273,6 +2402,12 @@ function FightMonster() {
         choiceText.setText("The Ropasci Dragon is attacking you! \nRoll to fight! \nYou need a " + (monsterModifier + 1).toString() + " to win!!!" );
         
         
+    } else if (specialMonster == "watcher") {
+        
+        monsterModifier = 4;
+        choiceText.setText("The Watcher is attacking you! \nRoll to fight! \nYou need a " + (monsterModifier + 1).toString() + " to win!!!" );
+        
+        
     } else {
         
         choiceText.setText("A " + monster + " is attacking you! \nRoll to fight! \nYou need a " + (monsterModifier + 1).toString() + " to win!!!" );    
@@ -2290,6 +2425,10 @@ function FightMonster() {
     } else if (specialMonster == "ropasci") {
         
         enemy = this.game.add.sprite(150, 200, "dragon");    
+        
+    } else if (specialMonster == "watcher") {
+        
+        enemy = this.game.add.sprite(150, 200, "watcher");    
         
     } else {
     
@@ -2433,6 +2572,15 @@ function AttackResult() {
                         }
                         
                         break;
+                        
+                    case 'watcher':
+                        
+                        choiceText.setText("Wow!  You won!  You gain 2 power! Open any door you want!");
+                        getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 2).toString());
+                        specialMonster = "none";
+                        CreateDoors("any");
+                        
+                        break;
                 }
             }
         }
@@ -2443,8 +2591,8 @@ function CreateMagicButtons () {
     noMagicButton = this.game.add.button(100, 400, "noMagicButton", UseMagic, 2,1,0);
     useMagicButton = this.game.add.button(400, 400, "useMagicButton", UseMagic, 2,1,0);
     
-    question.add(noMagicButton);
-    question.add(useMagicButton);
+    question.addChild(noMagicButton);
+    question.addChild(useMagicButton);
     
 }
 
@@ -2543,12 +2691,13 @@ function AddInventory(choice) {
         if (isMagic == true) {
             
             emitterList[0].destroy();    
-            question.getChildAt(6).destroy();
+            //question.getChildAt(6).destroy();
+            displayItem.destroy();
             
         } else {
             
-            question.getChildAt(5).destroy();
-            
+            //question.getChildAt(5).destroy();
+            displayItem.destroy();
         }
   
     } else {
@@ -2574,6 +2723,13 @@ function AddInventory(choice) {
             inventory.scale.setTo(.25,.25);
             packList[currentPlayer - 1].add(inventory);
         }
+        
+        if (currentItem.includes("rock")) {
+            
+            hasRock[currentPlayer - 1] = currentItem;
+            
+        }
+        
     }
     
     
@@ -2881,9 +3037,9 @@ function VillageResult() {
             break;
             
         case 5:
-            choiceText.setText("A stranger gives you a glowing rock.  \nYou don't know what it does!?!");
-            DisplayItem("rock");
-            currentItem = "rock";
+            choiceText.setText("A stranger gives you a bright green rock.  You don't know what it does!?!");
+            DisplayItem("rockGreen");
+            currentItem = "rockGreen";
             break;
             
         case 6:
@@ -3092,10 +3248,10 @@ function PoolResult() {
             break;
             
         case 5:
-            choiceText.setText("You find a bright blue rock in the water.  \nYou don't know what it does!?!");
+            choiceText.setText("You find a bright blue rock in the water. You don't know what it does!?!");
             //add blue rock
-            DisplayItem("rock");
-            currentItem = "rock";
+            DisplayItem("rockBlue");
+            currentItem = "rockBlue";
             break;
             
         case 6:
@@ -3125,9 +3281,18 @@ function DragonResult() {
             break;
             
         case 2:
-            choiceText.setText("...wants a rock.  \nDo you have a rock?");
-            choice = "giverock";
-            Choice();
+              if (hasRock[currentPlayer - 1] != "none") {
+                
+                choiceText.setText("...wants a rock. The Ropasci says, 'Give me your rock?'");
+                choice = "giverock";
+                Choice();    
+                
+            } else {
+                
+                dieResult = getRandomInt(3,7);
+                DragonResult();
+                
+            }
             break;
             
         case 3:
@@ -3142,10 +3307,10 @@ function DragonResult() {
             break;
             
         case 5:
-            choiceText.setText("...gives you a bright red rock.  \nYou don't know what it does!?!");
+            choiceText.setText("...gives you a bright red rock. You don't know what it does!?!");
             //add red rock
-            DisplayItem("rock");
-            currentItem = "rock";
+            DisplayItem("rockRed");
+            currentItem = "rockRed";
             break;
             
         case 6:
@@ -3173,9 +3338,19 @@ function AntsResult() {
             break;
             
         case 2:
-            choiceText.setText("...wants a rock.  \nDo you have a rock?");
-            choice = "giverock";
-            Choice();
+            if (hasRock[currentPlayer - 1] != "none") {
+                
+                choiceText.setText("...wants a rock. The ants say, 'Give us your rock?'");
+                choice = "giverock";
+                Choice();    
+                
+            } else {
+                
+                dieResult = getRandomInt(3,7);
+                AntsResult();
+                
+            }
+            
             break;
             
         case 3:
@@ -3200,10 +3375,10 @@ function AntsResult() {
             break;
             
         case 5:
-            choiceText.setText("The ants give you a yellow rock.  \nYou don't know what it does!?!");
+            choiceText.setText("The ants give you a bright yellow rock. You don't know what it does!?!");
             //add yellow rock
-            DisplayItem("rock");
-            currentItem = "rock";
+            DisplayItem("rockYellow");
+            currentItem = "rockYellow";
             break;
             
         case 6:
@@ -3278,12 +3453,7 @@ function Choice() {
         case "robinhood":
             ActivateChoice(RobinHood);
             break;
-            
-        // case "frog":
-            
-        //     ActivateChoice(FrogChange);
-        //     break;
-            
+
         case "treasurechest":
             
             ActivateChoice(TreasureChest);
@@ -3808,7 +3978,22 @@ function PrisonBreakResult(yesNo) {
     
 }
 
-function GiveRock() {
+function GiveRock(yesNo) {
+    
+    if (yesNo == noButton) {
+        
+        choiceText.setText("Awww...okay. If you change your mind then come back here!");
+        turnText.setText(" turn \nover");
+        
+    } else {
+        
+        var getGold = packList[currentPlayer - 1].getChildAt(2);
+        
+        choiceText.setText("Great!  Here's 5 gold!");
+        getGold = getGold.setText((parseInt(getGold.text, 10) + 5).toString());
+        
+        
+    }
     
 }
 
