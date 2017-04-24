@@ -8,12 +8,12 @@
 //To Do: 
 //      Limit objects to certain classes
 //      Create world events      
-//      Add monster side effects
+//      Add vampire side effects
+//      Add cure explanation
 //      Add players turn to card and visual marker 
 //      Add victory point for beating the Kraken, Ropasci, Spiders, and Ants
 //      Fix grammar and feel of spider and ant fights
-//      Add penalty for entering mountain too early
-//      Add death conditions
+//      Add death conditions...and zombie conditions
 
 //Later:
 //      Music & Sound effects
@@ -162,10 +162,6 @@ var sun;
 var newSun;
 var timer;
 var timerGroup;
-
-//testing keys
-var key0;
-var key9;
 
 //movement testing keys
 var key1;
@@ -1932,7 +1928,7 @@ function GoToQuest() {
     
     if (hasCurse[currentPlayer - 1] == "werewolf" && dayNight == 2) {
         
-        choiceText.setText("It's nighttime and you are a werewolf!  You must go monster hunting!!")
+        choiceText.setText("It's nighttime and you are a werewolf!  You must go monster hunting!!");
         
         turn = 3;
         
