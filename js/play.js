@@ -7,16 +7,13 @@
 
 //To Do: 
 //      Limit objects to certain classes
-//      finish inner corners
-//      Add glowing rock mechanic
 //      Create world events      
 //      Add monster side effects
-//      Create Ant Pet
 //      Add players turn to card and visual marker 
-//      Add four door results
 //      Add victory point for beating the Kraken, Ropasci, Spiders, and Ants
 //      Fix grammar and feel of spider and ant fights
 //      Add penalty for entering mountain too early
+//      Add death conditions
 
 //Later:
 //      Music & Sound effects
@@ -225,6 +222,8 @@ var blueDoorButton;
 var greenDoorButton;
 var redDoorButton;
 var yellowDoorButton;
+
+var hasCurse = ["none", "none", "none", "none", "none", "none"];
 
 
 //var prevOrientation;
@@ -539,9 +538,23 @@ function CreateInnerBoard () {
 function ManageTurn () {
     
     turnManagerButton.inputEnabled = false;
+    var getLife = packList[currentPlayer - 1].getChildAt(4);
+    
     
     switch (turn) {
         case 0:
+            
+            if (hasCurse[currentPlayer - 1] == "zombie") {
+                
+                getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
+                
+                if (getLife == "0") {
+                    
+                    BecomeZombie();
+                    
+                }
+            }
+
             if (arrested[currentPlayer - 1] == true) {
                 
                 turnText.setText("castle \nprison");
@@ -724,9 +737,9 @@ function DieResult() {
             TreasureResult();
             break;
             
-        // case 32:
-        //     StairsResult();
-        //     break;
+        case 35:
+            CurseResult();
+            break;
 
     }
     
@@ -1916,7 +1929,35 @@ function GoToQuest() {
     
     choiceText = this.game.add.text(50, 50, "Great!  Here's 1 Gold. \nWhat now?", { font: "40px Arial", fill: "green", align: "center", wordWrap: true, wordWrapWidth: question.width - 50 });
     var restName = packList[currentPlayer - 1].getChildAt(5).text.slice(0, -2);
-
+    
+    if (hasCurse[currentPlayer - 1] == "werewolf" && dayNight == 2) {
+        
+        choiceText.setText("It's nighttime and you are a werewolf!  You must go monster hunting!!")
+        
+        turn = 3;
+        
+        restButton = this.game.add.button(250, 200, restName, StartActionTimer, 2,1,0);
+        monsterButton = this.game.add.button(100, 400, "monsterButton", StartActionTimer, 2,1,0);
+        treasureButton = this.game.add.button(380, 375, "treasureButton", StartActionTimer, 2,1,0);
+        
+        restButton.scale.setTo(1.5,1.5);
+        var zees = this.game.add.sprite(55, -20, "sleeping");
+        restButton.addChild(zees);
+        
+        restButton.input.enabled = false;
+        treasureButton.input.enabled = false;
+        
+        
+        question.addChild(restButton);
+        question.addChild(monsterButton);
+        question.addChild(treasureButton);
+     
+        question.addChild(choiceText);
+        
+        return;
+        
+    }
+    
     if (turnText.text === "Quest!") {
         turn = 3;
 
@@ -1940,6 +1981,10 @@ function GoToQuest() {
         treasureButton = this.game.add.button(400, 400, "treasureButton", StartActionTimer, 2,1,0);
         caveButton = this.game.add.button(100, 200, "caveButton", StartActionTimer, 2,1,0);
         
+        restButton.scale.setTo(1.5,1.5);
+        var zees = this.game.add.sprite(55, -20, "sleeping");
+        restButton.addChild(zees);
+        
         question.addChild(restButton);
         question.addChild(monsterButton);
         question.addChild(treasureButton);
@@ -1954,6 +1999,10 @@ function GoToQuest() {
         monsterButton = this.game.add.button(100, 400, "monsterButton", StartActionTimer, 2,1,0);
         treasureButton = this.game.add.button(400, 400, "treasureButton", StartActionTimer, 2,1,0);
         stairsButton = this.game.add.button(100, 200, "stairsButton", StartActionTimer, 2,1,0);
+        
+        restButton.scale.setTo(1.5,1.5);
+        var zees = this.game.add.sprite(55, -20, "sleeping");
+        restButton.addChild(zees);
         
         question.addChild(restButton);
         question.addChild(monsterButton);
@@ -2054,8 +2103,7 @@ function StartActionTimer(action) {
             RunDelay(MakeStairs, "none", 200);
             RunDelay(MakeFourDoors, "none", 3000);
             break;
-            
-        
+    
     }
     
     for (var i = 0; i < buttons; i++) {
@@ -2063,9 +2111,7 @@ function StartActionTimer(action) {
         question.getChildAt(1).destroy();
         
     }
-    
-    
-    
+   
 }
 
 function MakeStairs() {
@@ -2140,13 +2186,12 @@ function MakeFourDoors() {
     }
     
     if (parseInt(getAttack.text, 10) < 12 && parseInt(getGold.text, 10) < 12 && hasRock[currentPlayer - 1] == "none") {
-        console.log("hey nothing!!");
+ 
         choiceText.setText("I'm sorry...you are not ready!");
         turnText.setText(" turn \nover");
         
     }
-    
-    console.log("hey i'm at the end!!");
+
 }
 
 function StairsResult(choice) {
@@ -2173,10 +2218,25 @@ function StairsResult(choice) {
         DeleteInventory();
     }
     
-    fightButton.destroy();
-    payButton.destroy();
-    rockButton.destroy();
+    
+    if (typeof fightButton !== "undefined") {
+        
+        fightButton.destroy();
+        
+    }
+    
+     if (typeof payButton !== "undefined") {
+        
+        payButton.destroy();
+        
+    }
+    
+     if (typeof rockButton !== "undefined") {
 
+        rockButton.destroy();
+    }
+    
+    
 }
 
 function CreateDoors(doors) {
@@ -2323,6 +2383,8 @@ function TreasureHunt() {
 
 function FightMonster() {
     var monsterList;
+    var getAttack = parseInt(packList[currentPlayer - 1].getChildAt(3), 10);
+    var innerOuter = boardLevel[currentPlayer - 1];
     
     if (dayNight == 1) {
     
@@ -2350,14 +2412,33 @@ function FightMonster() {
     
     
     if (reroll == false && specialMonster == "none") {
-
+        
+        if (getAttack < 8 && innerOuter == 2) {
+            
+            monsterModifier = getRandomInt(3,5);
+            
+        } else {
+            
+            monsterModifier = getRandomInt(2, 4);
+            
+        }
         monster = monsterList[pickMonster];
-        monsterModifier = getRandomInt(2,4);
+        
  
     } else if (reroll == false && specialMonster != "none") {
         
+        if (getAttack < 8 && innerOuter == 2) {
+            
+            monsterModifier = getRandomInt(3,5);
+            
+        } else {
+            
+            monsterModifier = getRandomInt(2, 4);
+            
+        }
+        
         monster = specialMonster;
-        monsterModifier = getRandomInt(2,4);
+        
         
     }
     
@@ -2485,15 +2566,33 @@ function AttackResult() {
                     choiceText.setText("Uggghh! The " + monster + " won. \nLose 1 life.");
                     getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
                     turn = 3;
-                    turnText.setText("turn \nover");
+                    
+                    if (monster == "zombie" || monster == "vampire" || monster == "thief" ||
+                        monster == "werewolf") {
+                            
+                            if (hasCurse[currentPlayer - 1] == "none") {
+                                
+                                choiceText.setText("Uggghh! The " + monster + " won. \nLose 1 life.  And....");
+                            
+                                RunDelay(MonsterCurse, "none", 3000);
+                                    
+                            } else {
+                                
+                                choiceText.setText("Uggghh! The " + monster + " won. \nLose 1 life. You can only have 1 curse.");
+                                
+                            }
+                            
+                            
+                    } else {
+                        
+                        turnText.setText("turn \nover");
+                            
+                    }
+                    
                     specialMonster = "none";
                 }
                     
             }
-            
-           
-            
-           
         }
         else {
             
@@ -2584,6 +2683,86 @@ function AttackResult() {
                 }
             }
         }
+}
+
+function MonsterCurse() {
+    
+    var getGold = packList[currentPlayer - 1].getChildAt(2);
+    
+    
+    switch (monster) {
+        
+        case "thief": 
+            choiceText.setText("...the thief steals 1 gold!");
+            getGold = getGold.setText((parseInt(getGold.text, 10) - 1).toString());
+            break;
+            
+        case "vampire":
+            
+            choiceText.setText("Roll to see if you're cursed! \n5 or 6 and you become cursed!");
+            turn = 35;
+            //GiveCurse();
+            break;
+            
+        case "werewolf":
+            
+            choiceText.setText("Roll to see if you're cursed! \n5 or 6 and you become cursed!");
+            turn = 35;
+            //GiveCurse();
+            
+            break;
+            
+        case "zombie":
+            
+            choiceText.setText("Roll to see if you're cursed! \n5 or 6 and you become cursed!");
+            turn = 35;
+            //GiveCurse();
+            
+            break;
+        
+        
+    }
+    
+    
+}
+
+function CurseResult() {
+    
+
+    if (dieResult > 4) {
+        
+        switch (monster) {
+        
+        case 'vampire':
+            choiceText.setText("Cursed!  When you lose a fight you lose 2 life...but, if you win gain 1 life");
+            hasCurse[currentPlayer - 1] = "vampire";
+            break;
+            
+        case 'werewolf':
+            
+            choiceText.setText("Cursed!  At night, you must always fight a monster!");
+            hasCurse[currentPlayer - 1] = "werewolf";
+            
+            break;
+            
+        case 'zombie':
+            
+            choiceText.setText("Cursed!  Every turn you lose 1 life.  At 0 life you become a zombie!");
+            hasCurse[currentPlayer - 1] = "zombie";
+                    
+            break;
+        
+        
+        }
+ 
+    } else {
+        
+        choiceText.setText("You're safe this time!");
+        turnText.setText(" turn \nover");
+        
+    }
+
+ 
 }
 
 function CreateMagicButtons () {
@@ -3398,7 +3577,7 @@ function AntsResult() {
 //Corner Management
 function Portal() {
     
-    var event = getComputedStyle(0,4);
+    var event = getRandomInt(0,4);
     
     switch (event) {
         case 0:
@@ -3410,11 +3589,12 @@ function Portal() {
         case 1:
             choiceText.setText("You fall down a hole!  \nWhere are you?");
             Hole();
+            turnText.setText(" turn \nover");
             break;
             
         case 2:
-            choiceText.setText("You find a sleeping monster!  \nWhere are you?");
-            FightMonster();
+            choiceText.setText("You find a sleeping monster!  \nGet Ready!!");
+            RunDelay(FightMonster, "none", 3000);
             break;
         
         
@@ -3469,6 +3649,11 @@ function Choice() {
             ActivateChoice(FairyGame);
             break;
             
+        case "portal":
+            
+            ActivateChoice(Portal);
+            break;
+        
         case "dragongame":
             
             ActivateChoice(DragonGame);
@@ -4023,6 +4208,13 @@ function FightTroll() {
     turn = 4;
     specialMonster = "troll";
     FightMonster();
+}
+
+function BecomeZombie() {
+    
+    
+    
+    
 }
 
 //***************Tools
