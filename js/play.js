@@ -221,6 +221,7 @@ var blueDoorButton;
 var greenDoorButton;
 var redDoorButton;
 var yellowDoorButton;
+var doorChoice;
 
 var hasCurse = ["none", "none", "none", "none", "none", "none"];
 
@@ -1675,7 +1676,7 @@ function CreateQuestion(puzzle) {
             
         case 1:
             qType = "Answer the Question";
-            
+            1
             var questionMark = [];
             
             for (var i = 0; i < questionList.length; i++) {
@@ -2327,7 +2328,7 @@ function DoorResult(door) {
         //switch life
         
         
-    } else {
+    } else if (door == yellowDoorButton) {
         
         choiceText.setText("This the Thief Door...you steal 5 gold from any player.");
         choice = "yellow";
@@ -2338,7 +2339,7 @@ function DoorResult(door) {
     }
     
     
-    RunDelay(ChoosePlayer, choice, 3000 );
+    //RunDelay(ChoosePlayer, choice, 3000 );
     
     
     blueDoorButton.destroy();
@@ -2354,6 +2355,8 @@ function DoorResult(door) {
 
 function ChoosePlayer(choice) {
     
+    doorChoice = choice;
+    
     var buttonX = 100;
     var buttonY = 200;
 
@@ -2362,10 +2365,10 @@ function ChoosePlayer(choice) {
         
         var getRace = packList[i].getChildAt(5).text.slice(0, -2);
         
-        playerButtons[i] = this.game.add.button(buttonX, buttonY, getRace, ChosenPlayer, i, choice, 2,1,0);
-        
+        var setI = i;
+        playerButtons[i]= this.game.add.button(buttonX, buttonY, getRace, ChosenPlayer, this);		
         question.add(playerButtons[i]);
-        
+        console.log("i = " + i);
         buttonX += 150;
         
         if (buttonX  > 450) {
@@ -2393,26 +2396,43 @@ function ChoosePlayer(choice) {
     
 }
 
-function ChosenPlayer(chosenPlayer, choice) {
+function ChosenPlayer(chosenPlayer) {
+    
+    
+    var getNumber;
+    
+    for (var i = 0; i < playerButtons.length; i++) {
+        
+        if (chosenPlayer == playerButtons[i]) {
+            
+            getNumber = i;
+            
+        }
+  
+    }
+    
+    console.log(getNumber);
     
     var getLifeCurrent = packList[currentPlayer - 1].getChildAt(4);
     var getAttackCurrent = packList[currentPlayer - 1].getChildAt(3);
     var getGoldCurrent = packList[currentPlayer - 1].getChildAt(2);
     
-    var getLifeOther = packList[chosenPlayer].getChildAt(4);
-    var getAttackOther = packList[chosenPlayer].getChildAt(3);
-    var getGoldOther = packList[chosenPlayer].getChildAt(2);
+    var getLifeOther = packList[getNumber].getChildAt(4);
+    var getAttackOther = packList[getNumber].getChildAt(3);
+    var getGoldOther = packList[getNumber].getChildAt(2);
     
     
-    switch (choice) {
+    switch (doorChoice) {
+        
         case "blue":
+            console.log("blue is in");
+            var holdValue = getAttackCurrent.text;
+            console.log("hv before = " + holdValue);
+            getAttackCurrent = getAttackCurrent.setText((parseInt(getAttackOther.text, 10)).toString());
+            console.log("hv after = " + holdValue);
+            getAttackOther = getAttackOther.setText((parseInt(holdValue, 10)).toString());
             
-            var holdValue = getAttackCurrent;
-            
-            getAttackCurrent = getAttackOther.setText((parseInt(getAttackOther.text, 10)).toString());
-            
-            getAttackOther = holdValue.setText((parseInt(holdValue.text, 10)).toString());
-            
+            //holdValue = 0;
             break;
         
         case "green":
@@ -2429,7 +2449,7 @@ function ChosenPlayer(chosenPlayer, choice) {
 
     }
     
-    
+  
 }
 
 function ManageQuest(choice) {
