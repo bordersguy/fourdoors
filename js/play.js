@@ -14,11 +14,14 @@
 //      Add victory point for beating the Kraken, Ropasci, Spiders, and Ants
 //      Fix grammar and feel of spider and ant fights
 //      Add death conditions...and zombie conditions
+//      Move ShowAnswer on FairyGame....maybe other games too
+//      Add code to separate questions from statements
 
 //Later:
 //      Music & Sound effects
 //      Polish 
 //      question input
+//      tidy up when keyboard input is viable
 
 var c1;
 var c2;
@@ -221,6 +224,13 @@ var yellowDoorButton;
 
 var hasCurse = ["none", "none", "none", "none", "none", "none"];
 
+var player1Button;
+var player2Button;
+var player3Button;
+var player4Button;
+var player5Button;
+var player6Button;
+var playerButtons = [player1Button, player2Button, player3Button, player4Button, player5Button, player6Button];
 
 //var prevOrientation;
 
@@ -353,7 +363,9 @@ create: function () {
 
 function KeyMove(number) {
     
-    if (questionUp == false) {
+    if (questionUp == false && turnText.text !== "move") {
+        
+        turn = 1;
         
         switch (number) {
         case key1:
@@ -578,6 +590,7 @@ function ManageTurn () {
             break;
             
         case 1:
+            
             UpdateTurnText(updatePos);
             turn = 2;
             break;
@@ -662,7 +675,13 @@ function DieResult() {
     switch (turn) {
         //turn start
         case 1:
-             CreateMovementToken(dieResult);
+             
+             if (turnText.text != "move") {
+             
+                CreateMovementToken(dieResult);    
+                 
+             }
+             
         
             //This deletes the question after a movement reroll from a quest.
             if (reroll == true && questionUp == true) {
@@ -1121,7 +1140,15 @@ function CreateToken(player) {
 }
 
 function ShowQuestion() {
-
+    
+    
+    //this is just a temporary fix    
+     if (typeof sun !== "undefined") {
+        
+        sun.destroy();
+        
+    }
+    
     
     if (questionUp == false) {
         
@@ -1585,7 +1612,7 @@ function GetQuestion() {
                    "What grade are you in?",
                    "May I go to the bathroom?",
                    "Can you come to my party?",
-                   "My favorite food is cheese pizza!"];
+                   "What's your favorite food?"];
                    
     vocabularyList = ["beautiful", "nickname", "second", "headache", "stomachache",
                       "medicine", "always", "because", "interesting", "February",
@@ -1924,6 +1951,7 @@ function ShowAnswer(argument) {
 function GoToQuest() {
     
     choiceText = this.game.add.text(50, 50, "Great!  Here's 1 Gold. \nWhat now?", { font: "40px Arial", fill: "green", align: "center", wordWrap: true, wordWrapWidth: question.width - 50 });
+    
     var restName = packList[currentPlayer - 1].getChildAt(5).text.slice(0, -2);
     
     if (hasCurse[currentPlayer - 1] == "werewolf" && dayNight == 2) {
@@ -1950,7 +1978,7 @@ function GoToQuest() {
      
         question.addChild(choiceText);
         
-        return;
+        
         
     }
     
@@ -1969,8 +1997,10 @@ function GoToQuest() {
         question.addChild(monsterButton);
         question.addChild(treasureButton);
         
-    } else if (turnText.text == "cave" || turnText.text == "exit") {
         
+        
+    } else if (turnText.text == "cave" || turnText.text == "exit") {
+        console.log("text == cave");
         turn = 3;
         restButton = this.game.add.button(400, 200, restName, StartActionTimer, 2,1,0);
         monsterButton = this.game.add.button(100, 400, "monsterButton", StartActionTimer, 2,1,0);
@@ -1989,7 +2019,7 @@ function GoToQuest() {
         
  
     } else if (turnText.text == "stairs") {
-        
+        console.log("text = stairs");
         turn = 3;
         restButton = this.game.add.button(400, 200, restName, StartActionTimer, 2,1,0);
         monsterButton = this.game.add.button(100, 400, "monsterButton", StartActionTimer, 2,1,0);
@@ -2012,7 +2042,7 @@ function GoToQuest() {
         timerBackground = this.game.add.sprite(45,200, backgroundAsset);
         
         question.add(timerBackground);
-        
+        question.addChild(choiceText);
         switch (turnText.text) {
             
             case "village":
@@ -2090,9 +2120,11 @@ function StartActionTimer(action) {
             choiceText.setText("You walk to the cave...");
             buttons = 4;
             MakeCave();
+            console.log("caveButton called");
+            break;
             
         case stairsButton:
-            
+            console.log("stairsButton called");
             choiceText.setText("You walk up the stairs...");
             buttons = 4;
             
@@ -2131,15 +2163,6 @@ function MakeCave() {
         CreateSun();
         StartSun();
         
-        RollDie();
-        timer = this.game.time.create(false);
-        //var actionTime = Math.floor(((Math.random() * 3) + 3) * 1000);
-        timer.add(rollTime, StopSun, this);
-        timer.start();
-        
-        question.add(cave);
-        
-        
         if (boardLevel[currentPlayer - 1] == 1) {
             
             turn = 22;
@@ -2149,6 +2172,17 @@ function MakeCave() {
             turn = 27;
         }
        
+        
+        RollDie();
+        timer = this.game.time.create(false);
+        //var actionTime = Math.floor(((Math.random() * 3) + 3) * 1000);
+        timer.add(rollTime, StopSun, this);
+        timer.start();
+        
+        question.add(cave);
+        
+        
+        
 }
 
 function MakeFourDoors() {
@@ -2251,21 +2285,43 @@ function CreateDoors(doors) {
 
 function DoorResult(door) {
     
+    var choice;
+    
     if (door == blueDoorButton) {
         
+        choiceText.setText("This is Balance Door...switch power with any player");
+        choice = "blue";
+        ChoosePlayer(choice);
+        //switch power
         
     } else if (door == greenDoorButton) {
         
+        choiceText.setText("This is the Random door....let's see what happens! Roll the die!");
+        choice = "green";
+        //switch random
         
         
     } else if (door == redDoorButton) {
         
+        choiceText.setText("This is the Vampire Door...switch life with any player.");
+        choice = "red";
+        ChoosePlayer(choice);
+        //switch life
+        
         
     } else {
         
+        choiceText.setText("This the Thief Door...you steal 5 gold from any player.");
+        choice = "yellow";
+        ChoosePlayer(choice);
+        //switch gold
         
         
     }
+    
+    
+    RunDelay(ChoosePlayer, choice, 3000 );
+    
     
     blueDoorButton.destroy();
     greenDoorButton.destroy();
@@ -2274,6 +2330,86 @@ function DoorResult(door) {
         
         
     
+    
+    
+}
+
+function ChoosePlayer(choice) {
+    
+    var buttonX = 100;
+    var buttonY = 200;
+
+    
+    for (var i = 0; i < totalPlayers; i++) {
+        
+        var getRace = packList[i].getChildAt(5).text.slice(0, -2);
+        
+        playerButtons[i] = this.game.add.button(buttonX, buttonY, getRace, ChosenPlayer, i, choice, 2,1,0);
+        
+        question.add(playerButtons[i]);
+        
+        buttonX += 150;
+        
+        if (buttonX  > 450) {
+            
+            buttonX = 100;
+            
+            if (buttonY == 200) {
+                
+                buttonY = 400;
+                
+            } else if (buttonY == 400) {
+                
+                buttonY = 200;
+                
+            }
+            
+        }
+        
+        
+        
+    }
+    
+
+    
+    
+}
+
+function ChosenPlayer(chosenPlayer, choice) {
+    
+    var getLifeCurrent = packList[currentPlayer - 1].getChildAt(4);
+    var getAttackCurrent = packList[currentPlayer - 1].getChildAt(3);
+    var getGoldCurrent = packList[currentPlayer - 1].getChildAt(2);
+    
+    var getLifeOther = packList[chosenPlayer].getChildAt(4);
+    var getAttackOther = packList[chosenPlayer].getChildAt(3);
+    var getGoldOther = packList[chosenPlayer].getChildAt(2);
+    
+    
+    switch (choice) {
+        case "blue":
+            
+            var holdValue = getAttackCurrent;
+            
+            getAttackCurrent = getAttackOther.setText((parseInt(getAttackOther.text, 10)).toString());
+            
+            getAttackOther = holdValue.setText((parseInt(holdValue.text, 10)).toString());
+            
+            break;
+        
+        case "green":
+            // code
+            break;
+        
+        case "red":
+            // code
+            break;
+            
+        case "yellow":
+            // code
+            break;
+
+    }
     
     
 }
@@ -2517,6 +2653,7 @@ function FightMonster() {
 }
 
 function AttackResult() {
+    
     var getLife = packList[currentPlayer - 1].getChildAt(4);
     var getAttack = packList[currentPlayer - 1].getChildAt(3);
     //dieResult = dice.animations.currentAnim.frame + 1;
@@ -2639,6 +2776,7 @@ function AttackResult() {
                         
                             choiceText.setText("Wow!  You won!  You get 1 attack and you're in the mountain!");
                             getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 1).toString());
+                            boardLevel[currentPlayer - 1] = 2;
                             specialMonster = "none";
                             turn = 3;
                             turnText.setText("turn \nover");
@@ -3134,47 +3272,7 @@ function TunnelResult() {
         choiceText.setText("Going out is always easy!");
         boardLevel[currentPlayer - 1] = 1;
         LevelSwitch("out15");
-        
-        // switch (dieResult) {
-        //     case 1:
-        //         choiceText.setText("Going out is always easy!");
-        //         boardLevel[currentPlayer - 1] = 1;
-        //         LevelSwitch("out15");
-        //         break;
-                
-        //     case 2:
-        //         choiceText.setText("You found a way out!");
-        //         boardLevel[currentPlayer - 1] = 1;
-        //         LevelSwitch("out15");
-        //         break;
-            
-        //     case 3:
-        //         choiceText.setText("You found a way out!");
-        //         boardLevel[currentPlayer - 1] = 1;
-        //         LevelSwitch("out15");
-        //         break;
-                
-        //     case 4:
-        //         choiceText.setText("You found a way out!");
-        //         boardLevel[currentPlayer - 1] = 1;
-        //         LevelSwitch("out15");
-        //         break;
-                
-        //     case 5:
-        //         choiceText.setText("You found a way out!");
-        //         boardLevel[currentPlayer - 1] = 1;
-        //         LevelSwitch("out15");
-        //         break;
-                
-        //     case 6:
-        //         choiceText.setText("You found a way in!");
-        //         boardLevel[currentPlayer - 1] = 2;
-        //         LevelSwitch("in10");
-        //         break;
-         
-        
-       
-        
+
     }
 
 }
@@ -3365,7 +3463,8 @@ function ForestResult() {
             
         case 3:
             choiceText.setText("Oh no! A monster found you!");
-            FightMonster();
+            turn = 4;
+            RunDelay(FightMonster, "none", 3000);
             break;
             
         case 4:
@@ -3589,7 +3688,8 @@ function Portal() {
             break;
             
         case 2:
-            choiceText.setText("You find a sleeping monster!  \nGet Ready!!");
+            turn = 4;
+            choiceText.setText("Something is sleeping here!  \nGet Ready!!");
             RunDelay(FightMonster, "none", 3000);
             break;
         
@@ -4197,7 +4297,8 @@ function PayTroll(yesNo) {
         turnText.setText("turn \nover");
     }
     
-    
+    yesButton.destroy();
+    noButton.destroy();
 }
 
 function FightTroll() {
