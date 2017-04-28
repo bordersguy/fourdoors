@@ -1612,7 +1612,12 @@ function GetQuestion() {
                    "What grade are you in?",
                    "May I go to the bathroom?",
                    "Can you come to my party?",
-                   "What's your favorite food?"];
+                   "What's your favorite food?",
+                   "How do you spell your name?",
+                   "What's the matter?", "Why are angry?", "Why are sad?",
+                   "Why are you worried?", "Because I have a math test.",
+                   "I have a headache.", "When is your birthday?", "Go to bed and get some rest.",
+                   "Don't worry.", "I'll help you."];
                    
     vocabularyList = ["beautiful", "nickname", "second", "headache", "stomachache",
                       "medicine", "always", "because", "interesting", "February",
@@ -1670,7 +1675,20 @@ function CreateQuestion(puzzle) {
             
         case 1:
             qType = "Answer the Question";
-            getQuestion = questionList[getRandomInt(0, questionList.length)];
+            
+            var questionMark = [];
+            
+            for (var i = 0; i < questionList.length; i++) {
+                
+                if (questionList[i].slice(-1) == "?") {
+                    
+                    questionMark.push(questionList[i]);
+                    
+                }
+                
+            }
+            
+            getQuestion = questionMark[getRandomInt(0, questionMark.length)];
             answer = "Your teacher will check your answer.";
 
             break;
