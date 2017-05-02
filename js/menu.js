@@ -15,6 +15,7 @@ var settingsGroup;
 
 var menuState = {
 
+ 
     create: function () {
       
     localStorage.clear();

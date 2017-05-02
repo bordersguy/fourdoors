@@ -756,6 +756,10 @@ function DieResult() {
         case 35:
             CurseResult();
             break;
+            
+        case 36:
+            GreenDoorResult();
+            break;
 
     }
     
@@ -1615,7 +1619,7 @@ function GetQuestion() {
                    "Can you come to my party?",
                    "What's your favorite food?",
                    "How do you spell your name?",
-                   "What's the matter?", "Why are angry?", "Why are sad?",
+                   "What's the matter?", "Why are angry?", "Why are you sad?",
                    "Why are you worried?", "Because I have a math test.",
                    "I have a headache.", "When is your birthday?", "Go to bed and get some rest.",
                    "Don't worry.", "I'll help you."];
@@ -1973,6 +1977,16 @@ function GoToQuest() {
     
     var restName = packList[currentPlayer - 1].getChildAt(5).text.slice(0, -2);
     
+    var buttonStyle = { font: "25px Impact", fill: "black", 
+            wordWrap: false, align: "center", backgroundColor: "transparent" };
+     
+    var restButtonText;
+    var monsterButtonText;
+    var treasureButtonText;
+    var otherButtonText;
+    
+    var zees;
+    
     if (hasCurse[currentPlayer - 1] == "werewolf" && dayNight == 2) {
         
         choiceText.setText("It's nighttime and you are a werewolf!  You must go monster hunting!!");
@@ -1980,11 +1994,19 @@ function GoToQuest() {
         turn = 3;
         
         restButton = this.game.add.button(250, 200, restName, StartActionTimer, 2,1,0);
+        restButtonText = this.game.add.text(0, 70, "Take a Rest", buttonStyle);   
+        restButton.addChild(restButtonText);
+        
         monsterButton = this.game.add.button(100, 400, "monsterButton", StartActionTimer, 2,1,0);
+        monsterButtonText = this.game.add.text(0, 105, "Monster Hunt", buttonStyle);   
+        monsterButton.addChild(monsterButtonText);
+        
         treasureButton = this.game.add.button(380, 375, "treasureButton", StartActionTimer, 2,1,0);
+        treasureButtonText = this.game.add.text(0, 120, "Treasure Hunt", buttonStyle);   
+        treasureButton.addChild(treasureButtonText);
         
         restButton.scale.setTo(1.5,1.5);
-        var zees = this.game.add.sprite(55, -20, "sleeping");
+        zees = this.game.add.sprite(55, -20, "sleeping");
         restButton.addChild(zees);
         
         restButton.input.enabled = false;
@@ -1997,7 +2019,7 @@ function GoToQuest() {
      
         question.addChild(choiceText);
         
-        
+        return;
         
     }
     
@@ -2005,13 +2027,21 @@ function GoToQuest() {
         turn = 3;
 
         restButton = this.game.add.button(250, 200, restName, StartActionTimer, 2,1,0);
+        restButtonText = this.game.add.text(0, 70, "Take a Rest", buttonStyle);   
+        restButton.addChild(restButtonText);
+        
         monsterButton = this.game.add.button(100, 400, "monsterButton", StartActionTimer, 2,1,0);
+        monsterButtonText = this.game.add.text(0, 105, "Monster Hunt", buttonStyle);   
+        monsterButton.addChild(monsterButtonText);
+        
         treasureButton = this.game.add.button(380, 375, "treasureButton", StartActionTimer, 2,1,0);
+        treasureButtonText = this.game.add.text(0, 120, "Treasure Hunt", buttonStyle);   
+        treasureButton.addChild(treasureButtonText);
         
         restButton.scale.setTo(1.5,1.5);
-        var zees = this.game.add.sprite(55, -20, "sleeping");
+        zees = this.game.add.sprite(55, -20, "sleeping");
         restButton.addChild(zees);
-        
+
         question.addChild(restButton);
         question.addChild(monsterButton);
         question.addChild(treasureButton);
@@ -2021,13 +2051,36 @@ function GoToQuest() {
     } else if (turnText.text == "cave" || turnText.text == "exit") {
         console.log("text == cave");
         turn = 3;
+        var caveText;
+        
+        if (turnText.text == "cave") {
+            
+            caveText = "Enter the Mountain";
+            
+        } else if (turnText.text == "exit") {
+            
+            caveText = "Exit the Mountain";
+            
+        }
+        
         restButton = this.game.add.button(400, 200, restName, StartActionTimer, 2,1,0);
+        restButtonText = this.game.add.text(0, 70, "Take a Rest", buttonStyle);   
+        restButton.addChild(restButtonText);
+        
         monsterButton = this.game.add.button(100, 400, "monsterButton", StartActionTimer, 2,1,0);
+        monsterButtonText = this.game.add.text(0, 105, "Monster Hunt", buttonStyle);   
+        monsterButton.addChild(monsterButtonText);
+        
         treasureButton = this.game.add.button(400, 400, "treasureButton", StartActionTimer, 2,1,0);
+        treasureButtonText = this.game.add.text(0, 120, "Treasure Hunt", buttonStyle);   
+        treasureButton.addChild(treasureButtonText);
+
         caveButton = this.game.add.button(100, 200, "caveButton", StartActionTimer, 2,1,0);
+        otherButtonText = this.game.add.text(0, 105, caveText, buttonStyle);   
+        caveButton.addChild(otherButtonText);
         
         restButton.scale.setTo(1.5,1.5);
-        var zees = this.game.add.sprite(55, -20, "sleeping");
+        zees = this.game.add.sprite(55, -20, "sleeping");
         restButton.addChild(zees);
         
         question.addChild(restButton);
@@ -2040,13 +2093,26 @@ function GoToQuest() {
     } else if (turnText.text == "stairs") {
         console.log("text = stairs");
         turn = 3;
+        
         restButton = this.game.add.button(400, 200, restName, StartActionTimer, 2,1,0);
+        restButtonText = this.game.add.text(0, 70, "Take a Rest", buttonStyle);   
+        restButton.addChild(restButtonText);
+        
         monsterButton = this.game.add.button(100, 400, "monsterButton", StartActionTimer, 2,1,0);
+        monsterButtonText = this.game.add.text(0, 105, "Monster Hunt", buttonStyle);   
+        monsterButton.addChild(monsterButtonText);
+        
         treasureButton = this.game.add.button(400, 400, "treasureButton", StartActionTimer, 2,1,0);
+        treasureButtonText = this.game.add.text(0, 120, "Treasure Hunt", buttonStyle);   
+        treasureButton.addChild(treasureButtonText);
+
         stairsButton = this.game.add.button(100, 200, "stairsButton", StartActionTimer, 2,1,0);
+        otherButtonText = this.game.add.text(0, 105, "Go Up The Stairs", buttonStyle);   
+        stairsButton.addChild(otherButtonText);
+
         
         restButton.scale.setTo(1.5,1.5);
-        var zees = this.game.add.sprite(55, -20, "sleeping");
+        zees = this.game.add.sprite(55, -20, "sleeping");
         restButton.addChild(zees);
         
         question.addChild(restButton);
@@ -2210,17 +2276,22 @@ function MakeFourDoors() {
     var getGold = packList[currentPlayer - 1].getChildAt(2);
 
     turn = 32;
+    
+     //var attackStyle = { font: "25px Impact", fill: "white", 
+       //         wordWrap: true, align: "center", backgroundColor: "transparent" };
+       //fightButtonText = this.game.add.text(98, 118, attack, attackStyle);        
         
     choiceText.setText("Hello. If you want to open an door you must...");
 
-    if (parseInt(getAttack.text, 10) >= 12) {
+    if (parseInt(getAttack.text, 10) >= 10) {
         
         fightButton = this.game.add.button(100, 400, "monsterButton", StairsResult, this, 2,1,0);
         question.addChild(fightButton);
-            
+        
+        //fightButtonText = this.game.add.text(98, 118, attack, attackStyle);            
     }
     
-    if (parseInt(getGold.text,10) >= 12) {
+    if (parseInt(getGold.text,10) >= 10) {
         
         payButton = this.game.add.button(400, 400, "coin", StairsResult, this, 2,1,0);    
         question.addChild(payButton);
@@ -2234,7 +2305,7 @@ function MakeFourDoors() {
                 
     }
     
-    if (parseInt(getAttack.text, 10) < 12 && parseInt(getGold.text, 10) < 12 && hasRock[currentPlayer - 1] == "none") {
+    if (parseInt(getAttack.text, 10) < 10 && parseInt(getGold.text, 10) < 10 && hasRock[currentPlayer - 1] == "none") {
  
         choiceText.setText("I'm sorry...you are not ready!");
         turnText.setText(" turn \nover");
@@ -2250,7 +2321,7 @@ function StairsResult(choice) {
     if (choice == payButton) {
         
         choiceText.setText("Thank You!!  Open any door you want!");
-        getGold = getGold.setText((parseInt(getGold.text, 10) - 12).toString());
+        getGold = getGold.setText((parseInt(getGold.text, 10) - 5).toString());
         CreateDoors("any");
         
     } else if (choice == fightButton) {
@@ -2317,6 +2388,8 @@ function DoorResult(door) {
         
         choiceText.setText("This is the Random door....let's see what happens! Roll the die!");
         choice = "green";
+        turn = 36;
+        RollDie();
         //switch random
         
         
@@ -2346,9 +2419,32 @@ function DoorResult(door) {
     greenDoorButton.destroy();
     redDoorButton.destroy();
     yellowDoorButton.destroy();
-        
-        
+  
+}
+
+function GreenDoorResult() {
     
+    if (dieResult < 3) {
+        
+        choiceText.setText("Vampire Power!  You must switch life with another player!");
+        
+        ChoosePlayer("red");
+        
+    } else if (dieResult > 2 && dieResult < 5) {
+        
+        choiceText.setText("Balance Power!  You must switch power with another player!");
+        
+        ChoosePlayer("blue");
+        
+    } else if (dieResult > 4) {
+        
+        choiceText.setText("Thief Power! You must steal 5 gold from another player!");
+        
+        ChoosePlayer("yellow");
+        
+    }
+    
+    ChoosePlayer(doorChoice);
     
     
 }
@@ -2365,10 +2461,10 @@ function ChoosePlayer(choice) {
         
         var getRace = packList[i].getChildAt(5).text.slice(0, -2);
         
-        var setI = i;
+       // var setI = i;
         playerButtons[i]= this.game.add.button(buttonX, buttonY, getRace, ChosenPlayer, this);		
         question.add(playerButtons[i]);
-        console.log("i = " + i);
+        //console.log("i = " + i);
         buttonX += 150;
         
         if (buttonX  > 450) {
@@ -2386,14 +2482,9 @@ function ChoosePlayer(choice) {
             }
             
         }
-        
-        
-        
+ 
     }
-    
 
-    
-    
 }
 
 function ChosenPlayer(chosenPlayer) {
@@ -2421,32 +2512,41 @@ function ChosenPlayer(chosenPlayer) {
     var getAttackOther = packList[getNumber].getChildAt(3);
     var getGoldOther = packList[getNumber].getChildAt(2);
     
+    var holdValue;
     
-    switch (doorChoice) {
+    if (doorChoice == "blue")  {
         
-        case "blue":
-            console.log("blue is in");
-            var holdValue = getAttackCurrent.text;
-            console.log("hv before = " + holdValue);
-            getAttackCurrent = getAttackCurrent.setText((parseInt(getAttackOther.text, 10)).toString());
-            console.log("hv after = " + holdValue);
-            getAttackOther = getAttackOther.setText((parseInt(holdValue, 10)).toString());
-            
-            //holdValue = 0;
-            break;
-        
-        case "green":
-            // code
-            break;
-        
-        case "red":
-            // code
-            break;
-            
-        case "yellow":
-            // code
-            break;
+        holdValue = getAttackCurrent.text;
 
+        getAttackCurrent = getAttackCurrent.setText((parseInt(getAttackOther.text, 10)).toString());
+
+        getAttackOther = getAttackOther.setText((parseInt(holdValue, 10)).toString());
+        
+    } else if (doorChoice == "red") {
+        
+        
+            holdValue = getLifeCurrent.text;
+        
+            getLifeCurrent = getLifeCurrent.setText((parseInt(getLifeOther.text, 10)).toString());
+
+            getLifeOther = getLifeOther.setText((parseInt(holdValue, 10)).toString());
+        
+        
+    } else if (doorChoice == "yellow") {
+        
+        
+            getGoldCurrent = getGoldCurrent.setText((parseInt(getGoldCurrent.text, 10) + 5).toString());
+
+            getGoldOther = getGoldOther.setText((parseInt(getGoldOther.text, 10) - 5).toString());
+        
+    }
+
+    var listLength = playerButtons.length;
+    
+    for (var i = 0; i < listLength; i++) {
+        
+        playerButtons[i].destroy();
+        
     }
     
   

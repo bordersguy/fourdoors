@@ -1,22 +1,36 @@
 var bootState = {
     
+    init: function() {
+        
+        
+        
+    },
+    
     preload: function () {
         
-        game.load.image('ogre', 'assets/ogre.png');
+        // this.game.load.image('ogre', 'assets/ogre.png');
+        
+        // this.game.add.sprite(0,0,'ogre');
+           
+           
+        var loadingText = this.game.add.text(300,150, 'Just will be a few seconds ^^', { fill: '#ffffff', fontSize: '60px' });
+        
+        this.game.load.image('ogre', 'assets/ogre.png');
+        
         
     },
     
     create: function (){
         
-           game.physics.startSystem(Phaser.Physics.ARCADE);
-           
-           game.add.sprite(0,0,'ogre');
-           
-           
-           var loadingText = game.add.text(300,150, 'Enjoy!', { fill: '#ffffff', fontSize: '60px' });
-           
-           game.state.start('load');
-           
+        this.game.physics.startSystem(Phaser.Physics.ARCADE);
+       
+        this.game.state.add('load', loadState);
+        this.game.state.add('menu', menuState);
+        this.game.state.add('play', playState);
+        this.game.state.add('win', menuState);
+       
+        this.game.state.start('load');
+       
           
         
     }
@@ -25,3 +39,4 @@ var bootState = {
     
     
 };
+

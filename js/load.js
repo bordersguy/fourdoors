@@ -1,5 +1,20 @@
 var loadState = {
     
+    init: function () {
+        
+        
+        this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+  
+        this.game.scale.setScreenSize( true );
+        
+        var loadingText = this.game.add.text(300,150, 'Loading...', { fill: '#ffffff', fontSize: '60px' });
+        
+        
+        
+        this.game.add.sprite(600,300,'ogre');
+
+    },
+    
     preload: function () {
         
         //menu and settings
@@ -118,7 +133,7 @@ var loadState = {
         //Characters
         this.game.load.image('elf', 'assets/elf.png');
         this.game.load.image('hobbit', 'assets/hobbit.png');
-        this.game.load.image('ogre', 'assets/ogre.png');
+        
         this.game.load.image('knight', 'assets/knight.png');
         this.game.load.image('warrior', 'assets/warrior.png');
         this.game.load.image('wizard', 'assets/wizard.png');
@@ -132,17 +147,13 @@ var loadState = {
         this.game.load.image('treasureEmpty', 'assets/treasureEmpty.png');
         this.game.load.image('treasurePoison', 'assets/treasurePoison.png');
         this.game.load.image('treasureThief', 'assets/treasureThief.png');
+
     },
     
     create: function () {
         
-        this.game.add.sprite(600,300,'ogre');
+     
         
-        this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
-  
-        this.game.scale.setScreenSize( true );
-        
-        var loadingText = this.game.add.text(300,150, 'Loading...', { fill: '#ffffff', fontSize: '60px' });
         
         var timerload = this.game.time.create(false);
     
@@ -151,8 +162,7 @@ var loadState = {
     
         timerload.add(2000, startMenu, this);
         
-       
-     //   game.state.start('menu');
+
         
         
         
