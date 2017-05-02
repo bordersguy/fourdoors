@@ -1,11 +1,6 @@
 var bootState = {
     
-    init: function() {
-        
-        
-        
-    },
-    
+ 
     preload: function () {
         
         // this.game.load.image('ogre', 'assets/ogre.png');
@@ -24,10 +19,7 @@ var bootState = {
         
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
        
-        this.game.state.add('load', loadState);
-        this.game.state.add('menu', menuState);
-        this.game.state.add('play', playState);
-        this.game.state.add('win', menuState);
+        
        
         this.game.state.start('load');
        

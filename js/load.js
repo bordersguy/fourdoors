@@ -152,7 +152,8 @@ var loadState = {
     
     create: function () {
         
-     
+        console.log("load create");
+        
         
         
         var timerload = this.game.time.create(false);
@@ -162,7 +163,7 @@ var loadState = {
     
         timerload.add(2000, startMenu, this);
         
-
+        
         
         
         
@@ -175,6 +176,8 @@ var loadState = {
 
 
 function  startMenu () {
+        
+        console.log("start function");
         
         this.game.state.start('menu');
         
