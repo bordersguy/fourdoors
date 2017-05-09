@@ -1,13 +1,16 @@
+var loadingText;
+
 var loadState = {
     
     init: function () {
         
+        this.game.load.onFileComplete.add(fileComplete, this);
         
         this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
   
         this.game.scale.setScreenSize( true );
         
-        var loadingText = this.game.add.text(300,150, 'Loading...', { fill: '#ffffff', fontSize: '60px' });
+        loadingText = this.game.add.text(300,150, 'Loading...', { fill: '#ffffff', fontSize: '60px' });
         
         
         
@@ -35,6 +38,8 @@ var loadState = {
         this.game.load.image('star', 'assets/star.png');
         this.game.load.image('rightBorder', 'assets/sideBoardRight.png');
         this.game.load.image('leftBorder', 'assets/sideBoardLeft.png');
+        
+        
         
         this.game.load.spritesheet('die', 'assets/dice.png', 79, 75);
         this.game.load.image('sheet', 'assets/characterFrame.png');
@@ -90,6 +95,8 @@ var loadState = {
         this.game.load.image('noMagicButton', 'assets/noMagic.png');
         this.game.load.image('useMagicButton', 'assets/useMagic.png');
         
+        
+        
         //Backgrounds
         this.game.load.image('sun', 'assets/sun.png');
         this.game.load.image('roadBackground', 'assets/roadBackground.png');
@@ -110,6 +117,8 @@ var loadState = {
         this.game.load.image('forestBackgroundNight', 'assets/forestBackgroundNight.png');
         this.game.load.image('caveBackgroundNight', 'assets/caveBackgroundNight.png');
         this.game.load.image('innerBackground', 'assets/innerBackground.png');
+        
+        
         
         //NPC's
         this.game.load.image('dragon', 'assets/dragon.png');
@@ -134,6 +143,8 @@ var loadState = {
         this.game.load.image('elf', 'assets/elf.png');
         this.game.load.image('hobbit', 'assets/hobbit.png');
         
+        
+        
         this.game.load.image('knight', 'assets/knight.png');
         this.game.load.image('warrior', 'assets/warrior.png');
         this.game.load.image('wizard', 'assets/wizard.png');
@@ -147,7 +158,9 @@ var loadState = {
         this.game.load.image('treasureEmpty', 'assets/treasureEmpty.png');
         this.game.load.image('treasurePoison', 'assets/treasurePoison.png');
         this.game.load.image('treasureThief', 'assets/treasureThief.png');
-
+        
+        
+        
     },
     
     create: function () {
@@ -181,4 +194,22 @@ function  startMenu () {
         
         this.game.state.start('menu');
         
+}
+
+function fileComplete(progress, cacheKey, success, totalLoaded, totalFiles) {
+
+	loadingText.setText("Loading " + progress + "%");
+
+// 	var newImage = this.game.add.image(x, y, cacheKey);
+
+// 	newImage.scale.set(0.3);
+
+// 	x += newImage.width + 20;
+
+// 	if (x > 700)
+// 	{
+// 		x = 32;
+// 		y += 332;
+// 	}
+
 }

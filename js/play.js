@@ -3,19 +3,18 @@
 //      Test prison break some more
 //      sun doesn't always get deleted....but, i think this is because of my key testing
 //      Can still get quest after having one in the forest
+//      Ants Telepathy choices didn't disappear?  maybe
+
 
 
 //To Do: 
 //      Limit objects to certain classes
 //      Create world events      
-//      Add vampire side effects
-//      Add cure explanation
 //      Add players turn to card and visual marker 
 //      Add victory point for beating the Kraken, Ropasci, Spiders, and Ants
 //      Fix grammar and feel of spider and ant fights
 //      Add death conditions...and zombie conditions
-//      Move ShowAnswer on FairyGame....maybe other games too
-//      Add code to separate questions from statements
+//      Add potion effects
 
 //Later:
 //      Music & Sound effects
@@ -224,6 +223,14 @@ var yellowDoorButton;
 var doorChoice;
 
 var hasCurse = ["none", "none", "none", "none", "none", "none"];
+
+var curseToken1;
+var curseToken2;
+var curseToken3;
+var curseToken4;
+var curseToken5;
+var curseToken6;
+var curseTokens = [curseToken1, curseToken2, curseToken3, curseToken4, curseToken5, curseToken6];
 
 var player1Button;
 var player2Button;
@@ -752,7 +759,9 @@ function DieResult() {
         case 29:
             TreasureResult();
             break;
-            
+        
+        //turn 30 & 31 are ants and fairy game
+        
         case 35:
             CurseResult();
             break;
@@ -1013,36 +1022,19 @@ function AddStats(player) {
                 
                 var lifeStyle = { font: "25px Impact", fill: "black", 
                 wordWrap: true, align: "center", backgroundColor: "transparent" };
-                
-                // if (player == c1 || player == c2 || player == c3) {
-                
+
                 goldText = this.game.add.text(6, 3, gold, goldStyle);
                 goldText.name = "goldText";
                 attackText = this.game.add.text(98, 118, attack, attackStyle);
                 attackText.name = "attackText";
                 lifeText = this.game.add.text(7, 118, life, lifeStyle);
                 lifeText.name = "lifeText";
+                
                 deletePlayer = this.game.add.button(80, -10, 'deleteX', DeletePlayer, this, 2,1,0);
                 packList[i].add(deletePlayer);
                 packList[i].add(goldText);
                 packList[i].add(attackText);
                 packList[i].add(lifeText);
-                    
-                //}
-                // else {
-                
-                //     goldText = this.game.add.text(92, 3, gold, goldStyle);
-                //     goldText.name = "goldText";
-                //     attackText = this.game.add.text(105, 50, attack, attackStyle);
-                //     attackText.name = "attackText";
-                //     lifeText = this.game.add.text(92, 95, life, lifeStyle);
-                //     lifeText.name = "lifeText";
-                //     deletePlayer = this.game.add.button(-20, -10, 'deleteX', DeletePlayer, this, 2,1,0);
-                //     packList[i].add(deletePlayer);
-                //     packList[i].add(goldText);
-                //     packList[i].add(attackText);
-                //     packList[i].add(lifeText);
-                // }
 
                 playerName = this.game.add.text(20, 92, currentRace + " " + (i + 1).toString(), { font: "20px Arial", fill: "black", align: "center" }, packList[i]); 
 
@@ -1954,7 +1946,7 @@ function ShowAnswer(argument) {
     
     var answerY = 250;
     
-    if (turn == 31) {
+    if (turn == 31 || turn == 30) {
         
         answerY = 150;
         
@@ -1994,15 +1986,15 @@ function GoToQuest() {
         turn = 3;
         
         restButton = this.game.add.button(250, 200, restName, StartActionTimer, 2,1,0);
-        restButtonText = this.game.add.text(0, 70, "Take a Rest", buttonStyle);   
+        restButtonText = this.game.add.text(-20, 70, "Take a Rest", buttonStyle);   
         restButton.addChild(restButtonText);
         
         monsterButton = this.game.add.button(100, 400, "monsterButton", StartActionTimer, 2,1,0);
         monsterButtonText = this.game.add.text(0, 105, "Monster Hunt", buttonStyle);   
         monsterButton.addChild(monsterButtonText);
         
-        treasureButton = this.game.add.button(380, 375, "treasureButton", StartActionTimer, 2,1,0);
-        treasureButtonText = this.game.add.text(0, 120, "Treasure Hunt", buttonStyle);   
+        treasureButton = this.game.add.button(380, 365, "treasureButton", StartActionTimer, 2,1,0);
+        treasureButtonText = this.game.add.text(10, 140, "Treasure Hunt", buttonStyle);   
         treasureButton.addChild(treasureButtonText);
         
         restButton.scale.setTo(1.5,1.5);
@@ -2027,15 +2019,15 @@ function GoToQuest() {
         turn = 3;
 
         restButton = this.game.add.button(250, 200, restName, StartActionTimer, 2,1,0);
-        restButtonText = this.game.add.text(0, 70, "Take a Rest", buttonStyle);   
+        restButtonText = this.game.add.text(-20, 70, "Take a Rest", buttonStyle);   
         restButton.addChild(restButtonText);
         
         monsterButton = this.game.add.button(100, 400, "monsterButton", StartActionTimer, 2,1,0);
         monsterButtonText = this.game.add.text(0, 105, "Monster Hunt", buttonStyle);   
         monsterButton.addChild(monsterButtonText);
         
-        treasureButton = this.game.add.button(380, 375, "treasureButton", StartActionTimer, 2,1,0);
-        treasureButtonText = this.game.add.text(0, 120, "Treasure Hunt", buttonStyle);   
+        treasureButton = this.game.add.button(380, 365, "treasureButton", StartActionTimer, 2,1,0);
+        treasureButtonText = this.game.add.text(10, 140, "Treasure Hunt", buttonStyle);   
         treasureButton.addChild(treasureButtonText);
         
         restButton.scale.setTo(1.5,1.5);
@@ -2064,7 +2056,7 @@ function GoToQuest() {
         }
         
         restButton = this.game.add.button(400, 200, restName, StartActionTimer, 2,1,0);
-        restButtonText = this.game.add.text(0, 70, "Take a Rest", buttonStyle);   
+        restButtonText = this.game.add.text(-20, 70, "Take a Rest", buttonStyle);   
         restButton.addChild(restButtonText);
         
         monsterButton = this.game.add.button(100, 400, "monsterButton", StartActionTimer, 2,1,0);
@@ -2072,7 +2064,7 @@ function GoToQuest() {
         monsterButton.addChild(monsterButtonText);
         
         treasureButton = this.game.add.button(400, 400, "treasureButton", StartActionTimer, 2,1,0);
-        treasureButtonText = this.game.add.text(0, 120, "Treasure Hunt", buttonStyle);   
+        treasureButtonText = this.game.add.text(10, 140, "Treasure Hunt", buttonStyle);   
         treasureButton.addChild(treasureButtonText);
 
         caveButton = this.game.add.button(100, 200, "caveButton", StartActionTimer, 2,1,0);
@@ -2095,7 +2087,7 @@ function GoToQuest() {
         turn = 3;
         
         restButton = this.game.add.button(400, 200, restName, StartActionTimer, 2,1,0);
-        restButtonText = this.game.add.text(0, 70, "Take a Rest", buttonStyle);   
+        restButtonText = this.game.add.text(-20, 70, "Take a Rest", buttonStyle);   
         restButton.addChild(restButtonText);
         
         monsterButton = this.game.add.button(100, 400, "monsterButton", StartActionTimer, 2,1,0);
@@ -2103,7 +2095,7 @@ function GoToQuest() {
         monsterButton.addChild(monsterButtonText);
         
         treasureButton = this.game.add.button(400, 400, "treasureButton", StartActionTimer, 2,1,0);
-        treasureButtonText = this.game.add.text(0, 120, "Treasure Hunt", buttonStyle);   
+        treasureButtonText = this.game.add.text(10, 140, "Treasure Hunt", buttonStyle);   
         treasureButton.addChild(treasureButtonText);
 
         stairsButton = this.game.add.button(100, 200, "stairsButton", StartActionTimer, 2,1,0);
@@ -2131,21 +2123,55 @@ function GoToQuest() {
         switch (turnText.text) {
             
             case "village":
-                choiceText.setText("Welcome!  Take a look around our village! \nRoll the die.");
-                turn = 18;
-                CreateSun();
+                
+                if (hasCurse[currentPlayer - 1] == "werewolf") {
+                    
+                    choiceText.setText("The village doctor can stop the werewolf curse for 3 gold.");
+                    choice = "removeCurse";
+                    Choice();
+                    
+                } else {
+                
+                    choiceText.setText("Welcome!  Take a look around our village! \nRoll the die.");
+                    turn = 18;
+                    CreateSun();
+                }
+                
                 break;
                 
             case "witch":
-                choiceText.setText("Do you want some help? \nRoll the die.");
-                turn = 21;
-                CreateSun();
+                if (hasCurse[currentPlayer - 1] == "vampire") {
+                    
+                    choiceText.setText("I can stop the vampire curse for 3 gold.");
+                    choice = "removeCurse";
+                    Choice();
+                    
+                } else {
+                    
+                    choiceText.setText("Do you want some help? \nRoll the die.");
+                    turn = 21;
+                    CreateSun();
+                    
+                }
+               
                 break;
             
             case "castle":
-                choiceText.setText("Welcome!  Take a look around the castle! \nRoll the die.");
-                turn = 19;
-                CreateSun();
+                
+                if (hasCurse[currentPlayer - 1] == "zombie") {
+                    
+                    choiceText.setText("The castle doctor can stop the zombie curse for 3 gold.");
+                    choice = "removeCurse";
+                    Choice();
+                    
+                } else {
+                    
+                    choiceText.setText("Welcome!  Take a look around the castle! \nRoll the die.");
+                    turn = 19;
+                    CreateSun();
+                    
+                }
+                
                 break;
             
             case "forest":
@@ -2205,11 +2231,10 @@ function StartActionTimer(action) {
             choiceText.setText("You walk to the cave...");
             buttons = 4;
             MakeCave();
-            console.log("caveButton called");
             break;
             
         case stairsButton:
-            console.log("stairsButton called");
+            //console.log("stairsButton called");
             choiceText.setText("You walk up the stairs...");
             buttons = 4;
             
@@ -2847,9 +2872,14 @@ function AttackResult() {
                             
                                 RunDelay(MonsterCurse, "none", 3000);
                                     
+                            } else if (hasCurse[currentPlayer - 1] == "vampire") {
+                                
+                                getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
+                                choiceText.setText("Uggghh! The " + monster + " won. \nLose 2 life. You are still cursed.");
+                                
                             } else {
                                 
-                                choiceText.setText("Uggghh! The " + monster + " won. \nLose 1 life. You can only have 1 curse.");
+                                choiceText.setText("Uggghh! The " + monster + " won. \nLose 1 life. You are still cursed.");
                                 
                             }
                             
@@ -2915,6 +2945,7 @@ function AttackResult() {
                             choiceText.setText("Wow!  You won!  You get 1 attack and you're in the mountain!");
                             getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 1).toString());
                             boardLevel[currentPlayer - 1] = 2;
+                            LevelSwitch("in10");
                             specialMonster = "none";
                             turn = 3;
                             turnText.setText("turn \nover");
@@ -2973,23 +3004,18 @@ function MonsterCurse() {
             
             choiceText.setText("Roll to see if you're cursed! \n5 or 6 and you become cursed!");
             turn = 35;
-            //GiveCurse();
             break;
             
         case "werewolf":
             
             choiceText.setText("Roll to see if you're cursed! \n5 or 6 and you become cursed!");
             turn = 35;
-            //GiveCurse();
-            
             break;
             
         case "zombie":
             
             choiceText.setText("Roll to see if you're cursed! \n5 or 6 and you become cursed!");
             turn = 35;
-            //GiveCurse();
-            
             break;
         
         
@@ -3006,22 +3032,39 @@ function CurseResult() {
         switch (monster) {
         
         case 'vampire':
-            choiceText.setText("Cursed!  When you lose a fight you lose 2 life...but, if you win gain 1 life");
+            choiceText.setText("Cursed!  Lose a fight lose 2 life...win and gain 1 life. The witch can help you.");
             hasCurse[currentPlayer - 1] = "vampire";
+            curseTokens[currentPlayer - 1] = this.game.add.sprite(cList[currentPlayer - 1].x + 80, cList[currentPlayer - 1].y + 40, "vampire");
+            
+            curseTokens[currentPlayer - 1].scale.setTo(.15,.15);
+            
+            console.log("x is = " + curseTokens[currentPlayer - 1].x + "y is = " + curseTokens[currentPlayer - 1].y);
+            
             break;
             
         case 'werewolf':
             
-            choiceText.setText("Cursed!  At night, you must always fight a monster!");
+            choiceText.setText("Cursed!  At night, you must always fight a monster!  Go to the village for help.");
             hasCurse[currentPlayer - 1] = "werewolf";
             
+            curseTokens[currentPlayer - 1] = this.game.add.sprite(cList[currentPlayer - 1].x + 80, cList[currentPlayer - 1].y + 40, "werewolf");
+            
+            curseTokens[currentPlayer - 1].scale.setTo(.15,.15);
+            
+            console.log("x is = " + curseTokens[currentPlayer - 1].x + "y is = " + curseTokens[currentPlayer - 1].y);
             break;
             
         case 'zombie':
             
-            choiceText.setText("Cursed!  Every turn you lose 1 life.  At 0 life you become a zombie!");
+            choiceText.setText("Cursed!  Every turn lose 1 life. At 0 life become a zombie! Go to the castle for help.");
             hasCurse[currentPlayer - 1] = "zombie";
-                    
+            
+            curseTokens[currentPlayer - 1] = this.game.add.sprite(cList[currentPlayer - 1].x + 80, cList[currentPlayer - 1].y + 40, "zombie");
+            
+            curseTokens[currentPlayer - 1].scale.setTo(.15,.15);
+            
+            console.log("x is = " + curseTokens[currentPlayer - 1].x + "y is = " + curseTokens[currentPlayer - 1].y);
+                                
             break;
         
         
@@ -3296,7 +3339,7 @@ function DeleteQuestion() {
         var getAttack = packList[currentPlayer - 1].getChildAt(3);
         var getRace = packList[currentPlayer - 1].getChildAt(5).text.slice(0, -2);
         
-         isFrog[currentPlayer - 1] = false;
+        isFrog[currentPlayer - 1] = false;
         packList[currentPlayer - 1].getChildAt(0).loadTexture(getRace);
         tokenList[currentPlayer - 1].loadTexture(getRace);
         getAttack = getAttack.setText(saveStat[currentPlayer - 1].toString());
@@ -3319,8 +3362,7 @@ function DeleteQuestion() {
 
 //Tunnel is done
 function TunnelResult() {
-    var getLife = packList[currentPlayer - 1].getChildAt(4);
-    var getAttack = packList[currentPlayer - 1].getChildAt(3);
+
     var getGold = packList[currentPlayer - 1].getChildAt(2);
     var enemy;
     var goldAmount;
@@ -3902,6 +3944,11 @@ function Choice() {
             
             ActivateChoice(PayTroll);
             break;
+            
+        case "removeCurse":
+            
+            ActivateChoice(RemoveCurse);
+            break;
     }
     
     
@@ -3977,7 +4024,8 @@ function FrogChange() {
     
     var getAttack = packList[currentPlayer - 1].getChildAt(3);
     
-    saveStat[currentPlayer - 1] = parseInt(getAttack,10);
+    saveStat[currentPlayer - 1] = parseInt(getAttack.text,10);
+    console.log("stat = " + saveStat[currentPlayer - 1]);
     getAttack = getAttack.setText("0");
     packList[currentPlayer - 1].getChildAt(0).loadTexture('frog');
     tokenList[currentPlayer - 1].loadTexture('frog');
@@ -4003,7 +4051,6 @@ function TreasureChest() {
 function TreasureResult() {
     
     var getLife = packList[currentPlayer - 1].getChildAt(4);
-    var getAttack = packList[currentPlayer - 1].getChildAt(3);
     var getGold = packList[currentPlayer - 1].getChildAt(2);
     
     if (dieResult > 4) {
@@ -4417,9 +4464,7 @@ function GiveRock(yesNo) {
 }
 
 function PayTroll(yesNo) {
-    
-    var getLife = packList[currentPlayer - 1].getChildAt(4);
-    var getAttack = packList[currentPlayer - 1].getChildAt(3);
+
     var getGold = packList[currentPlayer - 1].getChildAt(2);
     
     if (yesNo == yesButton) {
@@ -4450,6 +4495,28 @@ function BecomeZombie() {
     
     
     
+}
+
+function RemoveCurse(yesNo) {
+    
+    var getGold = packList[currentPlayer - 1].getChildAt(2);
+    
+    if (yesNo == yesButton) {
+        
+        getGold = getGold.setText((parseInt(getGold.text, 10) - 3).toString());
+        choiceText.setText("Bibidi babidi boo...the curse is gone!");
+        turnText.setText("turn \nover");
+        curseTokens[currentPlayer - 1].destroy();
+        hasCurse[currentPlayer - 1] = "none";
+    } else {
+        
+        choiceText.setText("No? Okay. Roll the die.");
+        turn = 21;
+        CreateSun();
+    }
+    
+    yesButton.destroy();
+    noButton.destroy();
 }
 
 //***************Tools
