@@ -2,19 +2,19 @@
 //      On mobile, the game doesn't resize in landscape
 //      Test prison break some more
 //      sun doesn't always get deleted....but, i think this is because of my key testing
-//      Can still get quest after having one in the forest
-//      Ants Telepathy choices didn't disappear?  maybe
+//      Give me a rock....destroy buttons and end turn
+
 
 
 
 //To Do: 
 //      Limit objects to certain classes
 //      Create world events      
-//      Add players turn to card and visual marker 
 //      Add victory point for beating the Kraken, Ropasci, Spiders, and Ants
 //      Fix grammar and feel of spider and ant fights
 //      Add death conditions...and zombie conditions
 //      Add potion effects
+//      create better buttons :)
 
 //Later:
 //      Music & Sound effects
@@ -240,7 +240,8 @@ var player5Button;
 var player6Button;
 var playerButtons = [player1Button, player2Button, player3Button, player4Button, player5Button, player6Button];
 
-//var prevOrientation;
+var turnMarker;
+var victoryPoints = [0,0,0,0,0,0];
 
 var playState = {
  
@@ -290,6 +291,8 @@ create: function () {
     turnText = this.game.add.text(turnManagerButton.width/2, turnManagerButton.height/2,  "Ready?", { font: "40px Arial", fill: "black", align: "center" }); 
     turnManagerButton.addChild(turnText);
     turnText.anchor.set(0.5, 0.5);
+    
+    turnMarker = this.game.add.sprite(cList[currentPlayer - 1].x + 30, cList[currentPlayer - 1].y, "star");
     
     //These keys are just for testing...delete when done.
     key1 = this.game.input.keyboard.addKey(Phaser.Keyboard.ONE);
@@ -1283,6 +1286,9 @@ function ResetCurrentPlayer () {
         currentPlayer = 1;
         DayNight();
     }
+    
+    turnMarker.x = cList[currentPlayer - 1].x + 30;
+    turnMarker.y = cList[currentPlayer - 1].y;
 }    
 
 function UpdateTurnText(box) {
@@ -1409,7 +1415,7 @@ function CreateSun() {
     
     var sunX;
     
-    if (backgroundAsset.includes("cave") || backgroundAsset.includes("castle")) {
+    if (backgroundAsset.includes("cave") || backgroundAsset.includes("castle") || backgroundAsset.includes("exit")) {
         
         sunX = 350;
         
@@ -1815,7 +1821,7 @@ function CreateQuestion(puzzle) {
             var antChoice = getRandomInt(0,4);
             answer = questionList[antChoice];
             
-            var style = { font: "32px Arial", fill: "white", wordWrapWidth: "300px", 
+            style = { font: "32px Arial", fill: "white", wordWrapWidth: "300px", 
                 wordWrap: true, align: "center", backgroundColor: "white" };
             
             sentenceGroup = this.game.add.group();
@@ -1825,7 +1831,7 @@ function CreateQuestion(puzzle) {
                 
                 getQuestion = questionList[i];    
                 
-                var sentenceAnt = this.game.add.text(350, sentenceY, getQuestion, style );
+                var sentenceAnt = this.game.add.text(70, sentenceY, getQuestion, style );
                 
                 sentenceGroup.add(sentenceAnt);
                 
@@ -1839,6 +1845,7 @@ function CreateQuestion(puzzle) {
             question.add(wrongButton);
             question.add(correctButton);
             question.add(revealButton);
+            question.add(sentenceGroup);
 
             break;
 
@@ -1867,10 +1874,6 @@ function CheckAnswer(result) {
     var getGold = packList[currentPlayer - 1].getChildAt(2);
     var getLife = packList[currentPlayer - 1].getChildAt(4);
     var adjustGold;  
-    
-    wrongButton.inputEnabled = false;
-    correctButton.inputEnabled = false;
-    
     
     if (turn == 30) {
          
@@ -1935,11 +1938,11 @@ function CheckAnswer(result) {
             GoToQuest();
             
         }
-        
-       
 
     }
-
+    
+    wrongButton.inputEnabled = false;
+    correctButton.inputEnabled = false;
 }
 
 function ShowAnswer(argument) {
@@ -2931,18 +2934,21 @@ function AttackResult() {
                             
                         } else {
                             
-                            choiceText.setText("Wow!  You got them all!  You get 3 attack!");
+                            AddVictoryPoint(specialMonster);
+                            choiceText.setText("Wow!  You got them all!  You get 3 attack! You get 1 victory point!");
                             getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 3).toString());
                             specialMonster = "none";
                             turn = 3;
                             turnText.setText("turn \nover");
+                            
                         }
                         
                         break;
                         
                     case 'troll':
-                        
-                            choiceText.setText("Wow!  You won!  You get 1 attack and you're in the mountain!");
+                            
+                            AddVictoryPoint(specialMonster);
+                            choiceText.setText("Wow!  You won!  You get 1 attack and you're in the mountain! You get 1 victory point!");
                             getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 1).toString());
                             boardLevel[currentPlayer - 1] = 2;
                             LevelSwitch("in10");
@@ -2966,7 +2972,8 @@ function AttackResult() {
                             
                         } else {
                             
-                            choiceText.setText("Wow!  You got them all!  You get 3 attack!");
+                            AddVictoryPoint(specialMonster);
+                            choiceText.setText("Wow!  You got them all!  You get 3 attack! You get 1 victory point!");
                             getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 3).toString());
                             specialMonster = "none";
                             turn = 3;
@@ -2977,10 +2984,31 @@ function AttackResult() {
                         
                     case 'watcher':
                         
-                        choiceText.setText("Wow!  You won!  You gain 2 power! Open any door you want!");
+                        AddVictoryPoint(specialMonster);
+                        choiceText.setText("Wow!  You won!  You gain 2 power! Open any door you want! You get 1 victory point!");
                         getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 2).toString());
                         specialMonster = "none";
                         CreateDoors("any");
+                        
+                        break;
+                        
+                    case 'kraken':
+                        
+                        AddVictoryPoint(specialMonster);
+                        choiceText.setText("Wow!  You won!  You gain 1 power! You get 1 victory point!");
+                        getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 1).toString());
+                        specialMonster = "none";
+                      
+                        
+                        break;
+                        
+                    case 'ropasci':
+                        
+                        AddVictoryPoint(specialMonster);
+                        choiceText.setText("Wow!  You won!  You gain 1 power! You get 1 victory point!");
+                        getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 1).toString());
+                        specialMonster = "none";
+                       
                         
                         break;
                 }
@@ -3625,7 +3653,13 @@ function WitchResult() {
 function ForestResult() {
     
     var getLife = packList[currentPlayer - 1].getChildAt(4);
-
+    
+    if (hasQuest[currentPlayer  -1][0] == true && dieResult == 6) {
+        
+        dieResult = getRandomInt(0,5);
+        
+    }
+    
     switch (dieResult) {
         
         case 1:
@@ -4011,7 +4045,7 @@ function ManageChallenge() {
                 questList[currentPlayer - 1].destroy();
             }
             
-            
+            turnText.setText(" turn \nover");
             break;
 
     }
@@ -4380,12 +4414,12 @@ function HelpWitch(yesNo) {
     
     if (yesNo == yesButton) {
         
-    choiceText.setText("There are too many zombies! \nKill 2 zombies and I'll give you a nice present.");
-    
-    hasQuest[currentPlayer - 1][0] = true;
-    hasQuest[currentPlayer - 1][1] = "witch";
-    
-    questList[currentPlayer - 1] = this.game.add.sprite(cList[currentPlayer - 1].x, cList[currentPlayer - 1].y +20, "questMarker");
+        choiceText.setText("There are too many zombies! \nKill 2 zombies and I'll give you a nice present.");
+        
+        hasQuest[currentPlayer - 1][0] = true;
+        hasQuest[currentPlayer - 1][1] = "witch";
+        
+        questList[currentPlayer - 1] = this.game.add.sprite(cList[currentPlayer - 1].x, cList[currentPlayer - 1].y +20, "questMarker");
         
     }else {
         
@@ -4519,8 +4553,38 @@ function RemoveCurse(yesNo) {
     noButton.destroy();
 }
 
+function AddVictoryPoint(killed) {
+    
+    victoryPoints[currentPlayer - 1] += 1;
+    
+    var xModify;
+    
+    if (isOdd(victoryPoints) == 1) {
+        
+        xModify = 40;
+        
+    } else {
+        
+        xModify = 60;
+        
+    }
+    
+    
+    var vPY = victoryPoints[currentPlayer - 1] * 25;
+    
+    
+    var victoryPoint = this.game.add.sprite(cList[currentPlayer - 1].x - xModify, vPY, killed);
+    
+    victoryPoint.scale.setTo(.10,.10);
+    
+}
+
 //***************Tools
 
+function isOdd(num) { 
+    return num % 2;
+    
+}
 
 function RunTimer(doThis) {
     
