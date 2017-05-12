@@ -2,19 +2,18 @@
 //      On mobile, the game doesn't resize in landscape
 //      Test prison break some more
 //      sun doesn't always get deleted....but, i think this is because of my key testing
-//      Give me a rock....destroy buttons and end turn
 
 
 
 
 //To Do: 
-//      Limit objects to certain classes
+//      
 //      Create world events      
-//      Add victory point for beating the Kraken, Ropasci, Spiders, and Ants
 //      Fix grammar and feel of spider and ant fights
 //      Add death conditions...and zombie conditions
 //      Add potion effects
 //      create better buttons :)
+//      Limit objects to certain classes
 
 //Later:
 //      Music & Sound effects
@@ -64,7 +63,7 @@ var packList = [pack1, pack2, pack3, pack4, pack5, pack6];
 var goldText;
 var attackText;
 var lifeText;
-var playerName;
+
 var deletePlayer;
 
 var card;
@@ -350,24 +349,7 @@ create: function () {
     this.scale.setScreenSize( true );
 }
 
-// update: function() {
-    
-    
 
-// }
-
-//preUpdate: function() {
-    
-    // if (this.scale.screenOrientation !== prevOrientation) {
-        
-    //     this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
-  
-    //     this.scale.setScreenSize( true );
-        
-    // }
-
-//}
-  
 };
 
 //***************Basic Board Management
@@ -1039,7 +1021,7 @@ function AddStats(player) {
                 packList[i].add(attackText);
                 packList[i].add(lifeText);
 
-                playerName = this.game.add.text(20, 92, currentRace + " " + (i + 1).toString(), { font: "20px Arial", fill: "black", align: "center" }, packList[i]); 
+                var playerName = this.game.add.text(20, 92, currentRace + " " + (i + 1).toString(), { font: "20px Arial", fill: "black", align: "center" }, packList[i]); 
 
                 deletePlayer.input.priorityID = 10;
                 
@@ -1408,7 +1390,21 @@ function ResetTurn() {
 
     isMagic = false;
     turn = 0;
-    ManageTurn();
+    
+    var eventChance = getRandomInt(0, 10);
+    console.log("EC = " + eventChance);
+    if (eventChance <= 1) {
+        
+        WorldEvent();
+        
+    } else {
+        
+        ManageTurn();    
+        
+    }
+    
+    
+    
 }
 
 function CreateSun() {
@@ -1968,7 +1964,7 @@ function ShowAnswer(argument) {
 
 function GoToQuest() {
     
-    choiceText = this.game.add.text(50, 50, "Great!  Here's 1 Gold. \nWhat now?", { font: "40px Arial", fill: "green", align: "center", wordWrap: true, wordWrapWidth: question.width - 50 });
+    choiceText = this.game.add.text(50, 50, "Great!  Here's 1 Gold. \nWhat now?", { font: "40px Arial", fill: "black", align: "center", wordWrap: true, wordWrapWidth: question.width - 50 });
     
     var restName = packList[currentPlayer - 1].getChildAt(5).text.slice(0, -2);
     
@@ -3385,6 +3381,14 @@ function DeleteQuestion() {
     ResetTurn();
 }
 
+function DeleteWorldEvent() {
+
+    questionPanel.destroy();
+    questionUp = false;
+    ManageTurn();
+    
+}
+
 
 //*******************Corners
 
@@ -4495,6 +4499,9 @@ function GiveRock(yesNo) {
         
     }
     
+    yesButton.destroy();
+    noButton.destroy();
+    
 }
 
 function PayTroll(yesNo) {
@@ -4577,6 +4584,49 @@ function AddVictoryPoint(killed) {
     
     victoryPoint.scale.setTo(.10,.10);
     
+}
+
+function WorldEvent() {
+    
+    questionPanel = this.game.add.sprite(300, 0, 'answersheet');
+    question = this.game.add.group();
+    question.width = questionPanel.width;
+    questionPanel.addChild(question);
+        
+    questionText = this.game.add.text(20, 150, getQuestion, { font: "40px Arial", fill: "black", align: "center", wordWrap: true, wordWrapWidth: question.width - 20 });
+    
+    
+    deleteQuestion = this.game.add.button (520, 15, 'deleteX', DeleteWorldEvent, this, 2,1,0);
+    question.addChild(deleteQuestion);
+    question.addChild(questionText);
+    
+    
+    var pickEvent = getRandomInt(0,4);
+    
+    switch (pickEvent) {
+        case 0:
+            questionText.setText("A big lightning storm hits the world!  If you are outside lose 1 life.");
+            
+            break;
+            
+        case 1:
+            questionText.setText("A blizzard hits the world! If you are outside without special clothes lose 1 life.");
+            
+            break;
+            
+        case 2:
+            questionText.setText("An earthquake hits the world!  If you are in the mountain lose 1 life.");
+            
+            break;
+            
+        case 3:
+            questionText.setText("The dragons united and are attacking!! If you are outside lose 1 life.");
+            
+            break;
+
+    }
+    
+        
 }
 
 //***************Tools
