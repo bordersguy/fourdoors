@@ -3,17 +3,14 @@
 //      Test prison break some more
 //      sun doesn't always get deleted....but, i think this is because of my key testing
 
-
-
-
 //To Do: 
-//      
+//      Draw Watcher & Ropasci
 //      Create world events      
-//      Fix grammar and feel of spider and ant fights
 //      Add death conditions...and zombie conditions
 //      Add potion effects
 //      create better buttons :)
 //      Limit objects to certain classes
+
 
 //Later:
 //      Music & Sound effects
@@ -127,6 +124,7 @@ var questionUp = false;
 
 var monsterModifier;
 var monster;
+var monsterSprite;
 
 var treasureType;
 var bonusType;
@@ -240,7 +238,7 @@ var player6Button;
 var playerButtons = [player1Button, player2Button, player3Button, player4Button, player5Button, player6Button];
 
 var turnMarker;
-var victoryPoints = [0,0,0,0,0,0];
+var victoryPoints = [1,1,1,1,1,1];
 
 var playState = {
  
@@ -417,7 +415,7 @@ function KeyMove(number) {
                 
             case key5:
                 dieResult =5;
-            DieResult();
+                DieResult();
                 break;
                 
             case key6:
@@ -426,13 +424,8 @@ function KeyMove(number) {
                 break;
 
         }
-        
-        
     }
-    
-    
-    
-    
+ 
 }
 
 function CreateBoardSpaces() {
@@ -889,7 +882,7 @@ function LevelSwitch(where) {
             tokenList[currentPlayer - 1].position.y = boardSpacesInner[10][1];
             cPosSet[currentPlayer - 1] = 10;
             
-            ResetTurn();
+            //ResetTurn();
     
             reroll = false;
             break;
@@ -901,7 +894,7 @@ function LevelSwitch(where) {
             tokenList[currentPlayer - 1].position.y = boardSpaces[15][1];
             cPosSet[currentPlayer - 1] = 15;
             
-            ResetTurn();
+            //ResetTurn();
     
             reroll = false;
             break;
@@ -927,7 +920,7 @@ function LevelSwitch(where) {
             tokenList[currentPlayer - 1].position.y = level[teleport][1];
             cPosSet[currentPlayer - 1] = teleport;
             
-            ResetTurn();
+            //ResetTurn();
     
             reroll = false;
             break;
@@ -942,14 +935,11 @@ function LevelSwitch(where) {
             
             boardLevel[currentPlayer - 1] = 2;
             
-            ResetTurn();
+            //ResetTurn();
     
             reroll = false;
             break;
-            
-            
-        
-        
+  
     }
     
 }
@@ -1303,7 +1293,7 @@ function UpdateTurnText(box) {
             
         } else {
             
-            night = "Night"
+            night = "Night";
             
         }
         
@@ -1674,7 +1664,7 @@ function CreateQuestion(puzzle) {
             
         case 1:
             qType = "Answer the Question";
-            1
+            
             var questionMark = [];
             
             for (var i = 0; i < questionList.length; i++) {
@@ -2174,7 +2164,7 @@ function GoToQuest() {
                 break;
             
             case "forest":
-                choiceText.setText("The forest can be a dangerous place! \nRoll the die.");
+                choiceText.setText("The forest can be dangerous! \nRoll the die.");
                 turn = 20;
                 CreateSun();
                 break;
@@ -2676,6 +2666,13 @@ function TreasureHunt() {
 }
 
 function FightMonster() {
+   
+    if (questionUp == false) {
+        
+        return;
+        
+    }
+       
     var monsterList;
     var getAttack = parseInt(packList[currentPlayer - 1].getChildAt(3), 10);
     var innerOuter = boardLevel[currentPlayer - 1];
@@ -2765,6 +2762,12 @@ function FightMonster() {
         choiceText.setText("The " + monster + " is attacking you! \nRoll to fight! \nYou need a " + (monsterModifier + 1).toString() + " to win!!!" );
         
         
+    } else if (specialMonster == "ant") {
+        
+       
+        choiceText.setText("The ants are attacking you! \nRoll to fight! \nYou need a " + (monsterModifier + 1).toString() + " to win!!!" );
+        
+        
     } else if (specialMonster == "kraken") {
         
         monsterModifier = 5;
@@ -2774,13 +2777,18 @@ function FightMonster() {
     }  else if (specialMonster == "ropasci") {
         
         monsterModifier = 5;
-        choiceText.setText("The Ropasci Dragon is attacking you! \nRoll to fight! \nYou need a " + (monsterModifier + 1).toString() + " to win!!!" );
+        choiceText.setText("The Ropasci Dragon is attacking you! Roll to fight! You need a " + (monsterModifier + 1).toString() + " to win!!!" );
         
         
     } else if (specialMonster == "watcher") {
         
         monsterModifier = 4;
-        choiceText.setText("The Watcher is attacking you! \nRoll to fight! \nYou need a " + (monsterModifier + 1).toString() + " to win!!!" );
+        choiceText.setText("The Watcher is attacking you! Roll to fight! \nYou need a " + (monsterModifier + 1).toString() + " to win!!!" );
+        
+        
+    } else if (specialMonster == "spider") {
+        
+      choiceText.setText("The spiders are attacking you! Roll to fight! \nYou need a " + (monsterModifier + 1).toString() + " to win!!!" );
         
         
     } else {
@@ -2791,30 +2799,36 @@ function FightMonster() {
     
     reroll == false;
     
-    var enemy;
+    
     
     if (specialMonster == "kraken") {
         
-        enemy = this.game.add.sprite(150, 200, monster);    
+        monsterSprite = this.game.add.sprite(150, 200, monster);    
         
     } else if (specialMonster == "ropasci") {
         
-        enemy = this.game.add.sprite(150, 200, "dragon");    
+        monsterSprite = this.game.add.sprite(150, 200, "dragon");    
         
     } else if (specialMonster == "watcher") {
         
-        enemy = this.game.add.sprite(150, 200, "watcher");    
+        monsterSprite = this.game.add.sprite(150, 200, "watcher");    
         
     } else {
     
-        enemy = this.game.add.sprite(400, 200, monster);    
+        monsterSprite = this.game.add.sprite(400, 200, monster);    
         
     }
     
-    question.add(enemy);
+    question.add(monsterSprite);
 }
 
 function AttackResult() {
+    
+    if (questionUp == false) {
+        
+        return;
+        
+    }
     
     var getLife = packList[currentPlayer - 1].getChildAt(4);
     var getAttack = packList[currentPlayer - 1].getChildAt(3);
@@ -2944,7 +2958,7 @@ function AttackResult() {
                     case 'troll':
                             
                             AddVictoryPoint(specialMonster);
-                            choiceText.setText("Wow!  You won!  You get 1 attack and you're in the mountain! You get 1 victory point!");
+                            choiceText.setText("You won!  You get 1 attack and you're in the mountain! You get 1 victory point!");
                             getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 1).toString());
                             boardLevel[currentPlayer - 1] = 2;
                             LevelSwitch("in10");
@@ -2983,6 +2997,7 @@ function AttackResult() {
                         AddVictoryPoint(specialMonster);
                         choiceText.setText("Wow!  You won!  You gain 2 power! Open any door you want! You get 1 victory point!");
                         getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 2).toString());
+                        monsterSprite.destroy();
                         specialMonster = "none";
                         CreateDoors("any");
                         
@@ -3449,7 +3464,7 @@ function TunnelResult() {
                     turnText.setText("turn \nover");
                 }
                 
-                break;
+                break;11
                 
             case 5:
                 enemy = this.game.add.sprite(400, 200, "troll");
@@ -3595,15 +3610,13 @@ function WitchResult() {
     
     var getLife = packList[currentPlayer - 1].getChildAt(4);
     var getAttack = packList[currentPlayer - 1].getChildAt(3);
-    var getGold = packList[currentPlayer - 1].getChildAt(2);
-    
+
     if (hasQuest[currentPlayer  -1][0] == true && dieResult == 6) {
         
         dieResult = getRandomInt(0,5);
         
     }
-    
-    
+
     switch (dieResult) {
         
         case 1:
@@ -3614,7 +3627,7 @@ function WitchResult() {
             break;
             
         case 2:
-            choiceText.setText("She says, 'Good Luck!' and then \nteleports you inside the mountain!");
+            choiceText.setText("She says, 'Good Luck!' and then teleports you inside the mountain!");
             LevelSwitch("teleportInner");
             turnText.setText("turn \nover");
             
@@ -4226,7 +4239,7 @@ function DragonGame(yesNo) {
 
     } else {
         
-        choiceText.setText("Let's play Rock-Paper-Scissors!  ");
+        choiceText.setText("Let's play Rock-Paper-Scissors!");
         RunDelay(PlayDragonGame, "none", 3000);
     }
     
@@ -4566,7 +4579,7 @@ function AddVictoryPoint(killed) {
     
     var xModify;
     
-    if (isOdd(victoryPoints) == 1) {
+    if (isOdd(victoryPoints[currentPlayer - 1]) == 1) {
         
         xModify = 40;
         
@@ -4603,24 +4616,72 @@ function WorldEvent() {
     
     var pickEvent = getRandomInt(0,4);
     
+    var getLife;
+    // var getAttack = packList[currentPlayer - 1].getChildAt(3);
+    // var getGold = packList[currentPlayer - 1].getChildAt(2);
+    
     switch (pickEvent) {
         case 0:
-            questionText.setText("A big lightning storm hits the world!  If you are outside lose 1 life.");
+            questionText.setText("A lightning storm hits the world!  If you are outside lose 1 life.");
+            
+            for (var i = 0; i < totalPlayers; i++) {
+                
+                if (boardLevel[i] == 1) {
+                    
+                    getLife = packList[i].getChildAt(4);
+                    getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
+                    
+                }
+                
+            }
             
             break;
             
         case 1:
             questionText.setText("A blizzard hits the world! If you are outside without special clothes lose 1 life.");
             
+            for (var i = 0; i < totalPlayers; i++) {
+                
+                if (boardLevel[i] == 1) {
+                    
+                    getLife = packList[i].getChildAt(4);
+                    getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
+                    
+                }
+                
+            }
+            
             break;
             
         case 2:
             questionText.setText("An earthquake hits the world!  If you are in the mountain lose 1 life.");
             
+            for (var i = 0; i < totalPlayers; i++) {
+                
+                if (boardLevel[i] == 2) {
+                    
+                    getLife = packList[i].getChildAt(4);
+                    getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
+                    
+                }
+                
+            }
+            
             break;
             
         case 3:
             questionText.setText("The dragons united and are attacking!! If you are outside lose 1 life.");
+            
+            for (var i = 0; i < totalPlayers; i++) {
+                
+                if (boardLevel[i] == 1) {
+                    
+                    getLife = packList[i].getChildAt(4);
+                    getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
+                    
+                }
+                
+            }
             
             break;
 
@@ -4667,6 +4728,8 @@ function RunTimer(doThis) {
 
 function RunDelay(ToDo, arg, timeX) {
     
+    deleteQuestion.input.enabled = false;
+    
     timer = this.game.time.create(false);
     //var actionTime = Mavar actionTime = 4000;
     if (arg == "none") {
@@ -4678,6 +4741,7 @@ function RunDelay(ToDo, arg, timeX) {
         timer.add(timeX, ToDo, this, arg);    
     }
     
+    timer.add(timeX + 100, DeleteOn, this);
     
     timer.start();
 }
@@ -4692,6 +4756,12 @@ function DestroyThis (thing) {
     
     thing.destroy();
     
+    
+}
+
+function DeleteOn() {
+    
+    deleteQuestion.input.enabled = true;
     
 }
 
