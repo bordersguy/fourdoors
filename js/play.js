@@ -2,6 +2,7 @@
 //      On mobile, the game doesn't resize in landscape
 //      Test prison break some more
 //      sun doesn't always get deleted....but, i think this is because of my key testing
+//      giving the rock doesn't delete the rock
 
 //To Do: 
 //      Draw Watcher & Ropasci
@@ -212,7 +213,7 @@ var hasRock = ["none", "none", "none", "none", "none", "none"];
 var payButton;
 var rockButton;
 var fightButton;
-
+var miniWatcher;
 var blueDoorButton;
 var greenDoorButton;
 var redDoorButton;
@@ -239,6 +240,8 @@ var playerButtons = [player1Button, player2Button, player3Button, player4Button,
 
 var turnMarker;
 var victoryPoints = [1,1,1,1,1,1];
+
+
 
 var playState = {
  
@@ -354,7 +357,7 @@ create: function () {
 
 function KeyMove(number) {
     
-    if (questionUp == false && turnText.text !== "move") {
+    if (questionUp == false && turnText.text !== "move" && totalPlayers > 0) {
         
         turn = 1;
         
@@ -2072,7 +2075,7 @@ function GoToQuest() {
         
  
     } else if (turnText.text == "stairs") {
-        console.log("text = stairs");
+        
         turn = 3;
         
         restButton = this.game.add.button(400, 200, restName, StartActionTimer, 2,1,0);
@@ -2225,6 +2228,7 @@ function StartActionTimer(action) {
         case stairsButton:
             //console.log("stairsButton called");
             choiceText.setText("You walk up the stairs...");
+            SummonWatcher();
             buttons = 4;
             
             RunDelay(MakeStairs, "none", 200);
@@ -2242,7 +2246,7 @@ function StartActionTimer(action) {
 }
 
 function MakeStairs() {
-    backgroundAsset = "innerBackground";
+    backgroundAsset = "stairsBackground";
     timerBackground = this.game.add.sprite(45,200, backgroundAsset);
     question.addChild(timerBackground);
 }
@@ -2314,7 +2318,7 @@ function MakeFourDoors() {
     
     if (hasRock[currentPlayer - 1] != "none") {
         
-        rockButton = this.game.add.button(400, 200, "greenRockButton", StairsResult, this, 2,1,0);
+        rockButton = this.game.add.button(400, 200, "rockGreen", StairsResult, this, 2,1,0);
         question.addChild(rockButton);
                 
     }
@@ -2434,6 +2438,16 @@ function DoorResult(door) {
     redDoorButton.destroy();
     yellowDoorButton.destroy();
   
+}
+
+function SummonWatcher() {
+    
+    miniWatcher = this.game.add.sprite(735, 275, 'miniWatcher');
+
+    miniWatcher.anchor.setTo(0.5, 0.5);
+    miniWatcher.alpha = 0;
+
+    this.game.add.tween(miniWatcher).to( { alpha: 1 }, 2000, Phaser.Easing.Linear.None, true, 0, 0, false);
 }
 
 function GreenDoorResult() {
@@ -2782,6 +2796,7 @@ function FightMonster() {
         
     } else if (specialMonster == "watcher") {
         
+        miniWatcher.destroy();
         monsterModifier = 4;
         choiceText.setText("The Watcher is attacking you! Roll to fight! \nYou need a " + (monsterModifier + 1).toString() + " to win!!!" );
         
@@ -3367,6 +3382,12 @@ function DeleteQuestion() {
    
             emitterList[0].destroy();
         }    
+        
+    }
+
+    if (typeof miniWatcher !== "undefined") {
+        
+        miniWatcher.destroy();  
         
     }
 
