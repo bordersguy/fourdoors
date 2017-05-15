@@ -3,14 +3,19 @@
 //      Test prison break some more
 //      sun doesn't always get deleted....but, i think this is because of my key testing
 //      giving the rock doesn't delete the rock
+//      werewolf attacks on spider attack in the forest after final spider
+//      trying to delete doors that don't exist
 
 //To Do: 
-//      Draw Watcher & Ropasci
-//      Create world events      
+//      Adjust stairs background and make rsp into fighting ropasci
+//      Create world events
+//      Add visual for increase stats
+//      Add visual for time passing on inner path
 //      Add death conditions...and zombie conditions
 //      Add potion effects
 //      create better buttons :)
 //      Limit objects to certain classes
+
 
 
 //Later:
@@ -148,6 +153,7 @@ var emitter4;
 var emitter5;
 var emitter6;
 var emitterList = [emitter, emitter1, emitter2, emitter3, emitter4, emitter5, emitter6];
+var emitterMini = [];
 
 var particleList = ['goldParticle', 'lifeParticle', 'luckParticle', 'speedParticle', 'strengthParticle' ];
 
@@ -2295,32 +2301,36 @@ function MakeFourDoors() {
 
     turn = 32;
     
-     //var attackStyle = { font: "25px Impact", fill: "white", 
-       //         wordWrap: true, align: "center", backgroundColor: "transparent" };
-       //fightButtonText = this.game.add.text(98, 118, attack, attackStyle);        
-        
+    var buttonStyle = { font: "25px Impact", fill: "black", 
+            wordWrap: false, align: "center", backgroundColor: "transparent" };
+
     choiceText.setText("Hello. If you want to open an door you must...");
 
     if (parseInt(getAttack.text, 10) >= 10) {
         
         fightButton = this.game.add.button(100, 400, "monsterButton", StairsResult, this, 2,1,0);
         question.addChild(fightButton);
+        var fightButtonText = this.game.add.text(20, 110, "Fight!!", buttonStyle);   
+        fightButton.addChild(fightButtonText);
         
-        //fightButtonText = this.game.add.text(98, 118, attack, attackStyle);            
     }
     
     if (parseInt(getGold.text,10) >= 10) {
         
         payButton = this.game.add.button(400, 400, "coin", StairsResult, this, 2,1,0);    
         question.addChild(payButton);
-            
+        var payButtonText = this.game.add.text(10, 110, "Pay 5 gold!", buttonStyle);   
+        payButton.addChild(payButtonText);
+                    
     }
     
     if (hasRock[currentPlayer - 1] != "none") {
         
         rockButton = this.game.add.button(400, 200, "rockGreen", StairsResult, this, 2,1,0);
         question.addChild(rockButton);
-                
+        var rockButtonText = this.game.add.text(50, 70, "Give me\na rock!", buttonStyle);   
+        rockButton.addChild(rockButtonText);
+        
     }
     
     if (parseInt(getAttack.text, 10) < 10 && parseInt(getGold.text, 10) < 10 && hasRock[currentPlayer - 1] == "none") {
@@ -2338,7 +2348,7 @@ function StairsResult(choice) {
     
     if (choice == payButton) {
         
-        choiceText.setText("Thank You!!  Open any door you want!");
+        choiceText.setText("Thank You!!  You may open the green door");
         getGold = getGold.setText((parseInt(getGold.text, 10) - 5).toString());
         CreateDoors("any");
         
@@ -2351,7 +2361,9 @@ function StairsResult(choice) {
         
     } else {
         
-        choiceText.setText("Yeah, a rock! Thanks! You can only open the door that matches your rock");
+        var rockColor = hasRock[currentPlayer - 1].replace("rock", '').toLowerCase();
+        
+        choiceText.setText("Yeah, a rock! The " + rockColor + " rock can open the " + rockColor + " door.");
         CreateDoors("rock");
         DeleteInventory();
     }
@@ -2379,15 +2391,50 @@ function StairsResult(choice) {
 
 function CreateDoors(doors) {
     
-    blueDoorButton = this.game.add.button(400, 200, "blueDoorButton", DoorResult, this, 2,1,0);
-    greenDoorButton = this.game.add.button(100, 400, "greenDoorButton", DoorResult, this, 2,1,0);
-    redDoorButton = this.game.add.button(400, 400, "redDoorButton", DoorResult, this, 2,1,0);
-    yellowDoorButton = this.game.add.button(100, 200, "yellowDoorButton", DoorResult, this, 2,1,0);
+    switch (doors) {
+        case 'any':
+            blueDoorButton = this.game.add.button(400, 200, "blueDoorButton", DoorResult, this, 2,1,0);
+            greenDoorButton = this.game.add.button(100, 400, "greenDoorButton", DoorResult, this, 2,1,0);
+            redDoorButton = this.game.add.button(400, 400, "redDoorButton", DoorResult, this, 2,1,0);
+            yellowDoorButton = this.game.add.button(100, 200, "yellowDoorButton", DoorResult, this, 2,1,0);
+            
+            question.addChild(blueDoorButton);
+            question.addChild(greenDoorButton);
+            question.addChild(redDoorButton);
+            question.addChild(yellowDoorButton);
+            break;
+        
+      case 'rock':
+            
+            var rockColor = hasRock[currentPlayer - 1].replace("rock", '');
+            console.log(rockColor);
+            if (rockColor == "Blue") {
+               
+               blueDoorButton = this.game.add.button(400, 200, "blueDoorButton", DoorResult, this, 2,1,0); 
+               question.addChild(blueDoorButton);
+               
+            } else if (rockColor == "Green") {
+                
+                greenDoorButton = this.game.add.button(100, 400, "greenDoorButton", DoorResult, this, 2,1,0);     
+                question.addChild(greenDoorButton);
+                
+            } else if (rockColor == "Red") {
+                
+                redDoorButton = this.game.add.button(400, 400, "redDoorButton", DoorResult, this, 2,1,0);    
+                question.addChild(redDoorButton);    
+                
+            } else if (rockColor == "Yellow") {
+                console.log("I'm yellow!");
+                yellowDoorButton = this.game.add.button(100, 200, "yellowDoorButton", DoorResult, this, 2,1,0);
+                question.addChild(yellowDoorButton);
+                
+            }
+            
+            hasRock[currentPlayer - 1] = "none";
+            break;
+    }
     
-    question.addChild(blueDoorButton);
-    question.addChild(greenDoorButton);
-    question.addChild(redDoorButton);
-    question.addChild(yellowDoorButton);
+    
  
 }
 
@@ -2442,7 +2489,7 @@ function DoorResult(door) {
 
 function SummonWatcher() {
     
-    miniWatcher = this.game.add.sprite(735, 275, 'miniWatcher');
+    miniWatcher = this.game.add.sprite(620, 265, 'miniWatcher');
 
     miniWatcher.anchor.setTo(0.5, 0.5);
     miniWatcher.alpha = 0;
@@ -2791,7 +2838,7 @@ function FightMonster() {
     }  else if (specialMonster == "ropasci") {
         
         monsterModifier = 5;
-        choiceText.setText("The Ropasci Dragon is attacking you! Roll to fight! You need a " + (monsterModifier + 1).toString() + " to win!!!" );
+        choiceText.setText("The Ropasci Monster is attacking you! Roll to fight! You need a " + (monsterModifier + 1).toString() + " to win!!!" );
         
         
     } else if (specialMonster == "watcher") {
@@ -2822,7 +2869,11 @@ function FightMonster() {
         
     } else if (specialMonster == "ropasci") {
         
-        monsterSprite = this.game.add.sprite(150, 200, "dragon");    
+        var pickForm = getRandomInt(0,3);
+        
+        var formList = ["dragonPaper", "dragonRock", "dragonScissor"];
+        specialMonster = formList[pickForm];
+        monsterSprite = this.game.add.sprite(150, 200, formList[pickForm]);    
         
     } else if (specialMonster == "watcher") {
         
@@ -2945,6 +2996,14 @@ function AttackResult() {
                 
             } else {
                 
+                var ropasci = specialMonster;
+                
+                if (specialMonster.includes("dragon")) {
+                    
+                    specialMonster = "ropasci";
+                    
+                }
+                
                 switch (specialMonster) {
                     case 'spider':
                         monsterCount -= 1;
@@ -3030,7 +3089,7 @@ function AttackResult() {
                         
                     case 'ropasci':
                         
-                        AddVictoryPoint(specialMonster);
+                        AddVictoryPoint(ropasci);
                         choiceText.setText("Wow!  You won!  You gain 1 power! You get 1 victory point!");
                         getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 1).toString());
                         specialMonster = "none";
@@ -3294,9 +3353,9 @@ function CreateParticles(particle, object, mini) {
     //StartParticles(emitter, particle);
     if (mini == true) {
         
-        emitterList[currentPlayer] = this.game.add.emitter(getPos.x + getPos.width - 50  , getPos.y + getPos.height - 10, 100);
+        emitterMini[currentPlayer - 1] = this.game.add.emitter(getPos.x + getPos.width - 50  , getPos.y + getPos.height - 10, 100);
 
-        currentEmitter = emitterList[currentPlayer];
+        currentEmitter = emitterMini[currentPlayer - 1];
 
         currentEmitter.maxParticleScale = .35;
         currentEmitter.minParticleScale = 0.15;
@@ -3367,7 +3426,11 @@ function DeleteInventory() {
             
         packList[currentPlayer - 1].getChildAt(6).destroy();
         
-        emitterList[currentPlayer].destroy();    
+        if (typeof emitterMini[currentPlayer - 1] !== "undefined") {
+            
+             emitterMini[currentPlayer - 1].destroy();  
+        }
+          
     }
     
 }
@@ -3796,7 +3859,7 @@ function PoolResult() {
 function DragonResult() {
     
     var getLife = packList[currentPlayer - 1].getChildAt(4);
-    var getGold = packList[currentPlayer - 1].getChildAt(2);
+    
     
     switch (dieResult) {
         
@@ -4523,6 +4586,9 @@ function GiveRock(yesNo) {
         choiceText.setText("Awww...okay. If you change your mind then come back here!");
         turnText.setText(" turn \nover");
         
+        yesButton.destroy();
+        noButton.destroy();
+        
     } else {
         
         var getGold = packList[currentPlayer - 1].getChildAt(2);
@@ -4530,11 +4596,15 @@ function GiveRock(yesNo) {
         choiceText.setText("Great!  Here's 5 gold!");
         getGold = getGold.setText((parseInt(getGold.text, 10) + 5).toString());
         
+        hasRock[currentPlayer - 1] = "none";
         
+        yesButton.destroy();
+        noButton.destroy();
+        
+        DeleteInventory();
     }
     
-    yesButton.destroy();
-    noButton.destroy();
+    
     
 }
 
