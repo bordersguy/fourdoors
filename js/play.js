@@ -2,12 +2,10 @@
 //      On mobile, the game doesn't resize in landscape
 //      Test prison break some more
 //      sun doesn't always get deleted....but, i think this is because of my key testing
-//      giving the rock doesn't delete the rock
 //      werewolf attacks on spider attack in the forest after final spider
-//      trying to delete doors that don't exist
+//      movement markers didn't disappear
 
 //To Do: 
-//      Adjust stairs background and make rsp into fighting ropasci
 //      Create world events
 //      Add visual for increase stats
 //      Add visual for time passing on inner path
@@ -225,6 +223,7 @@ var greenDoorButton;
 var redDoorButton;
 var yellowDoorButton;
 var doorChoice;
+var totalDoors;
 
 var hasCurse = ["none", "none", "none", "none", "none", "none"];
 
@@ -2118,6 +2117,8 @@ function GoToQuest() {
         
         question.add(timerBackground);
         question.addChild(choiceText);
+        
+        
         switch (turnText.text) {
             
             case "village":
@@ -2127,6 +2128,12 @@ function GoToQuest() {
                     choiceText.setText("The village doctor can stop the werewolf curse for 3 gold.");
                     choice = "removeCurse";
                     Choice();
+                    
+                } else if (playerBonus[currentPlayer - 1][1] == "gold") {
+                  
+                    choiceText.setText("A stranger wants to buy your " + playerBonus[currentPlayer - 1][0] + "for 3 gold.");
+                    choice = "sellInventory";
+                    Choice();  
                     
                 } else {
                 
@@ -2161,6 +2168,12 @@ function GoToQuest() {
                     choiceText.setText("The castle doctor can stop the zombie curse for 3 gold.");
                     choice = "removeCurse";
                     Choice();
+                    
+                } else if (playerBonus[currentPlayer - 1][1] == "gold") {
+                  
+                    choiceText.setText("A stranger wants to buy your " + playerBonus[currentPlayer - 1][0] + "for 3 gold.");
+                    choice = "sellInventory";
+                    Choice();  
                     
                 } else {
                     
@@ -2402,6 +2415,8 @@ function CreateDoors(doors) {
             question.addChild(greenDoorButton);
             question.addChild(redDoorButton);
             question.addChild(yellowDoorButton);
+            
+            totalDoors = 4;
             break;
         
       case 'rock':
@@ -2430,6 +2445,7 @@ function CreateDoors(doors) {
                 
             }
             
+            totalDoors = 1;
             hasRock[currentPlayer - 1] = "none";
             break;
     }
@@ -2441,7 +2457,7 @@ function CreateDoors(doors) {
 function DoorResult(door) {
     
     var choice;
-    
+
     if (door == blueDoorButton) {
         
         choiceText.setText("This is Balance Door...switch power with any player");
@@ -2455,9 +2471,7 @@ function DoorResult(door) {
         choice = "green";
         turn = 36;
         RollDie();
-        //switch random
-        
-        
+
     } else if (door == redDoorButton) {
         
         choiceText.setText("This is the Vampire Door...switch life with any player.");
@@ -2468,23 +2482,26 @@ function DoorResult(door) {
         
     } else if (door == yellowDoorButton) {
         
-        choiceText.setText("This the Thief Door...you steal 5 gold from any player.");
+        choiceText.setText("This the Thief Door...steal 5 gold from any player.");
         choice = "yellow";
         ChoosePlayer(choice);
         //switch gold
+  
+    }
+    
+    if (totalDoors == 1 ) {
         
+        door.destroy();
         
+    } else {
+        
+        blueDoorButton.destroy();
+        greenDoorButton.destroy();
+        redDoorButton.destroy();
+        yellowDoorButton.destroy();
     }
     
     
-    //RunDelay(ChoosePlayer, choice, 3000 );
-    
-    
-    blueDoorButton.destroy();
-    greenDoorButton.destroy();
-    redDoorButton.destroy();
-    yellowDoorButton.destroy();
-  
 }
 
 function SummonWatcher() {
@@ -3323,6 +3340,7 @@ function AddInventory(choice) {
             CreateParticles(itemModifier + 'Particle', inventory, true);
             playerBonus[currentPlayer - 1] = [itemObject, itemModifier];
             displayItem.destroy();
+            
         } else {
             
             displayItem.destroy();
@@ -4084,6 +4102,11 @@ function Choice() {
             
             ActivateChoice(RemoveCurse);
             break;
+            
+        case "sellInventory":
+            ActivateChoice(SellInventory);
+            break;
+            
     }
     
     
@@ -4656,7 +4679,22 @@ function RemoveCurse(yesNo) {
     } else {
         
         choiceText.setText("No? Okay. Roll the die.");
-        turn = 21;
+        
+        if (turnText.text == "village") {
+            
+            turn = 18;
+            
+        } else if (turnText.text == "witch") {
+            
+            turn = 21;
+            
+        } else if (turnText.text == "castle") {
+            
+            turn = 19;
+            
+        }
+        
+        
         CreateSun();
     }
     
@@ -4779,6 +4817,39 @@ function WorldEvent() {
     }
     
         
+}
+
+function SellInventory(yesNo) {
+    
+    var getGold = packList[currentPlayer - 1].getChildAt(2);
+    
+    if (yesNo == yesButton) {
+        getGold = getGold.setText((parseInt(getGold.text, 10) + 3).toString());
+        choiceText.setText("The stranger says, 'Enjoy your gold!'");
+        DeleteInventory();
+        turnText.setText("turn \nover");
+
+    } else {
+        
+        choiceText.setText("Okay. You can still look around! Roll the die.");
+        
+        if (turnText.text == "village") {
+            
+            turn = 18;
+            
+        } else if (turnText.text == "castle") {
+            
+            turn = 19;
+            
+        }
+        
+        CreateSun();
+    }
+    
+    yesButton.destroy();
+    noButton.destroy();
+    
+    
 }
 
 //***************Tools
