@@ -2,17 +2,17 @@
 //      On mobile, the game doesn't resize in landscape
 //      Test prison break some more
 //      sun doesn't always get deleted....but, i think this is because of my key testing
-//      werewolf attacks on spider attack in the forest after final spider
 //      movement markers didn't disappear
 
+
 //To Do: 
-//      Create world events
+//      Create art for world events
 //      Add visual for increase stats
 //      Add visual for time passing on inner path
 //      Add death conditions...and zombie conditions
-//      Add potion effects
 //      create better buttons :)
 //      Limit objects to certain classes
+//      Add special character advantages
 
 
 
@@ -142,6 +142,7 @@ var displayItem;
 var hasItem;
 var hasBonus;
 var isMagic = false;
+var checkSpeed = 0;
 
 var emitter;
 var emitter1;
@@ -546,6 +547,13 @@ function ManageTurn () {
     switch (turn) {
         case 0:
             
+            //Add DeathCondition here
+            if (getLife.text == "0" && playerBonus[currentPlayer - 1][1] == "life") {
+                
+                getLife = getLife.setText((parseInt(getLife.text, 10) + 4).toString());
+                DeleteInventory();
+            }
+            
             if (hasCurse[currentPlayer - 1] == "zombie") {
                 
                 getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
@@ -854,11 +862,17 @@ function CreateMovementToken(moves) {
 
 function MovePlayer (spot) {
     
+    checkSpeed += 1;
+    
+    if (playerBonus[currentPlayer - 1][1] == "speed" && checkSpeed > 1) {
+        
+        DeleteInventory();
+        
+    }
+    
     tokenList[currentPlayer - 1].position.x = spot.x;
     tokenList[currentPlayer - 1].position.y = spot.y;
-    
-    
-    
+
     if (spot == aSpot) {
         
         updatePos = newSpot1;
@@ -1385,7 +1399,7 @@ function UpdateTurnText(box) {
 function ResetTurn() {
     
     specialMonster = "none";
-
+    checkSpeed = 0;
     isMagic = false;
     turn = 0;
     
@@ -1982,29 +1996,29 @@ function GoToQuest() {
         
         turn = 3;
         
-        restButton = this.game.add.button(250, 200, restName, StartActionTimer, 2,1,0);
-        restButtonText = this.game.add.text(-20, 70, "Take a Rest", buttonStyle);   
-        restButton.addChild(restButtonText);
+        // restButton = this.game.add.button(250, 200, restName, StartActionTimer, 2,1,0);
+        // restButtonText = this.game.add.text(-20, 70, "Take a Rest", buttonStyle);   
+        // restButton.addChild(restButtonText);
         
         monsterButton = this.game.add.button(100, 400, "monsterButton", StartActionTimer, 2,1,0);
         monsterButtonText = this.game.add.text(0, 105, "Monster Hunt", buttonStyle);   
         monsterButton.addChild(monsterButtonText);
         
-        treasureButton = this.game.add.button(380, 365, "treasureButton", StartActionTimer, 2,1,0);
-        treasureButtonText = this.game.add.text(10, 140, "Treasure Hunt", buttonStyle);   
-        treasureButton.addChild(treasureButtonText);
+        // treasureButton = this.game.add.button(380, 365, "treasureButton", StartActionTimer, 2,1,0);
+        // treasureButtonText = this.game.add.text(10, 140, "Treasure Hunt", buttonStyle);   
+        // treasureButton.addChild(treasureButtonText);
         
-        restButton.scale.setTo(1.5,1.5);
-        zees = this.game.add.sprite(55, -20, "sleeping");
-        restButton.addChild(zees);
+        // restButton.scale.setTo(1.5,1.5);
+        // zees = this.game.add.sprite(55, -20, "sleeping");
+        // restButton.addChild(zees);
         
-        restButton.input.enabled = false;
-        treasureButton.input.enabled = false;
+        // restButton.input.enabled = false;
+        // treasureButton.input.enabled = false;
         
         
-        question.addChild(restButton);
+        // question.addChild(restButton);
         question.addChild(monsterButton);
-        question.addChild(treasureButton);
+        // question.addChild(treasureButton);
      
         question.addChild(choiceText);
         
@@ -2131,7 +2145,7 @@ function GoToQuest() {
                     
                 } else if (playerBonus[currentPlayer - 1][1] == "gold") {
                   
-                    choiceText.setText("A stranger wants to buy your " + playerBonus[currentPlayer - 1][0] + "for 3 gold.");
+                    choiceText.setText("A stranger wants to buy your " + playerBonus[currentPlayer - 1][0] + " for 3 gold.");
                     choice = "sellInventory";
                     Choice();  
                     
@@ -2171,7 +2185,7 @@ function GoToQuest() {
                     
                 } else if (playerBonus[currentPlayer - 1][1] == "gold") {
                   
-                    choiceText.setText("A stranger wants to buy your " + playerBonus[currentPlayer - 1][0] + "for 3 gold.");
+                    choiceText.setText("A stranger wants to buy your " + playerBonus[currentPlayer - 1][0] + " for 3 gold.");
                     choice = "sellInventory";
                     Choice();  
                     
@@ -2220,6 +2234,12 @@ function GoToQuest() {
 function StartActionTimer(action) {
     
     var buttons = 3;
+    
+    if (hasCurse[currentPlayer - 1] == "werewolf" && dayNight == 2) {
+        
+        buttons = 1;
+        
+    }
     
     switch (action) {
         
@@ -2750,6 +2770,12 @@ function FightMonster() {
         return;
         
     }
+    
+    if (turnText.text.includes("over")) {
+        
+        return;
+        
+    }
        
     var monsterList;
     var getAttack = parseInt(packList[currentPlayer - 1].getChildAt(3), 10);
@@ -2913,9 +2939,9 @@ function AttackResult() {
         
     }
     
-    var getLife = packList[currentPlayer - 1].getChildAt(4);
+    
     var getAttack = packList[currentPlayer - 1].getChildAt(3);
-    //dieResult = dice.animations.currentAnim.frame + 1;
+
     
     if (dieResult == monsterModifier) {
         
@@ -2937,56 +2963,28 @@ function AttackResult() {
                 if (hasItem && hasBonus) {
                     
                     choiceText.setText("Uggghh! The " + monster + " won. \nYour shield can save 1 life.  \nDo you want to roll again?");    
+                    
                     CreateMagicButtons();
                     specialMonster = "none";
                     return;
-                } else if (hasItem){
                     
+                } else if (hasItem){
+                    DeleteInventory();
                     choiceText.setText("Uggghh! The " + monster + " won. \nYour shield saved 1 life.");                
                     turn = 3;
                     turnText.setText("turn \nover");
                     specialMonster = "none";
                     return;
+                    
                 } else if (hasBonus) {
                     
                     choiceText.setText("Uggghh! The " + monster + " won. \nDo you want to roll again?");                
                     CreateMagicButtons();
-                    
                     return;
+                    
                 } else {
                     
-                    choiceText.setText("Uggghh! The " + monster + " won. \nLose 1 life.");
-                    getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
-                    turn = 3;
-                    
-                    if (monster == "zombie" || monster == "vampire" || monster == "thief" ||
-                        monster == "werewolf") {
-                            
-                            if (hasCurse[currentPlayer - 1] == "none") {
-                                
-                                choiceText.setText("Uggghh! The " + monster + " won. \nLose 1 life.  And....");
-                            
-                                RunDelay(MonsterCurse, "none", 3000);
-                                    
-                            } else if (hasCurse[currentPlayer - 1] == "vampire") {
-                                
-                                getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
-                                choiceText.setText("Uggghh! The " + monster + " won. \nLose 2 life. You are still cursed.");
-                                
-                            } else {
-                                
-                                choiceText.setText("Uggghh! The " + monster + " won. \nLose 1 life. You are still cursed.");
-                                
-                            }
-                            
-                            
-                    } else {
-                        
-                        turnText.setText("turn \nover");
-                            
-                    }
-                    
-                    specialMonster = "none";
+                    LostFight();
                 }
                     
             }
@@ -3008,7 +3006,7 @@ function AttackResult() {
                 } else {
                     
                     turnText.setText("turn \nover");
-                    specialMonster = "none"
+                    specialMonster = "none";
                 }
                 
             } else {
@@ -3118,6 +3116,45 @@ function AttackResult() {
         }
 }
 
+function LostFight() {
+      
+        var getLife = packList[currentPlayer - 1].getChildAt(4);
+        
+        choiceText.setText("Uggghh! The " + monster + " won. \nLose 1 life.");
+        getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
+        turn = 3;
+        
+        if (monster == "zombie" || monster == "vampire" || monster == "thief" ||
+            monster == "werewolf") {
+                
+                if (hasCurse[currentPlayer - 1] == "none") {
+                    
+                    choiceText.setText("Uggghh! The " + monster + " won. \nLose 1 life.  And....");
+                
+                    RunDelay(MonsterCurse, "none", 3000);
+                        
+                } else if (hasCurse[currentPlayer - 1] == "vampire") {
+                    
+                    getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
+                    choiceText.setText("Uggghh! The " + monster + " won. \nLose 2 life. You are still cursed.");
+                    
+                } else {
+                    
+                    choiceText.setText("Uggghh! The " + monster + " won. \nLose 1 life. You are still cursed.");
+                    
+                }
+                
+                
+        } else {
+            
+            turnText.setText("turn \nover");
+                
+        }
+        
+        specialMonster = "none";
+    }
+
+
 function MonsterCurse() {
     
     var getGold = packList[currentPlayer - 1].getChildAt(2);
@@ -3226,8 +3263,22 @@ function UseMagic(magic) {
         
         if (turn == 4) {
             
-             choiceText.setText("You still have your magic.");
-
+             choiceText.setText("You still have your magic...but...");
+             
+             if (playerBonus[currentPlayer - 1][0] == "shield") {
+                 
+                choiceText.setText("Your shield saves 1 life");
+                emitterMini[currentPlayer - 1].destroy(); 
+                DeleteInventory();
+                
+                useMagicButton.destroy();
+                noMagicButton.destroy();
+                turnText.text.setText("turn\nover");
+                
+                return;
+             }
+             RunDelay(LostFight,"none", 3000);
+    
             
         }
         
@@ -3236,9 +3287,9 @@ function UseMagic(magic) {
         if (turn == 4) {
             
             reroll = true;
-            emitterList[currentPlayer].destroy(); 
+            emitterMini[currentPlayer - 1].destroy(); 
             DeleteInventory();
-            playerBonus[currentPlayer - 1][1] = ["none"];
+            playerBonus[currentPlayer - 1][1] = "none";
             FightMonster();
             
             
@@ -3246,7 +3297,8 @@ function UseMagic(magic) {
         
     }
     
-    
+    useMagicButton.destroy();
+    noMagicButton.destroy();
     
 }
 
@@ -3347,6 +3399,7 @@ function AddInventory(choice) {
             inventory = this.game.add.sprite (40,110, currentItem);
             inventory.scale.setTo(.25,.25);
             packList[currentPlayer - 1].add(inventory);
+            playerBonus[currentPlayer - 1] = [itemObject, itemModifier];
         }
         
         if (currentItem.includes("rock")) {
@@ -3357,7 +3410,7 @@ function AddInventory(choice) {
         
     }
     
-    
+    console.log(playerBonus[currentPlayer - 1]);
     garbageButton.destroy();
     keepButton.destroy();
     turnText.setText("turn \nover");
@@ -3448,6 +3501,9 @@ function DeleteInventory() {
             
              emitterMini[currentPlayer - 1].destroy();  
         }
+        
+        playerBonus[currentPlayer - 1][0] = "none";
+        playerBonus[currentPlayer - 1][1] = "none";
           
     }
     
