@@ -117,6 +117,10 @@ var loadState = {
         this.game.load.image('forestBackgroundNight', 'assets/forestBackgroundNight.png');
         this.game.load.image('caveBackgroundNight', 'assets/caveBackgroundNight.png');
         this.game.load.image('innerBackground', 'assets/innerBackground.png');
+        this.game.load.image('blizzard', 'assets/blizzard.png');
+        this.game.load.image('earthquake', 'assets/earthquake.png');
+        this.game.load.image('dragonAttack', 'assets/dragonAttack.png');
+        this.game.load.image('storm', 'assets/storm.png');
         
         
         

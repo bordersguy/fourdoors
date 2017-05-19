@@ -4791,7 +4791,8 @@ function WorldEvent() {
     question.width = questionPanel.width;
     questionPanel.addChild(question);
         
-    questionText = this.game.add.text(20, 150, getQuestion, { font: "40px Arial", fill: "black", align: "center", wordWrap: true, wordWrapWidth: question.width - 20 });
+    questionText = this.game.add.text(20, 100, getQuestion, { font: "40px Arial", fill: "black", align: "center", wordWrap: true, wordWrapWidth: question.width - 20 });
+    
     
     
     deleteQuestion = this.game.add.button (520, 15, 'deleteX', DeleteWorldEvent, this, 2,1,0);
@@ -4800,14 +4801,17 @@ function WorldEvent() {
     
     
     var pickEvent = getRandomInt(0,4);
-    
+    var eventPicture;
+
     var getLife;
-    // var getAttack = packList[currentPlayer - 1].getChildAt(3);
-    // var getGold = packList[currentPlayer - 1].getChildAt(2);
+
     
     switch (pickEvent) {
         case 0:
             questionText.setText("A lightning storm hits the world!  If you are outside lose 1 life.");
+
+            eventPicture = this.game.add.sprite(50, 250, "storm");
+            question.addChild(eventPicture);
             
             for (var i = 0; i < totalPlayers; i++) {
                 
@@ -4825,6 +4829,9 @@ function WorldEvent() {
         case 1:
             questionText.setText("A blizzard hits the world! If you are outside without special clothes lose 1 life.");
             
+            eventPicture = this.game.add.sprite(50, 250, "blizzard");
+            question.addChild(eventPicture);
+            
             for (var i = 0; i < totalPlayers; i++) {
                 
                 if (boardLevel[i] == 1) {
@@ -4841,6 +4848,10 @@ function WorldEvent() {
         case 2:
             questionText.setText("An earthquake hits the world!  If you are in the mountain lose 1 life.");
             
+            eventPicture = this.game.add.sprite(50, 250, "earthquake");
+            question.addChild(eventPicture);
+            
+            
             for (var i = 0; i < totalPlayers; i++) {
                 
                 if (boardLevel[i] == 2) {
@@ -4856,6 +4867,9 @@ function WorldEvent() {
             
         case 3:
             questionText.setText("The dragons united and are attacking!! If you are outside lose 1 life.");
+            
+            eventPicture = this.game.add.sprite(50, 250, "dragonAttack");
+            question.addChild(eventPicture);
             
             for (var i = 0; i < totalPlayers; i++) {
                 
