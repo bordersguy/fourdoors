@@ -70,7 +70,8 @@ var loadState = {
         this.game.load.image('greenDoorButton', 'assets/greenDoorButton.png');
         this.game.load.image('redDoorButton', 'assets/redDoorButton.png');
         this.game.load.image('yellowDoorButton', 'assets/yellowDoorButton.png');
-        
+        this.game.load.image('skull', 'assets/skull.png');
+        this.game.load.image('tokenSkull', 'assets/tokenSkull.png');
         
         
         //Inventory

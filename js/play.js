@@ -6,10 +6,11 @@
 
 
 //To Do: 
-//      Create art for world events
+
+//      Show attack level for monsters
 //      Add visual for increase stats
 //      Add visual for time passing on inner path
-//      Add death conditions...and zombie conditions
+//      zombie conditions
 //      create better buttons :)
 //      Limit objects to certain classes
 //      Add special character advantages
@@ -246,7 +247,11 @@ var playerButtons = [player1Button, player2Button, player3Button, player4Button,
 
 var turnMarker;
 var victoryPoints = [1,1,1,1,1,1];
-
+var isDead = ["no", "no", "no", "no", "no", "no"];
+var playerFight = false;
+var playerAttackValue;
+var whichPlayerFighting;
+var currentStronger;
 
 
 var playState = {
@@ -542,23 +547,30 @@ function ManageTurn () {
     
     turnManagerButton.inputEnabled = false;
     var getLife = packList[currentPlayer - 1].getChildAt(4);
-    
+    var getLifeInt = parseInt(getLife.text, 10);
     
     switch (turn) {
         case 0:
             
-            //Add DeathCondition here
-            if (getLife.text == "0" && playerBonus[currentPlayer - 1][1] == "life") {
+            if (getLifeInt <= 0 && playerBonus[currentPlayer - 1][1] == "life") {
                 
                 getLife = getLife.setText((parseInt(getLife.text, 10) + 4).toString());
                 DeleteInventory();
+            }
+            
+            if (getLifeInt <= 0 && hasCurse[currentPlayer - 1] != "zombie" && isDead[currentPlayer - 1] == "no"){
+                
+                DeadPlayer();
+                
             }
             
             if (hasCurse[currentPlayer - 1] == "zombie") {
                 
                 getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
                 
-                if (getLife == "0") {
+                getLifeInt = parseInt(getLife.text, 10);
+                
+                if (getLifeInt <= 0) {
                     
                     BecomeZombie();
                     
@@ -581,9 +593,7 @@ function ManageTurn () {
                 
                 
             } else {
-                
-                
-                
+
                 turnText.setText("player " + currentPlayer + "\nroll");
                 turn = 1;   
                 
@@ -698,6 +708,10 @@ function DieResult() {
         
         case 4:
             AttackResult();
+            break;
+            
+        case 7:
+            AttackPlayerResult();
             break;
     
         case 18:
@@ -1402,6 +1416,15 @@ function ResetTurn() {
     checkSpeed = 0;
     isMagic = false;
     turn = 0;
+    playerFight = false;
+    
+    var getLife = packList[currentPlayer - 1].getChildAt(4);
+    
+    if (isDead[currentPlayer - 1] == "yes") {
+        
+        getLife = getLife.setText("0");
+        
+    }
     
     var eventChance = getRandomInt(0, 10);
     console.log("EC = " + eventChance);
@@ -1980,6 +2003,12 @@ function GoToQuest() {
     
     var restName = packList[currentPlayer - 1].getChildAt(5).text.slice(0, -2);
     
+    if (isDead[currentPlayer - 1] == "yes") {
+        
+        restName = "tokenSkull";
+        
+    }
+    
     var buttonStyle = { font: "25px Impact", fill: "black", 
             wordWrap: false, align: "center", backgroundColor: "transparent" };
      
@@ -1995,40 +2024,75 @@ function GoToQuest() {
         choiceText.setText("It's nighttime and you are a werewolf!  You must go monster hunting!!");
         
         turn = 3;
-        
-        // restButton = this.game.add.button(250, 200, restName, StartActionTimer, 2,1,0);
-        // restButtonText = this.game.add.text(-20, 70, "Take a Rest", buttonStyle);   
-        // restButton.addChild(restButtonText);
-        
+
         monsterButton = this.game.add.button(100, 400, "monsterButton", StartActionTimer, 2,1,0);
         monsterButtonText = this.game.add.text(0, 105, "Monster Hunt", buttonStyle);   
         monsterButton.addChild(monsterButtonText);
-        
-        // treasureButton = this.game.add.button(380, 365, "treasureButton", StartActionTimer, 2,1,0);
-        // treasureButtonText = this.game.add.text(10, 140, "Treasure Hunt", buttonStyle);   
-        // treasureButton.addChild(treasureButtonText);
-        
-        // restButton.scale.setTo(1.5,1.5);
-        // zees = this.game.add.sprite(55, -20, "sleeping");
-        // restButton.addChild(zees);
-        
-        // restButton.input.enabled = false;
-        // treasureButton.input.enabled = false;
-        
-        
-        // question.addChild(restButton);
+
         question.addChild(monsterButton);
-        // question.addChild(treasureButton);
-     
         question.addChild(choiceText);
         
         return;
         
     }
     
+    if (isDead[currentPlayer - 1] == "yes") {
+        
+        question.addChild(choiceText);
+        var buttonX = 100;
+        var buttonY = 200;
+        
+        for (var i = 0; i < totalPlayers; i++) {
+            
+            if (boardLevel[i] == boardLevel[currentPlayer - 1] && i != currentPlayer - 1) {
+                
+                if(cPosSet[i] == cPosSet[currentPlayer - 1]) {
+                    
+                    choiceText.setText("There is a player here!  You must fight them!");
+                    playerFight = true;
+                    var getRace = packList[i].getChildAt(5).text.slice(0, -2);
+        
+               
+                    playerButtons[i]= this.game.add.button(buttonX, buttonY, getRace, FightPlayer, this);		
+                    question.add(playerButtons[i]);
+                    
+                    buttonX += 150;
+                    
+                    if (buttonX  > 450) {
+                        
+                        buttonX = 100;
+                        
+                        if (buttonY == 200) {
+                                
+                                buttonY = 400;
+                                
+                        } else if (buttonY == 400) {
+                                
+                                buttonY = 200;
+                                
+                        }
+            
+                    }
+                    
+                }
+   
+            }
+            
+        }
+        
+        
+    }
+    
+    if (playerFight == true) {
+        
+        return;
+    }
+    
     if (turnText.text === "Quest!") {
         turn = 3;
-
+        
+        console.log(restName);
+        
         restButton = this.game.add.button(250, 200, restName, StartActionTimer, 2,1,0);
         restButtonText = this.game.add.text(-20, 70, "Take a Rest", buttonStyle);   
         restButton.addChild(restButtonText);
@@ -2664,6 +2728,151 @@ function ChosenPlayer(chosenPlayer) {
   
 }
 
+function FightPlayer(fightPlayer) {
+    
+    var getNumber;
+    
+    for (var i = 0; i < playerButtons.length; i++) {
+        
+        if (fightPlayer == playerButtons[i]) {
+            
+            getNumber = i;
+            
+        }
+  
+    }
+    
+    whichPlayerFighting = getNumber;
+    
+    var getLifeCurrent = packList[currentPlayer - 1].getChildAt(4);
+    var getAttackCurrent = packList[currentPlayer - 1].getChildAt(3);
+
+    var getLifeOther = packList[getNumber].getChildAt(4);
+    var getAttackOther = packList[getNumber].getChildAt(3);
+
+    
+    var totalAttackCurrent = parseInt(getAttackCurrent.text, 10);
+    
+    if (playerBonus[currentPlayer - 1][0] == "sword") {
+        
+        totalAttackCurrent += 1;
+        
+    }
+    
+    if (playerBonus[currentPlayer - 1][1] == "strength") {
+        
+        totalAttackCurrent += 1;
+        
+    }
+    
+    var totalAttackOther = parseInt(getAttackOther.text, 10);
+    
+    if (playerBonus[getNumber][0] == "sword") {
+        
+        totalAttackOther += 1;
+        
+    }
+    
+    if (playerBonus[getNumber][1] == "strength") {
+        
+        totalAttackOther += 1;
+        
+    }
+    
+    if (totalAttackCurrent - totalAttackOther > 5 ) {
+        
+        choiceText.setText("You're too strong!  Gain 1 attack...the other player loses 1 life.");   
+        getAttackCurrent = getAttackCurrent.setText((parseInt(getAttackCurrent.text, 10) + 1).toString());
+        getLifeOther = getLifeOther.setText((parseInt(getLifeOther.text, 10) - 1).toString());
+        return;
+        
+    } else if (totalAttackCurrent - totalAttackOther < 5) {
+        
+        playerAttackValue = totalAttackCurrent - totalAttackOther + 1;
+        turn = 7;
+        choiceText.setText("You are stronger! The other player needs to roll the die.  They need a "
+                            + (playerAttackValue) + " to win!");
+        currentStronger = true;
+        return;
+        
+    } else if (totalAttackOther - totalAttackCurrent > 5) {
+        
+        choiceText.setText("The other player is too strong!  They gain 1 attack...you lose 1 life.");    
+        getAttackOther = getAttackOther.setText((parseInt(getAttackOther.text, 10) + 1).toString());
+        getLifeCurrent = getLifeCurrent.setText((parseInt(getLifeCurrent.text, 10) - 1).toString());
+        return;
+        
+    } else if (totalAttackOther - totalAttackCurrent < 5) {
+        
+        playerAttackValue = totalAttackOther - totalAttackCurrent + 1;
+        turn = 7;
+        choiceText.setText("They are stronger! You need to roll the die.  You need a "
+                            + (playerAttackValue) + " to win!");
+        currentStronger = false;
+        return;
+        
+    }
+    
+    
+}
+
+function AttackPlayerResult() {
+    
+    console.log("apr");
+    console.log(currentStronger);
+    console.log(playerAttackValue +  " pav & " + dieResult + " dr" );
+    
+    var getLifeCurrent = packList[currentPlayer - 1].getChildAt(4);
+    var getAttackCurrent = packList[currentPlayer - 1].getChildAt(3);
+
+    var getLifeOther = packList[whichPlayerFighting].getChildAt(4);
+    var getAttackOther = packList[whichPlayerFighting].getChildAt(3);
+    
+    if (dieResult >= playerAttackValue && currentStronger == false) {
+
+        choiceText.setText("You won! Gain 1 attack...the other player loses 1 life.");
+        getAttackCurrent = getAttackCurrent.setText((parseInt(getAttackCurrent.text, 10) + 1).toString());
+        getLifeOther = getLifeOther.setText((parseInt(getLifeOther.text, 10) - 1).toString());
+        return;
+        
+    } else if (dieResult == playerAttackValue - 1 && currentStronger == false ) {
+
+        choiceText.setText("You tied...try again!");        
+        return;
+        
+    } else if (dieResult < playerAttackValue - 1 && currentStronger == false) {
+
+        choiceText.setText("They won!  They gain 1 attack...you lose 1 life.");    
+        getAttackOther = getAttackOther.setText((parseInt(getAttackOther.text, 10) + 1).toString());
+        getLifeCurrent = getLifeCurrent.setText((parseInt(getLifeCurrent.text, 10) - 1).toString());
+        return;
+        
+    } else if (dieResult >= playerAttackValue && currentStronger == true) {
+
+        
+        choiceText.setText("They won!  They gain 1 attack...you lose 1 life.");    
+        getAttackOther = getAttackOther.setText((parseInt(getAttackOther.text, 10) + 1).toString());
+        getLifeCurrent = getLifeCurrent.setText((parseInt(getLifeCurrent.text, 10) - 1).toString());
+        return;
+        
+    } else if (dieResult == playerAttackValue - 1 && currentStronger == true ) {
+        
+
+        choiceText.setText("You tied...try again!");        
+        return;
+        
+    } else if (dieResult < playerAttackValue - 1 && currentStronger == true) {
+        
+
+        choiceText.setText("You won! Gain 1 attack...the other player loses 1 life.");
+        getAttackCurrent = getAttackCurrent.setText((parseInt(getAttackCurrent.text, 10) + 1).toString());
+        getLifeOther = getLifeOther.setText((parseInt(getLifeOther.text, 10) - 1).toString());
+        return;
+        
+    }
+
+}
+
 function ManageQuest(choice) {
     
     var getGold = packList[currentPlayer - 1].getChildAt(2);
@@ -3154,7 +3363,6 @@ function LostFight() {
         specialMonster = "none";
     }
 
-
 function MonsterCurse() {
     
     var getGold = packList[currentPlayer - 1].getChildAt(2);
@@ -3484,11 +3692,6 @@ function CheckInventory(item, modify) {
         
         hasBonus = false;
     }
-        
-            
-   
-    
-
 }
 
 function DeleteInventory() {
@@ -4918,6 +5121,32 @@ function SellInventory(yesNo) {
     
     yesButton.destroy();
     noButton.destroy();
+    
+    
+}
+
+function DeadPlayer() {
+    
+    questionPanel = this.game.add.sprite(300, 0, 'answersheet');
+    question = this.game.add.group();
+    question.width = questionPanel.width;
+    questionPanel.addChild(question);
+        
+    questionText = this.game.add.text(20, 100, getQuestion, { font: "40px Arial", fill: "black", align: "center", wordWrap: true, wordWrapWidth: question.width - 20 });
+    
+    var skull = this.game.add.sprite(50, 250, "skull");
+    question.addChild(skull);
+    
+    deleteQuestion = this.game.add.button (520, 15, 'deleteX', DeleteWorldEvent, this, 2,1,0);
+    question.addChild(deleteQuestion);
+    question.addChild(questionText);
+    
+    isDead[currentPlayer - 1] = "yes";
+    questionText.setText("You have no life!  You are now a skeleton.  Your life will always go down to 0. " +  
+    "You must fight other players now.");
+    
+    packList[currentPlayer - 1].getChildAt(0).loadTexture('tokenSkull');
+    tokenList[currentPlayer - 1].loadTexture('tokenSkull');
     
     
 }
