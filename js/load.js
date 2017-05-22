@@ -72,6 +72,9 @@ var loadState = {
         this.game.load.image('yellowDoorButton', 'assets/yellowDoorButton.png');
         this.game.load.image('skull', 'assets/skull.png');
         this.game.load.image('tokenSkull', 'assets/tokenSkull.png');
+        this.game.load.image('zombieToken', 'assets/zombieToken.png');
+        this.game.load.image('zombieHead', 'assets/zombieHead.png');
+        this.game.load.image('monsterValue', 'assets/monsterAttackValueFrame.png');
         
         
         //Inventory

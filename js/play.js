@@ -7,13 +7,15 @@
 
 //To Do: 
 
-//      Show attack level for monsters
 //      Add visual for increase stats
 //      Add visual for time passing on inner path
 //      zombie conditions
 //      create better buttons :)
 //      Limit objects to certain classes
 //      Add special character advantages
+//      Add turnover text to death conditions
+//      Update webpage
+//      redraw player characters
 
 
 
@@ -259,6 +261,8 @@ var playState = {
 create: function () {
     //prevOrientation = this.scale.screenOrientation;
     
+    
+    
     this.game.stage.backgroundColor = "#4488AA";
     
     sun = this.game.add.sprite(5,5, "sun");
@@ -359,12 +363,43 @@ create: function () {
     this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
   
     this.scale.setScreenSize( true );
+    
+    var margin = 50;
+    // and set the world's bounds according to the given margin
+    var x = -margin;
+    var y = -margin;
+    var w = this.game.world.width + margin * 2;
+    var h = this.game.world.height + margin * 2;
+    // it's not necessary to increase height, we do it to keep uniformity
+    this.game.world.setBounds(x, y, w, h);
+  
+    // we make sure camera is at position (0,0)
+    //game.world.camera.position.set(0);
+    
+    //SetBounds();
+    
+    //AddQuake();
 }
 
 
 };
 
 //***************Basic Board Management
+
+function SetBounds() {
+    
+    // var margin = 50;
+    // // and set the world's bounds according to the given margin
+    // var x = -margin;
+    // var y = -margin;
+    // var w = this.game.world.width + margin * 2;
+    // var h = this.game.world.height + margin * 2;
+    // // it's not necessary to increase height, we do it to keep uniformity
+    // this.game.world.setBounds(x, y, w, h);
+  
+    // // we make sure camera is at position (0,0)
+    // this.game.world.camera.position.set(0);
+}
 
 function KeyMove(number) {
     
@@ -567,12 +602,10 @@ function ManageTurn () {
             if (hasCurse[currentPlayer - 1] == "zombie") {
                 
                 getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
-                
-                getLifeInt = parseInt(getLife.text, 10);
-                
-                if (getLifeInt <= 0) {
+             
+                if ((getLifeInt - 1) <= 0 && isDead[currentPlayer - 1] == "no") {
                     
-                    BecomeZombie();
+                    DeadPlayer();
                     
                 }
             }
@@ -2007,6 +2040,13 @@ function GoToQuest() {
         
         restName = "tokenSkull";
         
+        if (hasCurse[currentPlayer - 1] == "zombie") {
+            
+            restName = "zombieToken";
+            
+        }
+        
+        
     }
     
     var buttonStyle = { font: "25px Impact", fill: "black", 
@@ -3110,6 +3150,17 @@ function FightMonster() {
         choiceText.setText("A " + monster + " is attacking you! \nRoll to fight! \nYou need a " + (monsterModifier + 1).toString() + " to win!!!" );    
         
     }
+
+    
+    var monsterValue = this.game.add.sprite(20, 225, "monsterValue");
+    question.addChild(monsterValue);
+    
+    var monsterValueText = this.game.add.text(monsterValue.width/2, monsterValue.height/2,  
+    (monsterModifier + parseInt(packList[currentPlayer - 1].getChildAt(3).text, 10)).toString(), 
+    { font: "40px Arial", fill: "black", align: "center" }); 
+    monsterValueText.anchor.setTo(0.5, 0.5);
+    
+    monsterValue.addChild(monsterValueText);
     
     reroll == false;
     
@@ -4917,13 +4968,6 @@ function FightTroll() {
     FightMonster();
 }
 
-function BecomeZombie() {
-    
-    
-    
-    
-}
-
 function RemoveCurse(yesNo) {
     
     var getGold = packList[currentPlayer - 1].getChildAt(2);
@@ -4989,28 +5033,17 @@ function AddVictoryPoint(killed) {
 
 function WorldEvent() {
     
-    questionPanel = this.game.add.sprite(300, 0, 'answersheet');
-    question = this.game.add.group();
-    question.width = questionPanel.width;
-    questionPanel.addChild(question);
-        
-    questionText = this.game.add.text(20, 100, getQuestion, { font: "40px Arial", fill: "black", align: "center", wordWrap: true, wordWrapWidth: question.width - 20 });
-    
-    
-    
-    deleteQuestion = this.game.add.button (520, 15, 'deleteX', DeleteWorldEvent, this, 2,1,0);
-    question.addChild(deleteQuestion);
-    question.addChild(questionText);
-    
-    
     var pickEvent = getRandomInt(0,4);
     var eventPicture;
 
     var getLife;
-
+    
+    //pickEvent = 2;
     
     switch (pickEvent) {
         case 0:
+            
+            WorldEventPanel();
             questionText.setText("A lightning storm hits the world!  If you are outside lose 1 life.");
 
             eventPicture = this.game.add.sprite(50, 250, "storm");
@@ -5030,6 +5063,8 @@ function WorldEvent() {
             break;
             
         case 1:
+            
+            WorldEventPanel();
             questionText.setText("A blizzard hits the world! If you are outside without special clothes lose 1 life.");
             
             eventPicture = this.game.add.sprite(50, 250, "blizzard");
@@ -5049,26 +5084,15 @@ function WorldEvent() {
             break;
             
         case 2:
-            questionText.setText("An earthquake hits the world!  If you are in the mountain lose 1 life.");
-            
-            eventPicture = this.game.add.sprite(50, 250, "earthquake");
-            question.addChild(eventPicture);
-            
-            
-            for (var i = 0; i < totalPlayers; i++) {
-                
-                if (boardLevel[i] == 2) {
-                    
-                    getLife = packList[i].getChildAt(4);
-                    getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
-                    
-                }
-                
-            }
-            
+
+            AddQuake();
+
             break;
             
         case 3:
+            
+            WorldEvent();
+            
             questionText.setText("The dragons united and are attacking!! If you are outside lose 1 life.");
             
             eventPicture = this.game.add.sprite(50, 250, "dragonAttack");
@@ -5090,6 +5114,20 @@ function WorldEvent() {
     }
     
         
+}
+
+function WorldEventPanel() {
+     
+    questionPanel = this.game.add.sprite(300, 0, 'answersheet');
+    question = this.game.add.group();
+    question.width = questionPanel.width;
+    questionPanel.addChild(question);
+        
+    questionText = this.game.add.text(20, 100, getQuestion, { font: "40px Arial", fill: "black", align: "center", wordWrap: true, wordWrapWidth: question.width - 20 });
+
+    deleteQuestion = this.game.add.button (520, 15, 'deleteX', DeleteWorldEvent, this, 2,1,0);
+    question.addChild(deleteQuestion);
+    question.addChild(questionText);
 }
 
 function SellInventory(yesNo) {
@@ -5127,6 +5165,8 @@ function SellInventory(yesNo) {
 
 function DeadPlayer() {
     
+    isDead[currentPlayer - 1] = "yes";
+    
     questionPanel = this.game.add.sprite(300, 0, 'answersheet');
     question = this.game.add.group();
     question.width = questionPanel.width;
@@ -5134,19 +5174,35 @@ function DeadPlayer() {
         
     questionText = this.game.add.text(20, 100, getQuestion, { font: "40px Arial", fill: "black", align: "center", wordWrap: true, wordWrapWidth: question.width - 20 });
     
-    var skull = this.game.add.sprite(50, 250, "skull");
-    question.addChild(skull);
-    
     deleteQuestion = this.game.add.button (520, 15, 'deleteX', DeleteWorldEvent, this, 2,1,0);
     question.addChild(deleteQuestion);
     question.addChild(questionText);
     
-    isDead[currentPlayer - 1] = "yes";
-    questionText.setText("You have no life!  You are now a skeleton.  Your life will always go down to 0. " +  
-    "You must fight other players now.");
-    
-    packList[currentPlayer - 1].getChildAt(0).loadTexture('tokenSkull');
-    tokenList[currentPlayer - 1].loadTexture('tokenSkull');
+    if (hasCurse[currentPlayer - 1] == "zombie") {
+        
+        var zombie = this.game.add.sprite(200, 300, "zombieHead");
+        question.addChild(zombie);
+        
+        questionText.setText("You have no life!  You are now a zomibe.  Your life will always go down to 0. " +  
+        "You must fight other players now.");
+        
+        packList[currentPlayer - 1].getChildAt(0).loadTexture('zombieToken');
+        tokenList[currentPlayer - 1].loadTexture('zombieToken');
+        
+    } else {
+        
+        var skull = this.game.add.sprite(50, 250, "skull");
+        question.addChild(skull);
+
+        questionText.setText("You have no life!  You are now a skeleton.  Your life will always go down to 0. " +  
+        "You must fight other players now.");
+        
+        packList[currentPlayer - 1].getChildAt(0).loadTexture('tokenSkull');
+        tokenList[currentPlayer - 1].loadTexture('tokenSkull');
+            
+        
+    }
+ 
     
     
 }
@@ -5226,5 +5282,55 @@ function DeleteOn() {
     
 }
 
+function AddQuake() {
+    
+    // define the camera offset for the quake
+    var rumbleOffset = 10;
+    
+    // we need to move according to the camera's current position
+    var properties = {
+    x: this.game.camera.x - rumbleOffset
+    };
+    
+    // we make it a relly fast movement
+    var duration = 20;
+    // we use bounce in-out to soften it a little bit
+    var ease = Phaser.Easing.Bounce.InOut;
+    var autoStart = false;
+    // a little delay because we will run it indefinitely
+    var delay = 100;
+    // we want to go back to the original position
+    var yoyo = true;
+    
+    var quake = this.game.add.tween(this.game.camera)
+    .to(properties, duration, ease, autoStart, delay, 20, yoyo);
+    
+    quake.onComplete.addOnce(EarthquakeEvent);
+    
+    // let the earthquake begins
+    quake.start();
+}
+
+function EarthquakeEvent() {
+    
+    WorldEventPanel();
+    
+    questionText.setText("An earthquake hits the world!  If you are in the mountain lose 1 life.");
+    
+    var eventPicture = this.game.add.sprite(50, 250, "earthquake");
+    question.addChild(eventPicture);
+    
+    
+    for (var i = 0; i < totalPlayers; i++) {
+        
+        if (boardLevel[i] == 2) {
+            
+            var getLife = packList[i].getChildAt(4);
+            getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
+            
+        }
+        
+    }
+}
 
 
