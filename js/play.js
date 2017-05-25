@@ -3,19 +3,21 @@
 //      Test prison break some more
 //      sun doesn't always get deleted....but, i think this is because of my key testing
 //      movement markers didn't disappear
+//      sun is flying away
 
 
 //To Do: 
 
-//      Add visual for increase stats
+//      Fix increase stats on world events
 //      Add visual for time passing on inner path
-//      zombie conditions
 //      create better buttons :)
 //      Limit objects to certain classes
 //      Add special character advantages
 //      Add turnover text to death conditions
 //      Update webpage
 //      redraw player characters
+//      Add player names to player fights
+//      add hand cursors where appropriate
 
 
 
@@ -255,6 +257,17 @@ var playerAttackValue;
 var whichPlayerFighting;
 var currentStronger;
 
+var scalingText;
+var textTween;
+var scalingText1;
+var scalingText2;
+var scalingText3;
+var scalingText4;
+var scalingText5;
+var scalingText6;
+
+var scalingTexts = [scalingText1, scalingText2, scalingText3, scalingText4, scalingText5, scalingText6];
+
 
 var playState = {
  
@@ -291,12 +304,14 @@ create: function () {
 
     //Create Card
     card = this.game.add.button (950, 500, 'card', ShowQuestion, this, 2,1,0);
+    card.input.useHandCursor = true;
     
     //Create Die    
     dice = this.game.add.sprite(175, 500, 'die');
     dice.animations.add('roll', [0,1,2,3,4,5], 10, true);
     dice.inputEnabled = true;
     dice.events.onInputDown.add(RollDie, this);
+    dice.input.useHandCursor = true;
     
     CreateBoardSpaces();
     CreateInnerBoard();
@@ -304,6 +319,7 @@ create: function () {
     //Create Turn Management Button...this just starts the game and identifies what to do
     turnManagerButton = this.game.add.button(0, 480, "turnButton", ManageTurn, 2,1,0);
     turnText = this.game.add.text(turnManagerButton.width/2, turnManagerButton.height/2,  "Ready?", { font: "40px Arial", fill: "black", align: "center" }); 
+    turnManagerButton.input.useHandCursor = true;
     turnManagerButton.addChild(turnText);
     turnText.anchor.set(0.5, 0.5);
     
@@ -372,7 +388,11 @@ create: function () {
     var h = this.game.world.height + margin * 2;
     // it's not necessary to increase height, we do it to keep uniformity
     this.game.world.setBounds(x, y, w, h);
-  
+    
+    //scalingTexts = this.game.add.group();
+    
+    //ScaleText("+1", 1);
+    
     // we make sure camera is at position (0,0)
     //game.world.camera.position.set(0);
     
@@ -590,6 +610,7 @@ function ManageTurn () {
             if (getLifeInt <= 0 && playerBonus[currentPlayer - 1][1] == "life") {
                 
                 getLife = getLife.setText((parseInt(getLife.text, 10) + 4).toString());
+                getLifeInt += 4;
                 DeleteInventory();
             }
             
@@ -844,6 +865,8 @@ function CreateMovementToken(moves) {
             
             aSpot = this.game.add.button(aX, aY, "aSpot", MovePlayer, this, 2,1,0);
             bSpot = this.game.add.button(bX, bY, "bSpot", MovePlayer, this, 2,1,0);
+            aSpot.input.useHandCursor = true;
+            bSpot.input.useHandCursor = true;
             
             turnText.setText("move");
             return;
@@ -887,6 +910,9 @@ function CreateMovementToken(moves) {
             
             aSpot = this.game.add.button(aX2, aY2, "aSpot", MovePlayer, this, 2,1,0);
             bSpot = this.game.add.button(bX2, bY2, "bSpot", MovePlayer, this, 2,1,0);
+            
+            aSpot.input.useHandCursor = true;
+            bSpot.input.useHandCursor = true;
             
             turnText.setText("move");
             return;
@@ -1020,7 +1046,7 @@ function TurnOnCharacters () {
         cList[i].inputEnabled = true;
         cList[i].events.onInputDown.add(AddStats, cList[i]);
         cList[i].name = "c" + (i + 1).toString();
-        
+        cList[i].input.useHandCursor = true;
         packList[i] = this.game.add.group();
     }
 }
@@ -1038,7 +1064,7 @@ function AddStats(player) {
             if (setPlayer == i && cSet[i] == false) {
                 
                 cSet[i] = true;
-                
+                cList[i].input.useHandCursor = false;
                 totalPlayers += 1;
                 
                 turnText.setText(totalPlayers + "\nplayers");
@@ -1083,6 +1109,7 @@ function AddStats(player) {
                 var playerName = this.game.add.text(20, 92, currentRace + " " + (i + 1).toString(), { font: "20px Arial", fill: "black", align: "center" }, packList[i]); 
 
                 deletePlayer.input.priorityID = 10;
+                deletePlayer.input.useHandCursor = true;
                 
                 CreateToken(i);
                 
@@ -1219,6 +1246,11 @@ function ShowQuestion() {
         question.addChild(questionExplain);
         question.addChild(questionText);
         question.addChild(revealButton);
+        
+        wrongButton.input.useHandCursor = true;
+        correctButton.input.useHandCursor = true;
+        revealButton.input.useHandCursor = true;
+            
 
         questionUp = true;
    
@@ -1238,6 +1270,9 @@ function ShowQuestion() {
 
             questionUp = true;
         }
+        
+        
+        deleteQuestion.input.useHandCursor = true;
     }
 }
 
@@ -1309,6 +1344,7 @@ function DeletePlayer() {
             
             //Allows for new Character
             cSet[i] = false;
+            cList[i].input.useHandCursor = true;
             
             turnText.setText(totalPlayers + "\nplayers");
             
@@ -1869,6 +1905,10 @@ function CreateQuestion(puzzle) {
             correctButton = this.game.add.button(400, 525, 'correct', CheckAnswer, this, 2,1,0);
             revealButton = this.game.add.button(250, 525, 'reveal', ShowAnswer, this, 2,1,0);
             
+            wrongButton.input.useHandCursor = true;
+            correctButton.input.useHandCursor = true;
+            revealButton.input.useHandCursor = true;
+            
             question.add(wrongButton);
             question.add(correctButton);
             question.add(revealButton);
@@ -1905,6 +1945,11 @@ function CreateQuestion(puzzle) {
             wrongButton = this.game.add.button(100, 525, 'wrong', CheckAnswer, this, 2,1,0);
             correctButton = this.game.add.button(400, 525, 'correct', CheckAnswer, this, 2,1,0);
             revealButton = this.game.add.button(250, 525, 'reveal', ShowAnswer, this, 2,1,0);
+            
+            wrongButton.input.useHandCursor = true;
+            correctButton.input.useHandCursor = true;
+            revealButton.input.useHandCursor = true;
+            
             
             question.add(wrongButton);
             question.add(correctButton);
@@ -1964,19 +2009,21 @@ function CheckAnswer(result) {
         if (parseInt(getGold.text, 10) >= 1) {
             
             getGold = getGold.setText((parseInt(getGold.text, 10) - adjustGold).toString());
+            ScaleText("+" + adjustGold, currentPlayer - 1, "yellow");
             questionExplain.setText("Sorry, you lose " + adjustGold.toString() + " gold."); 
 
         }
         else {
             
             getLife = getLife.setText((parseInt(getLife.text, 10) - adjustGold).toString());
+            ScaleText("-" + adjustGold, currentPlayer - 1, "yellow");
             questionExplain.setText("Sorry.  Oh no! You have no gold! \nLose " + adjustGold.toString() + " life.");
        }
        
     }   else {
         
             getGold = getGold.setText((parseInt(getGold.text, 10) + adjustGold).toString());
-        
+            ScaleText("+" + adjustGold, currentPlayer - 1, "yellow");
              if (turn == 30 || turn == 31) {
             
             choiceText.setText("Congratulations!  Here's " + adjustGold + " gold!");
@@ -2068,7 +2115,9 @@ function GoToQuest() {
         monsterButton = this.game.add.button(100, 400, "monsterButton", StartActionTimer, 2,1,0);
         monsterButtonText = this.game.add.text(0, 105, "Monster Hunt", buttonStyle);   
         monsterButton.addChild(monsterButtonText);
-
+        
+        monsterButton.input.useHandCursor = true;
+        
         question.addChild(monsterButton);
         question.addChild(choiceText);
         
@@ -2095,6 +2144,8 @@ function GoToQuest() {
                
                     playerButtons[i]= this.game.add.button(buttonX, buttonY, getRace, FightPlayer, this);		
                     question.add(playerButtons[i]);
+                    
+                    playerButtons[i].input.useHandCursor = true;
                     
                     buttonX += 150;
                     
@@ -2145,6 +2196,11 @@ function GoToQuest() {
         treasureButtonText = this.game.add.text(10, 140, "Treasure Hunt", buttonStyle);   
         treasureButton.addChild(treasureButtonText);
         
+        restButton.input.useHandCursor = true;
+        monsterButton.input.useHandCursor = true;
+        treasureButton.input.useHandCursor = true;
+        
+        
         restButton.scale.setTo(1.5,1.5);
         zees = this.game.add.sprite(55, -20, "sleeping");
         restButton.addChild(zees);
@@ -2190,6 +2246,11 @@ function GoToQuest() {
         zees = this.game.add.sprite(55, -20, "sleeping");
         restButton.addChild(zees);
         
+        restButton.input.useHandCursor = true;
+        monsterButton.input.useHandCursor = true;
+        treasureButton.input.useHandCursor = true;
+        caveButton.input.useHandCursor = true;
+        
         question.addChild(restButton);
         question.addChild(monsterButton);
         question.addChild(treasureButton);
@@ -2217,10 +2278,14 @@ function GoToQuest() {
         otherButtonText = this.game.add.text(0, 105, "Go Up The Stairs", buttonStyle);   
         stairsButton.addChild(otherButtonText);
 
-        
         restButton.scale.setTo(1.5,1.5);
         zees = this.game.add.sprite(55, -20, "sleeping");
         restButton.addChild(zees);
+
+        restButton.input.useHandCursor = true;
+        monsterButton.input.useHandCursor = true;
+        treasureButton.input.useHandCursor = true;
+        stairsButton.input.useHandCursor = true;
         
         question.addChild(restButton);
         question.addChild(monsterButton);
@@ -2447,6 +2512,8 @@ function MakeFourDoors() {
         
         fightButton = this.game.add.button(100, 400, "monsterButton", StairsResult, this, 2,1,0);
         question.addChild(fightButton);
+        fightButton.input.useHandCursor = true;
+
         var fightButtonText = this.game.add.text(20, 110, "Fight!!", buttonStyle);   
         fightButton.addChild(fightButtonText);
         
@@ -2456,6 +2523,8 @@ function MakeFourDoors() {
         
         payButton = this.game.add.button(400, 400, "coin", StairsResult, this, 2,1,0);    
         question.addChild(payButton);
+        payButton.input.useHandCursor = true;
+        
         var payButtonText = this.game.add.text(10, 110, "Pay 5 gold!", buttonStyle);   
         payButton.addChild(payButtonText);
                     
@@ -2465,6 +2534,8 @@ function MakeFourDoors() {
         
         rockButton = this.game.add.button(400, 200, "rockGreen", StairsResult, this, 2,1,0);
         question.addChild(rockButton);
+        rockButton.input.useHandCursor = true;
+        
         var rockButtonText = this.game.add.text(50, 70, "Give me\na rock!", buttonStyle);   
         rockButton.addChild(rockButtonText);
         
@@ -2535,6 +2606,12 @@ function CreateDoors(doors) {
             redDoorButton = this.game.add.button(400, 400, "redDoorButton", DoorResult, this, 2,1,0);
             yellowDoorButton = this.game.add.button(100, 200, "yellowDoorButton", DoorResult, this, 2,1,0);
             
+            blueDoorButton.input.useHandCursor = true;
+            greenDoorButton.input.useHandCursor = true;
+            redDoorButton.input.useHandCursor = true;
+            yellowDoorButton.input.useHandCursor = true;
+            
+            
             question.addChild(blueDoorButton);
             question.addChild(greenDoorButton);
             question.addChild(redDoorButton);
@@ -2550,21 +2627,25 @@ function CreateDoors(doors) {
             if (rockColor == "Blue") {
                
                blueDoorButton = this.game.add.button(400, 200, "blueDoorButton", DoorResult, this, 2,1,0); 
+               blueDoorButton.input.useHandCursor = true;
                question.addChild(blueDoorButton);
                
             } else if (rockColor == "Green") {
                 
                 greenDoorButton = this.game.add.button(100, 400, "greenDoorButton", DoorResult, this, 2,1,0);     
+                greenDoorButton.input.useHandCursor = true;
                 question.addChild(greenDoorButton);
                 
             } else if (rockColor == "Red") {
                 
                 redDoorButton = this.game.add.button(400, 400, "redDoorButton", DoorResult, this, 2,1,0);    
+                redDoorButton.input.useHandCursor = true;
                 question.addChild(redDoorButton);    
                 
             } else if (rockColor == "Yellow") {
-                console.log("I'm yellow!");
+                
                 yellowDoorButton = this.game.add.button(100, 200, "yellowDoorButton", DoorResult, this, 2,1,0);
+                yellowDoorButton.input.useHandCursor = true;
                 question.addChild(yellowDoorButton);
                 
             }
@@ -2679,6 +2760,8 @@ function ChoosePlayer(choice) {
         
        // var setI = i;
         playerButtons[i]= this.game.add.button(buttonX, buttonY, getRace, ChosenPlayer, this);		
+        playerButtons[i].input.useHandCursor = true;
+        
         question.add(playerButtons[i]);
         //console.log("i = " + i);
         buttonX += 150;
@@ -2826,7 +2909,7 @@ function FightPlayer(fightPlayer) {
         getLifeOther = getLifeOther.setText((parseInt(getLifeOther.text, 10) - 1).toString());
         return;
         
-    } else if (totalAttackCurrent - totalAttackOther < 5) {
+    } else if (totalAttackCurrent - totalAttackOther < 5 && totalAttackCurrent - totalAttackOther > 0) {
         
         playerAttackValue = totalAttackCurrent - totalAttackOther + 1;
         turn = 7;
@@ -2835,7 +2918,18 @@ function FightPlayer(fightPlayer) {
         currentStronger = true;
         return;
         
-    } else if (totalAttackOther - totalAttackCurrent > 5) {
+    } else if (totalAttackCurrent - totalAttackOther == 0) {
+        
+        playerAttackValue = totalAttackCurrent - totalAttackOther + 1;
+        turn = 7;
+        choiceText.setText("Your power is equal. Roll the die to see what happens!");
+        currentStronger = true;
+        return;
+        
+    } 
+    
+    
+    else if (totalAttackOther - totalAttackCurrent > 5) {
         
         choiceText.setText("The other player is too strong!  They gain 1 attack...you lose 1 life.");    
         getAttackOther = getAttackOther.setText((parseInt(getAttackOther.text, 10) + 1).toString());
@@ -2867,6 +2961,67 @@ function AttackPlayerResult() {
 
     var getLifeOther = packList[whichPlayerFighting].getChildAt(4);
     var getAttackOther = packList[whichPlayerFighting].getChildAt(3);
+    
+    if (playerAttackValue == 0) {
+        
+        switch (dieResult) {
+            case 1:
+                
+                choiceText.setText("You won! Gain 1 attack...the other player loses 1 life.");
+                getAttackCurrent = getAttackCurrent.setText((parseInt(getAttackCurrent.text, 10) + 1).toString());
+                getLifeOther = getLifeOther.setText((parseInt(getLifeOther.text, 10) - 1).toString());
+                
+                break;
+            
+            case 2:
+                
+                choiceText.setText("They won!  They gain 1 attack...you lose 1 life.");    
+                getAttackOther = getAttackOther.setText((parseInt(getAttackOther.text, 10) + 1).toString());
+                getLifeCurrent = getLifeCurrent.setText((parseInt(getLifeCurrent.text, 10) - 1).toString());
+                
+                break;
+                
+            case 3:
+                
+                choiceText.setText("You hit each other!  You both lose 1 life.");    
+                getLifeOther = getLifeOther.setText((parseInt(getLifeOther.text, 10) - 1).toString());
+                getLifeCurrent = getLifeCurrent.setText((parseInt(getLifeCurrent.text, 10) - 1).toString());
+                
+                break;
+                
+            case 4:
+                
+                choiceText.setText("They won!  They gain 1 attack...you lose 1 life.");    
+                getAttackOther = getAttackOther.setText((parseInt(getAttackOther.text, 10) + 1).toString());
+                getLifeCurrent = getLifeCurrent.setText((parseInt(getLifeCurrent.text, 10) - 1).toString());
+                
+                break;
+                
+            case 5:
+                
+                choiceText.setText("You fight a long time, but nobody loses!  You both get stronger...both gain 1 attack.");    
+                getAttackOther = getAttackOther.setText((parseInt(getAttackOther.text, 10) + 1).toString());
+                getAttackCurrent = getAttackCurrent.setText((parseInt(getAttackCurrent.text, 10) + 1).toString());
+                
+                break;
+                
+            case 6:
+                
+                choiceText.setText("You hit each other!  You both lose 1 life.");    
+                getLifeOther = getLifeOther.setText((parseInt(getLifeOther.text, 10) - 1).toString());
+                getLifeCurrent = getLifeCurrent.setText((parseInt(getLifeCurrent.text, 10) - 1).toString());
+                
+                break;
+                
+            
+            
+        }
+        
+        
+        
+        
+    }
+    
     
     if (dieResult >= playerAttackValue && currentStronger == false) {
 
@@ -3255,6 +3410,7 @@ function AttackResult() {
                 
                 choiceText.setText("You won!!  \nGain 1 attack!");
                 getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 1).toString());
+                ScaleText("+1", currentPlayer - 1, "grey");
                 turn = 3;
                 
                 if (hasQuest[currentPlayer - 1][0] == "witch") {
@@ -3296,6 +3452,7 @@ function AttackResult() {
                             AddVictoryPoint(specialMonster);
                             choiceText.setText("Wow!  You got them all!  You get 3 attack! You get 1 victory point!");
                             getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 3).toString());
+                            ScaleText("+1", currentPlayer - 1,"grey");
                             specialMonster = "none";
                             turn = 3;
                             turnText.setText("turn \nover");
@@ -3309,6 +3466,7 @@ function AttackResult() {
                             AddVictoryPoint(specialMonster);
                             choiceText.setText("You won!  You get 1 attack and you're in the mountain! You get 1 victory point!");
                             getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 1).toString());
+                            ScaleText("+1", currentPlayer - 1,"grey");
                             boardLevel[currentPlayer - 1] = 2;
                             LevelSwitch("in10");
                             specialMonster = "none";
@@ -3334,6 +3492,7 @@ function AttackResult() {
                             AddVictoryPoint(specialMonster);
                             choiceText.setText("Wow!  You got them all!  You get 3 attack! You get 1 victory point!");
                             getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 3).toString());
+                            ScaleText("+3", currentPlayer - 1,"grey");
                             specialMonster = "none";
                             turn = 3;
                             turnText.setText("turn \nover");
@@ -3346,6 +3505,7 @@ function AttackResult() {
                         AddVictoryPoint(specialMonster);
                         choiceText.setText("Wow!  You won!  You gain 2 power! Open any door you want! You get 1 victory point!");
                         getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 2).toString());
+                        ScaleText("+2", currentPlayer - 1, "grey");
                         monsterSprite.destroy();
                         specialMonster = "none";
                         CreateDoors("any");
@@ -3357,6 +3517,7 @@ function AttackResult() {
                         AddVictoryPoint(specialMonster);
                         choiceText.setText("Wow!  You won!  You gain 1 power! You get 1 victory point!");
                         getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 1).toString());
+                        ScaleText("+1", currentPlayer - 1);
                         specialMonster = "none";
                       
                         
@@ -3367,6 +3528,7 @@ function AttackResult() {
                         AddVictoryPoint(ropasci);
                         choiceText.setText("Wow!  You won!  You gain 1 power! You get 1 victory point!");
                         getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 1).toString());
+                        ScaleText("+1", currentPlayer - 1,"grey");
                         specialMonster = "none";
                        
                         
@@ -3382,6 +3544,8 @@ function LostFight() {
         
         choiceText.setText("Uggghh! The " + monster + " won. \nLose 1 life.");
         getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
+        ScaleText("-1", currentPlayer - 1, "red");
+        
         turn = 3;
         
         if (monster == "zombie" || monster == "vampire" || monster == "thief" ||
@@ -3397,6 +3561,7 @@ function LostFight() {
                     
                     getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
                     choiceText.setText("Uggghh! The " + monster + " won. \nLose 2 life. You are still cursed.");
+                    ScaleText("-1", currentPlayer - 1, "red");
                     
                 } else {
                     
@@ -3511,6 +3676,9 @@ function CreateMagicButtons () {
     noMagicButton = this.game.add.button(100, 400, "noMagicButton", UseMagic, 2,1,0);
     useMagicButton = this.game.add.button(400, 400, "useMagicButton", UseMagic, 2,1,0);
     
+    noMagicButton.input.useHandCursor = true;
+    useMagicButton.input.useHandCursor = true;
+    
     question.addChild(noMagicButton);
     question.addChild(useMagicButton);
     
@@ -3602,6 +3770,9 @@ function DisplayItem(item) {
         
         garbageButton = this.game.add.button(50, 510, 'garbage', AddInventory, this, 2,1,0);
         keepButton = this.game.add.button(300, 510, 'take', AddInventory, this, 2,1,0);
+        
+        garbageButton.input.useHandCursor = true;
+        keepButton.input.useHandCursor = true;
         
         question.addChild(keepButton);
         question.addChild(garbageButton);
@@ -3926,12 +4097,14 @@ function VillageResult() {
         case 1:
             choiceText.setText("A farmer gives you some food.  \nGain 1 life.");
             getLife = getLife.setText((parseInt(getLife.text, 10) + 1).toString());
+            ScaleText("+1", currentPlayer - 1, "red");
             turnText.setText("next");
             break;
             
         case 2:
             choiceText.setText("A traveller gives you a ride.  \nGain 1 life and roll to move again.");
             getLife = getLife.setText((parseInt(getLife.text, 10) + 1).toString());
+            ScaleText("+1", currentPlayer - 1, "red");
             turn = 1;
             reroll = true;
             break;
@@ -3939,12 +4112,14 @@ function VillageResult() {
         case 3:
             choiceText.setText("While you are having fun, a thief steals 1 gold.");
             getGold = getGold.setText((parseInt(getGold.text, 10) - 1).toString());
+            ScaleText("-1", currentPlayer - 1, "yellow");
             turnText.setText("next");
             break;
             
         case 4:
             choiceText.setText("A farmer gives you some food.  \nGain 1 life.");
             getLife = getLife.setText((parseInt(getLife.text, 10) + 1).toString());
+            ScaleText("+1", currentPlayer - 1, "red");
             turnText.setText("next");
             break;
             
@@ -3979,12 +4154,14 @@ function CastleResult() {
         case 1:
             choiceText.setText("You eat at a delicious restaurant.  \nGain 1 life.");
             getLife = getLife.setText((parseInt(getLife.text, 10) + 1).toString());
+            ScaleText("+1", currentPlayer - 1, "red");
             turnText.setText("turn \nover");
             break;
             
         case 2:
             choiceText.setText("A traveller gives you a ride.  \nGain 1 life and roll to move again.");
             getLife = getLife.setText((parseInt(getLife.text, 10) + 1).toString());
+            ScaleText("+1", currentPlayer - 1, "red");
             turn = 1;
             reroll = true;
             break;
@@ -3992,12 +4169,14 @@ function CastleResult() {
         case 3:
             choiceText.setText("While you are having fun, a thief steals 1 gold.");
             getGold = getGold.setText((parseInt(getGold.text, 10) - 1).toString());
+            ScaleText("-1", currentPlayer - 1, "yellow");
             turnText.setText("turn \nover");
             break;
             
         case 4:
             choiceText.setText("You train with some soldiers.  \nGain 1 strength.");
             getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 1).toString());
+            ScaleText("+1", currentPlayer - 1, "yellow");
             turnText.setText("turn \nover");
             break;
             
@@ -4034,6 +4213,7 @@ function WitchResult() {
         case 1:
             choiceText.setText("The witch heals you.  \nGain 1 life.");
             getLife = getLife.setText((parseInt(getLife.text, 10) + 1).toString());
+            ScaleText("+1", currentPlayer - 1, "red");
             turnText.setText("turn \nover");
             
             break;
@@ -4048,6 +4228,7 @@ function WitchResult() {
         case 3:
             choiceText.setText("The witch makes you stronger!  \nGain 1 strength.");
             getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 1).toString());
+            ScaleText("+1", currentPlayer - 1, "grey");
             turnText.setText("turn \nover");
             
             break;
@@ -4055,6 +4236,7 @@ function WitchResult() {
         case 4:
             choiceText.setText("She makes you drink a potion.  \nGain 1 strength.");
             getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 1).toString());
+            ScaleText("+1", currentPlayer - 1, "grey");
             turnText.setText("turn \nover");
             
             break;
@@ -4094,12 +4276,14 @@ function ForestResult() {
         case 1:
             choiceText.setText("You find some special fruit!.  \nGain 1 life.");
             getLife = getLife.setText((parseInt(getLife.text, 10) + 1).toString());
+            ScaleText("+1", currentPlayer - 1, "red");
             turnText.setText("turn \over");
             break;
             
         case 2:
             choiceText.setText("You get lost and eat nothing!  \nLose 1 life.");
             getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
+            ScaleText("-1", currentPlayer - 1, "red");
             turn = 1;
             turnText.setText("turn \over");
             break;
@@ -4144,6 +4328,7 @@ function PoolResult() {
         case 1:
             choiceText.setText("A fairy gives you some magic water.  \nGain 1 life.");
             getLife = getLife.setText((parseInt(getLife.text, 10) + 1).toString());
+            ScaleText("+1", currentPlayer - 1, "red");
             turnText.setText("next");
             break;
             
@@ -4161,6 +4346,7 @@ function PoolResult() {
         case 4:
             choiceText.setText("You find some gold in the pool!  \nGain 2 gold.");
             getGold = getGold.setText((parseInt(getGold.text, 10) + 2).toString());
+            ScaleText("+2", currentPlayer - 1);
             turnText.setText("next");
             break;
             
@@ -4215,6 +4401,7 @@ function DragonResult() {
         case 3:
             choiceText.setText("...is sleepy.  You both rest. \nGain 1 life.");
             getLife = getLife.setText((parseInt(getLife.text, 10) + 1).toString());
+            ScaleText("+1", currentPlayer - 1, "red");
             break;
             
         case 4:
@@ -4427,6 +4614,9 @@ function ActivateChoice(doThis) {
     noButton = this.game.add.button(50, 510, 'noButton', doThis, this, 2,1,0);
     yesButton = this.game.add.button(300, 510, 'yesButton', doThis, this, 2,1,0);
     
+    noButton.input.useHandCursor = true;
+    yesButton.input.useHandCursor = true;
+    
     question.addChild(noButton);
     question.addChild(yesButton);
     
@@ -4457,6 +4647,8 @@ function ManageChallenge() {
                 getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 1).toString());
                 getGold = getGold.setText((parseInt(getGold.text, 10) + 1).toString());
                 
+                ScaleText("+1\n+1\n+1", currentPlayer - 1, "black");
+    
                 questList[currentPlayer - 1].destroy();
             }
             break;
@@ -4468,6 +4660,7 @@ function ManageChallenge() {
                 
                 choiceText.setText("Awww...the guards catch you!  Lose 1 life.");
                 getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
+                ScaleText("-1", currentPlayer - 1, "red");
                 
             } else {
                 
@@ -4475,6 +4668,7 @@ function ManageChallenge() {
                 hasQuest[currentPlayer - 1][1] = "none";
                 choiceText.setText("Nice!  The thieves are happy! Gain 5 gold");
                 getGold = getGold.setText((parseInt(getGold.text, 10) + 5).toString());
+                ScaleText("+5", currentPlayer - 1, "yellow");
                 
                 questList[currentPlayer - 1].destroy();
             }
@@ -4526,6 +4720,7 @@ function TreasureResult() {
         
         choiceText.setText("Great!  You found 3 gold!");
         getGold = getGold.setText((parseInt(getGold.text, 10) + 3).toString());
+        ScaleText("+3", currentPlayer - 1, "yellow");
         turnText.setText("turn \nover");
     } else if (dieResult == 3) {
         treasureChest.loadTexture("treasureThief");
@@ -4536,6 +4731,7 @@ function TreasureResult() {
         treasureChest.loadTexture("treasurePoison");
         choiceText.setText("Uggh! It's a trap!  Poison gas comes out and you lose 1 life!")
         getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
+        ScaleText("-1", currentPlayer - 1);
         turnText.setText("turn \nover");
     } else {
         treasureChest.loadTexture("treasureEmpty");
@@ -4563,6 +4759,7 @@ function RobinHood(yesNo) {
         
         choiceText.setText("Well, that's okay. \nI'll still give you a gold.");
         getGold = getGold.setText((parseInt(getGold.text, 10) + 1).toString());
+        ScaleText("+1", currentPlayer - 1, "yellow");
     }
     
     
@@ -4668,6 +4865,8 @@ function PlayDragonGame() {
     
     choiceText.setText("Stand up!  Let's say it together, 'Rock, Scissors, Paper!'");
     rpsButton = this.game.add.button(100, 525, 'rpsButton', RPSReveal, this, 2,1,0);
+    rpsButton.input.useHandCursor = true;
+    
     
     question.add(rpsButton);
 }
@@ -4705,6 +4904,10 @@ function RPSReveal() {
     victoryButton = this.game.add.button(400, 510, 'victoryButton', RPSResult, this, 2,1,0);
     doOverButton = this.game.add.button(250, 510, 'doOverButton', DoOverRPS, this, 2,1,0);
     
+    defeatButton.input.useHandCursor = true;
+    victoryButton.input.useHandCursor = true;
+    doOverButton.input.useHandCursor = true;
+    
     question.add(defeatButton);
     question.add(victoryButton);
     question.add(doOverButton);
@@ -4720,6 +4923,7 @@ function RPSResult(winLose) {
         
         choiceText.setText("You beat me!  Here's 3 gold!");
         getGold = getGold.setText((parseInt(getGold.text, 10) + 3).toString());
+        ScaleText("+3", currentPlayer - 1, "yellow");
         
     } else {
         
@@ -4736,6 +4940,7 @@ function RPSResult(winLose) {
             choiceText.setText("You lost! I'll take your " + gold + " and 1 life!!");
             getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
             getGold = getGold.setText((parseInt(getGold.text, 10) - gold).toString());
+            ScaleText("-1\n- " + gold, currentPlayer - 1, "black");
             
             
         }
@@ -4859,6 +5064,7 @@ function HelpWitch(yesNo) {
         
         choiceText.setText("Well, that's okay. \nI'll still give you a gold.");
         getGold = getGold.setText((parseInt(getGold.text, 10) + 1).toString());
+        ScaleText("+1", currentPlayer - 1, "yellow");
     }
     
     
@@ -4928,6 +5134,7 @@ function GiveRock(yesNo) {
         
         choiceText.setText("Great!  Here's 5 gold!");
         getGold = getGold.setText((parseInt(getGold.text, 10) + 5).toString());
+        ScaleText("+5", currentPlayer - 1, "yellow");
         
         hasRock[currentPlayer - 1] = "none";
         
@@ -4947,6 +5154,7 @@ function PayTroll(yesNo) {
     
     if (yesNo == yesButton) {
         getGold = getGold.setText((parseInt(getGold.text, 10) - 5).toString());
+        ScaleText("-5", currentPlayer - 1, "yellow");
         choiceText.setText("The troll says, 'Thank you, come again!' \nYou're in the mountain!  ");
         turnText.setText("turn \nover");
         boardLevel[currentPlayer - 1] = 2;
@@ -4975,6 +5183,7 @@ function RemoveCurse(yesNo) {
     if (yesNo == yesButton) {
         
         getGold = getGold.setText((parseInt(getGold.text, 10) - 3).toString());
+        ScaleText("-3", currentPlayer - 1, "yellow");
         choiceText.setText("Bibidi babidi boo...the curse is gone!");
         turnText.setText("turn \nover");
         curseTokens[currentPlayer - 1].destroy();
@@ -5055,6 +5264,8 @@ function WorldEvent() {
                     
                     getLife = packList[i].getChildAt(4);
                     getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
+                    RunDelay(LoopScaleText, i, 500);
+                    console.log("text looped");
                     
                 }
                 
@@ -5076,6 +5287,8 @@ function WorldEvent() {
                     
                     getLife = packList[i].getChildAt(4);
                     getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
+                    RunDelay(LoopScaleText, i, 500);
+                    console.log("text looped");
                     
                 }
                 
@@ -5091,7 +5304,7 @@ function WorldEvent() {
             
         case 3:
             
-            WorldEvent();
+            WorldEventPanel();
             
             questionText.setText("The dragons united and are attacking!! If you are outside lose 1 life.");
             
@@ -5104,7 +5317,9 @@ function WorldEvent() {
                     
                     getLife = packList[i].getChildAt(4);
                     getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
-                    
+
+                    RunDelay(LoopScaleText, i, 500);
+                    console.log("text looped");
                 }
                 
             }
@@ -5114,6 +5329,12 @@ function WorldEvent() {
     }
     
         
+}
+
+function LoopScaleText(player) {
+    
+    ScaleText("-1", player, "red");
+   
 }
 
 function WorldEventPanel() {
@@ -5126,6 +5347,8 @@ function WorldEventPanel() {
     questionText = this.game.add.text(20, 100, getQuestion, { font: "40px Arial", fill: "black", align: "center", wordWrap: true, wordWrapWidth: question.width - 20 });
 
     deleteQuestion = this.game.add.button (520, 15, 'deleteX', DeleteWorldEvent, this, 2,1,0);
+    deleteQuestion.input.useHandCursor = true;
+    
     question.addChild(deleteQuestion);
     question.addChild(questionText);
 }
@@ -5136,6 +5359,7 @@ function SellInventory(yesNo) {
     
     if (yesNo == yesButton) {
         getGold = getGold.setText((parseInt(getGold.text, 10) + 3).toString());
+        ScaleText("+3", currentPlayer - 1, "yellow");
         choiceText.setText("The stranger says, 'Enjoy your gold!'");
         DeleteInventory();
         turnText.setText("turn \nover");
@@ -5175,6 +5399,7 @@ function DeadPlayer() {
     questionText = this.game.add.text(20, 100, getQuestion, { font: "40px Arial", fill: "black", align: "center", wordWrap: true, wordWrapWidth: question.width - 20 });
     
     deleteQuestion = this.game.add.button (520, 15, 'deleteX', DeleteWorldEvent, this, 2,1,0);
+    deleteQuestion.input.useHandCursor = true;
     question.addChild(deleteQuestion);
     question.addChild(questionText);
     
@@ -5331,6 +5556,36 @@ function EarthquakeEvent() {
         }
         
     }
+}
+
+function ScaleText(scaleText, player, color) {
+
+    scalingText = this.game.add.text(30, 70, scaleText, { font: "20px impact", fill: color, align: "center" }); 
+    cList[player].addChild(scalingText);
+    //scalingTexts.addChild(scalingText);
+    
+    scalingTexts[player] = this.game.add.tween(scalingText.scale).to({ x: 3, y: 3 }, 500, Phaser.Easing.Back.Out, true, 1000); 
+    scalingTexts[player].onComplete.add(function () {MoveText(player);}, this);
+    
+}
+
+function MoveText(player) {
+
+    console.log("move text");
+   
+    scalingTexts[player].to({y: -300}, 1000, Phaser.Easing.Back.Out);
+    //textTween.onComplete.add(RemoveElement, cList[player]);
+    
+    
+}
+
+function RemoveElement(thisArray) {
+    
+    console.log("pop");
+    
+    thisArray.pop();
+    
+    
 }
 
 

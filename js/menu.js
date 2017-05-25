@@ -2,8 +2,7 @@ var wordList;
 var settingsSwitch = 0;
 var settingsPanel;
 var currentList;
-var totalWords = 0;
-var saveText
+var totalWords = 0; 
 var enter1;
 var explain;
 var submit;
@@ -26,8 +25,10 @@ var menuState = {
     
 
     var button = game.add.button (450,250, 'startbutton', start, this, 2,1,0);
+    button.input.useHandCursor = true;
     
     var button2 = game.add.button (1100,25, 'settings', showSettings, this, 2,1,0);
+    button2.input.useHandCursor = true;
     
     settingsGroup = game.add.group();
     
