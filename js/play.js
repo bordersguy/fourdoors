@@ -4,20 +4,18 @@
 //      sun doesn't always get deleted....but, i think this is because of my key testing
 //      movement markers didn't disappear
 //      sun is flying away
+//      Prevent quest card from being clicked while a world event is about to be played
 
 
 //To Do: 
 
-//      Fix increase stats on world events
 //      Add visual for time passing on inner path
 //      create better buttons :)
 //      Limit objects to certain classes
 //      Add special character advantages
-//      Add turnover text to death conditions
 //      Update webpage
 //      redraw player characters
-//      Add player names to player fights
-//      add hand cursors where appropriate
+//      Fix vampire curse
 
 
 
@@ -36,7 +34,6 @@ var c6;
 var cList;
 var cSet = [false, false, false, false, false, false];
 var totalPlayers = 0;
-//var playersList = [];
 
 //vars used to set the position of the tokens
 var cPos1;
@@ -249,6 +246,7 @@ var player5Button;
 var player6Button;
 var playerButtons = [player1Button, player2Button, player3Button, player4Button, player5Button, player6Button];
 
+var monsterValue;
 var turnMarker;
 var victoryPoints = [1,1,1,1,1,1];
 var isDead = ["no", "no", "no", "no", "no", "no"];
@@ -272,10 +270,7 @@ var scalingTexts = [scalingText1, scalingText2, scalingText3, scalingText4, scal
 var playState = {
  
 create: function () {
-    //prevOrientation = this.scale.screenOrientation;
-    
-    
-    
+
     this.game.stage.backgroundColor = "#4488AA";
     
     sun = this.game.add.sprite(5,5, "sun");
@@ -325,7 +320,7 @@ create: function () {
     
     turnMarker = this.game.add.sprite(cList[currentPlayer - 1].x + 30, cList[currentPlayer - 1].y, "star");
     
-    //These keys are just for testing...delete when done.
+    //Keyboard inputs for dice results
     key1 = this.game.input.keyboard.addKey(Phaser.Keyboard.ONE);
     key2 = this.game.input.keyboard.addKey(Phaser.Keyboard.TWO);
     key3 = this.game.input.keyboard.addKey(Phaser.Keyboard.THREE);
@@ -389,37 +384,12 @@ create: function () {
     // it's not necessary to increase height, we do it to keep uniformity
     this.game.world.setBounds(x, y, w, h);
     
-    //scalingTexts = this.game.add.group();
-    
-    //ScaleText("+1", 1);
-    
-    // we make sure camera is at position (0,0)
-    //game.world.camera.position.set(0);
-    
-    //SetBounds();
-    
-    //AddQuake();
 }
 
 
 };
 
 //***************Basic Board Management
-
-function SetBounds() {
-    
-    // var margin = 50;
-    // // and set the world's bounds according to the given margin
-    // var x = -margin;
-    // var y = -margin;
-    // var w = this.game.world.width + margin * 2;
-    // var h = this.game.world.height + margin * 2;
-    // // it's not necessary to increase height, we do it to keep uniformity
-    // this.game.world.setBounds(x, y, w, h);
-  
-    // // we make sure camera is at position (0,0)
-    // this.game.world.camera.position.set(0);
-}
 
 function KeyMove(number) {
     
@@ -976,9 +946,7 @@ function LevelSwitch(where) {
             tokenList[currentPlayer - 1].position.x = boardSpacesInner[10][0];
             tokenList[currentPlayer - 1].position.y = boardSpacesInner[10][1];
             cPosSet[currentPlayer - 1] = 10;
-            
-            //ResetTurn();
-    
+
             reroll = false;
             break;
             
@@ -988,9 +956,7 @@ function LevelSwitch(where) {
             tokenList[currentPlayer - 1].position.x = boardSpaces[15][0];
             tokenList[currentPlayer - 1].position.y = boardSpaces[15][1];
             cPosSet[currentPlayer - 1] = 15;
-            
-            //ResetTurn();
-    
+
             reroll = false;
             break;
             
@@ -1014,9 +980,7 @@ function LevelSwitch(where) {
             tokenList[currentPlayer - 1].position.x = level[teleport][0];
             tokenList[currentPlayer - 1].position.y = level[teleport][1];
             cPosSet[currentPlayer - 1] = teleport;
-            
-            //ResetTurn();
-    
+
             reroll = false;
             break;
             
@@ -1029,9 +993,7 @@ function LevelSwitch(where) {
             cPosSet[currentPlayer - 1] = teleport;
             
             boardLevel[currentPlayer - 1] = 2;
-            
-            //ResetTurn();
-    
+
             reroll = false;
             break;
   
@@ -1183,9 +1145,7 @@ function PickRace(player, number) {
 }
 
 function CreateToken(player) {
-    //outer box = x85.71 y85.71
-    //player is equal to i from AddStats()
-    
+
     var startSpaceXY = Math.floor(Math.random() * 24);
     
     var tokenX = boardSpaces[startSpaceXY][0];
@@ -1202,28 +1162,25 @@ function CreateToken(player) {
     tokenName = this.game.add.text(0, 0, currentRace + (player + 1).toString(), { font: "20px Arial", fill: "white", align: "center" });
     tokenList[player].addChild(tokenName);
     tokenName.y = tokenList[player].height;
-    
+    //console.log(tokenList[0]);
     this.game.world.bringToTop(clouds);
 
 }
 
 function ShowQuestion() {
-    
-    
+   
     //this is just a temporary fix    
      if (typeof sun !== "undefined") {
         
         sun.destroy();
         
     }
-    
-    
+ 
     if (questionUp == false) {
         
         if (turnText.text == "Quest!" || turnText.text == "cave" || turnText.text == "exit" || 
         turnText.text == "stairs") {
         
-            
         questionPanel = this.game.add.sprite(300, 0, 'answersheet');
         question = this.game.add.group();
         question.width = questionPanel.width;
@@ -1250,7 +1207,6 @@ function ShowQuestion() {
         wrongButton.input.useHandCursor = true;
         correctButton.input.useHandCursor = true;
         revealButton.input.useHandCursor = true;
-            
 
         questionUp = true;
    
@@ -1496,7 +1452,7 @@ function ResetTurn() {
     }
     
     var eventChance = getRandomInt(0, 10);
-    console.log("EC = " + eventChance);
+
     if (eventChance <= 1) {
         
         WorldEvent();
@@ -1553,10 +1509,7 @@ function StartSun() {
 }
 
 function StopSun() {
-    //sun.body.velocity.setTo(0, 0);
-    //question.add(sun);
-    
-    
+
     if (dayNight == 1 ) {
         
         newSun = this.game.add.sprite(sun.x - 300, sun.y, "sun");    
@@ -1832,8 +1785,6 @@ function CreateQuestion(puzzle) {
                 for (var i = 0; i < sentenceLength; i++) {
                     
                     var word = deconstructed[i];
-                    //var wordLength = deconstructed[i];
-                    
                     ShuffleWord(word);
                     
                     newOrder[i] = shuffledWord;
@@ -1912,7 +1863,6 @@ function CreateQuestion(puzzle) {
             question.add(wrongButton);
             question.add(correctButton);
             question.add(revealButton);
-            //question.add(bubbles);
             RunDelay(PopBubble, "none", 3000);
             
             break;
@@ -2144,6 +2094,8 @@ function GoToQuest() {
                
                     playerButtons[i]= this.game.add.button(buttonX, buttonY, getRace, FightPlayer, this);		
                     question.add(playerButtons[i]);
+                    var playersName = this.game.add.text(20, 92, tokenList[i].name.slice(0, -1) + (i + 1).toString(), { font: "20px Arial", fill: "black", align: "center" }); 
+                    playerButtons[i].addChild(playersName);
                     
                     playerButtons[i].input.useHandCursor = true;
                     
@@ -2181,9 +2133,7 @@ function GoToQuest() {
     
     if (turnText.text === "Quest!") {
         turn = 3;
-        
-        console.log(restName);
-        
+
         restButton = this.game.add.button(250, 200, restName, StartActionTimer, 2,1,0);
         restButtonText = this.game.add.text(-20, 70, "Take a Rest", buttonStyle);   
         restButton.addChild(restButtonText);
@@ -2212,7 +2162,7 @@ function GoToQuest() {
         
         
     } else if (turnText.text == "cave" || turnText.text == "exit") {
-        console.log("text == cave");
+
         turn = 3;
         var caveText;
         
@@ -2434,7 +2384,7 @@ function StartActionTimer(action) {
             break;
             
         case stairsButton:
-            //console.log("stairsButton called");
+
             choiceText.setText("You walk up the stairs...");
             SummonWatcher();
             buttons = 4;
@@ -2460,7 +2410,7 @@ function MakeStairs() {
 }
 
 function MakeCave() {
-       // backgroundAsset = turnText.text + "Background";
+
         if (dayNight == 1) {
             
             cave = this.game.add.sprite(45,200, 'caveBackground');
@@ -2486,7 +2436,7 @@ function MakeCave() {
         
         RollDie();
         timer = this.game.time.create(false);
-        //var actionTime = Math.floor(((Math.random() * 3) + 3) * 1000);
+
         timer.add(rollTime, StopSun, this);
         timer.start();
         
@@ -2623,7 +2573,7 @@ function CreateDoors(doors) {
       case 'rock':
             
             var rockColor = hasRock[currentPlayer - 1].replace("rock", '');
-            console.log(rockColor);
+
             if (rockColor == "Blue") {
                
                blueDoorButton = this.game.add.button(400, 200, "blueDoorButton", DoorResult, this, 2,1,0); 
@@ -2668,7 +2618,7 @@ function DoorResult(door) {
         choiceText.setText("This is Balance Door...switch power with any player");
         choice = "blue";
         ChoosePlayer(choice);
-        //switch power
+
         
     } else if (door == greenDoorButton) {
         
@@ -2682,7 +2632,7 @@ function DoorResult(door) {
         choiceText.setText("This is the Vampire Door...switch life with any player.");
         choice = "red";
         ChoosePlayer(choice);
-        //switch life
+        
         
         
     } else if (door == yellowDoorButton) {
@@ -2690,8 +2640,7 @@ function DoorResult(door) {
         choiceText.setText("This the Thief Door...steal 5 gold from any player.");
         choice = "yellow";
         ChoosePlayer(choice);
-        //switch gold
-  
+
     }
     
     if (totalDoors == 1 ) {
@@ -2753,17 +2702,17 @@ function ChoosePlayer(choice) {
     var buttonX = 100;
     var buttonY = 200;
 
-    
     for (var i = 0; i < totalPlayers; i++) {
         
         var getRace = packList[i].getChildAt(5).text.slice(0, -2);
-        
-       // var setI = i;
+
         playerButtons[i]= this.game.add.button(buttonX, buttonY, getRace, ChosenPlayer, this);		
         playerButtons[i].input.useHandCursor = true;
-        
+        var playersName = this.game.add.text(20, 92, tokenList[i].name.slice(0, -1) + (i + 1).toString(), { font: "20px Arial", fill: "white", align: "center" }); 
+        playerButtons[i].addChild(playersName);
+
         question.add(playerButtons[i]);
-        //console.log("i = " + i);
+
         buttonX += 150;
         
         if (buttonX  > 450) {
@@ -2800,9 +2749,7 @@ function ChosenPlayer(chosenPlayer) {
         }
   
     }
-    
-    console.log(getNumber);
-    
+
     var getLifeCurrent = packList[currentPlayer - 1].getChildAt(4);
     var getAttackCurrent = packList[currentPlayer - 1].getChildAt(3);
     var getGoldCurrent = packList[currentPlayer - 1].getChildAt(2);
@@ -2907,6 +2854,7 @@ function FightPlayer(fightPlayer) {
         choiceText.setText("You're too strong!  Gain 1 attack...the other player loses 1 life.");   
         getAttackCurrent = getAttackCurrent.setText((parseInt(getAttackCurrent.text, 10) + 1).toString());
         getLifeOther = getLifeOther.setText((parseInt(getLifeOther.text, 10) - 1).toString());
+        turnText.setText("turn\nover");
         return;
         
     } else if (totalAttackCurrent - totalAttackOther < 5 && totalAttackCurrent - totalAttackOther > 0) {
@@ -2934,6 +2882,7 @@ function FightPlayer(fightPlayer) {
         choiceText.setText("The other player is too strong!  They gain 1 attack...you lose 1 life.");    
         getAttackOther = getAttackOther.setText((parseInt(getAttackOther.text, 10) + 1).toString());
         getLifeCurrent = getLifeCurrent.setText((parseInt(getLifeCurrent.text, 10) - 1).toString());
+         turnText.setText("turn\nover");
         return;
         
     } else if (totalAttackOther - totalAttackCurrent < 5) {
@@ -2951,16 +2900,13 @@ function FightPlayer(fightPlayer) {
 }
 
 function AttackPlayerResult() {
-    
-    console.log("apr");
-    console.log(currentStronger);
-    console.log(playerAttackValue +  " pav & " + dieResult + " dr" );
-    
+
     var getLifeCurrent = packList[currentPlayer - 1].getChildAt(4);
     var getAttackCurrent = packList[currentPlayer - 1].getChildAt(3);
 
     var getLifeOther = packList[whichPlayerFighting].getChildAt(4);
     var getAttackOther = packList[whichPlayerFighting].getChildAt(3);
+    turnText.setText("turn\nover");
     
     if (playerAttackValue == 0) {
         
@@ -2970,7 +2916,8 @@ function AttackPlayerResult() {
                 choiceText.setText("You won! Gain 1 attack...the other player loses 1 life.");
                 getAttackCurrent = getAttackCurrent.setText((parseInt(getAttackCurrent.text, 10) + 1).toString());
                 getLifeOther = getLifeOther.setText((parseInt(getLifeOther.text, 10) - 1).toString());
-                
+                ScaleText("+1", currentPlayer - 1, "grey");
+                ScaleText("-1", whichPlayerFighting, "red");
                 break;
             
             case 2:
@@ -2978,7 +2925,8 @@ function AttackPlayerResult() {
                 choiceText.setText("They won!  They gain 1 attack...you lose 1 life.");    
                 getAttackOther = getAttackOther.setText((parseInt(getAttackOther.text, 10) + 1).toString());
                 getLifeCurrent = getLifeCurrent.setText((parseInt(getLifeCurrent.text, 10) - 1).toString());
-                
+                ScaleText("-1", currentPlayer - 1, "red");
+                ScaleText("+1", whichPlayerFighting, "grey");
                 break;
                 
             case 3:
@@ -2986,7 +2934,8 @@ function AttackPlayerResult() {
                 choiceText.setText("You hit each other!  You both lose 1 life.");    
                 getLifeOther = getLifeOther.setText((parseInt(getLifeOther.text, 10) - 1).toString());
                 getLifeCurrent = getLifeCurrent.setText((parseInt(getLifeCurrent.text, 10) - 1).toString());
-                
+                ScaleText("-1", currentPlayer - 1, "red");
+                ScaleText("-1", whichPlayerFighting, "red");
                 break;
                 
             case 4:
@@ -2994,7 +2943,8 @@ function AttackPlayerResult() {
                 choiceText.setText("They won!  They gain 1 attack...you lose 1 life.");    
                 getAttackOther = getAttackOther.setText((parseInt(getAttackOther.text, 10) + 1).toString());
                 getLifeCurrent = getLifeCurrent.setText((parseInt(getLifeCurrent.text, 10) - 1).toString());
-                
+                ScaleText("-1", currentPlayer - 1, "red");
+                ScaleText("+1", whichPlayerFighting, "grey");
                 break;
                 
             case 5:
@@ -3002,7 +2952,8 @@ function AttackPlayerResult() {
                 choiceText.setText("You fight a long time, but nobody loses!  You both get stronger...both gain 1 attack.");    
                 getAttackOther = getAttackOther.setText((parseInt(getAttackOther.text, 10) + 1).toString());
                 getAttackCurrent = getAttackCurrent.setText((parseInt(getAttackCurrent.text, 10) + 1).toString());
-                
+                ScaleText("+1", currentPlayer - 1, "grey");
+                ScaleText("+1", whichPlayerFighting, "grey");
                 break;
                 
             case 6:
@@ -3010,7 +2961,8 @@ function AttackPlayerResult() {
                 choiceText.setText("You hit each other!  You both lose 1 life.");    
                 getLifeOther = getLifeOther.setText((parseInt(getLifeOther.text, 10) - 1).toString());
                 getLifeCurrent = getLifeCurrent.setText((parseInt(getLifeCurrent.text, 10) - 1).toString());
-                
+                ScaleText("-1", currentPlayer - 1, "red");
+                ScaleText("-1", whichPlayerFighting, "red");
                 break;
                 
             
@@ -3028,6 +2980,8 @@ function AttackPlayerResult() {
         choiceText.setText("You won! Gain 1 attack...the other player loses 1 life.");
         getAttackCurrent = getAttackCurrent.setText((parseInt(getAttackCurrent.text, 10) + 1).toString());
         getLifeOther = getLifeOther.setText((parseInt(getLifeOther.text, 10) - 1).toString());
+        ScaleText("+1", currentPlayer - 1, "grey");
+        ScaleText("-1", whichPlayerFighting, "red");
         return;
         
     } else if (dieResult == playerAttackValue - 1 && currentStronger == false ) {
@@ -3040,6 +2994,8 @@ function AttackPlayerResult() {
         choiceText.setText("They won!  They gain 1 attack...you lose 1 life.");    
         getAttackOther = getAttackOther.setText((parseInt(getAttackOther.text, 10) + 1).toString());
         getLifeCurrent = getLifeCurrent.setText((parseInt(getLifeCurrent.text, 10) - 1).toString());
+        ScaleText("-1", currentPlayer - 1, "red");
+        ScaleText("+1", whichPlayerFighting, "grey");
         return;
         
     } else if (dieResult >= playerAttackValue && currentStronger == true) {
@@ -3048,20 +3004,23 @@ function AttackPlayerResult() {
         choiceText.setText("They won!  They gain 1 attack...you lose 1 life.");    
         getAttackOther = getAttackOther.setText((parseInt(getAttackOther.text, 10) + 1).toString());
         getLifeCurrent = getLifeCurrent.setText((parseInt(getLifeCurrent.text, 10) - 1).toString());
+        ScaleText("-1", currentPlayer - 1, "red");
+        ScaleText("+1", whichPlayerFighting, "grey");
         return;
         
     } else if (dieResult == playerAttackValue - 1 && currentStronger == true ) {
         
-
+        turnText.setText("try\nagain");
         choiceText.setText("You tied...try again!");        
         return;
         
     } else if (dieResult < playerAttackValue - 1 && currentStronger == true) {
         
-
         choiceText.setText("You won! Gain 1 attack...the other player loses 1 life.");
         getAttackCurrent = getAttackCurrent.setText((parseInt(getAttackCurrent.text, 10) + 1).toString());
         getLifeOther = getLifeOther.setText((parseInt(getLifeOther.text, 10) - 1).toString());
+        ScaleText("+1", currentPlayer - 1, "grey");
+        ScaleText("-1", whichPlayerFighting, "red");
         return;
         
     }
@@ -3085,6 +3044,7 @@ function ManageQuest(choice) {
                 getGold = getGold.setText((parseInt(getGold.text, 10) - 1).toString());
                 getLife = getLife.setText((parseInt(getLife.text, 10) + 1).toString());
                 choiceText.setText("....Oh no!  While you were sleeping a thief stole 1 gold! \nGain 1 life.");
+                ScaleText("-1\n+1", currentPlayer - 1, "black");
                 turnText.setText("Next");
             }
             else if (resting == 2) {
@@ -3097,6 +3057,8 @@ function ManageQuest(choice) {
             else {
                 choiceText.setText("....you had a great rest! \nGain 1 life.");
                 getLife = getLife.setText((parseInt(getLife.text, 10) + 1).toString());
+                ScaleText("+1", currentPlayer - 1, "red");
+                
                 turnText.setText("Next");
             }
             
@@ -3133,6 +3095,8 @@ function TreasureHunt() {
         
         choiceText.setText("No treasure....but you did \nfind 1 Gold.");
         getGold = getGold.setText((parseInt(getGold.text, 10) + 1).toString());
+        ScaleText("+1", currentPlayer - 1, "yellow");
+                
         DisplayItem("coin");
         
     } else if (treasureFound == 3) {
@@ -3297,7 +3261,7 @@ function FightMonster() {
         
     } else if (specialMonster == "spider") {
         
-      choiceText.setText("The spiders are attacking you! Roll to fight! \nYou need a " + (monsterModifier + 1).toString() + " to win!!!" );
+        choiceText.setText("The spiders are attacking you! Roll to fight! \nYou need a " + (monsterModifier + 1).toString() + " to win!!!" );
         
         
     } else {
@@ -3307,7 +3271,7 @@ function FightMonster() {
     }
 
     
-    var monsterValue = this.game.add.sprite(20, 225, "monsterValue");
+    monsterValue = this.game.add.sprite(20, 225, "monsterValue");
     question.addChild(monsterValue);
     
     var monsterValueText = this.game.add.text(monsterValue.width/2, monsterValue.height/2,  
@@ -3507,6 +3471,7 @@ function AttackResult() {
                         getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 2).toString());
                         ScaleText("+2", currentPlayer - 1, "grey");
                         monsterSprite.destroy();
+                        monsterValue.destroy();
                         specialMonster = "none";
                         CreateDoors("any");
                         
@@ -3617,7 +3582,8 @@ function MonsterCurse() {
 
 function CurseResult() {
     
-
+    turnText.setText(" turn \nover");
+    
     if (dieResult > 4) {
         
         switch (monster) {
@@ -3628,8 +3594,6 @@ function CurseResult() {
             curseTokens[currentPlayer - 1] = this.game.add.sprite(cList[currentPlayer - 1].x + 80, cList[currentPlayer - 1].y + 40, "vampire");
             
             curseTokens[currentPlayer - 1].scale.setTo(.15,.15);
-            
-            console.log("x is = " + curseTokens[currentPlayer - 1].x + "y is = " + curseTokens[currentPlayer - 1].y);
             
             break;
             
@@ -3642,7 +3606,6 @@ function CurseResult() {
             
             curseTokens[currentPlayer - 1].scale.setTo(.15,.15);
             
-            console.log("x is = " + curseTokens[currentPlayer - 1].x + "y is = " + curseTokens[currentPlayer - 1].y);
             break;
             
         case 'zombie':
@@ -3653,9 +3616,7 @@ function CurseResult() {
             curseTokens[currentPlayer - 1] = this.game.add.sprite(cList[currentPlayer - 1].x + 80, cList[currentPlayer - 1].y + 40, "zombie");
             
             curseTokens[currentPlayer - 1].scale.setTo(.15,.15);
-            
-            console.log("x is = " + curseTokens[currentPlayer - 1].x + "y is = " + curseTokens[currentPlayer - 1].y);
-                                
+
             break;
         
         
@@ -3664,7 +3625,7 @@ function CurseResult() {
     } else {
         
         choiceText.setText("You're safe this time!");
-        turnText.setText(" turn \nover");
+        
         
     }
 
@@ -3797,12 +3758,10 @@ function AddInventory(choice) {
         if (isMagic == true) {
             
             emitterList[0].destroy();    
-            //question.getChildAt(6).destroy();
             displayItem.destroy();
             
         } else {
-            
-            //question.getChildAt(5).destroy();
+
             displayItem.destroy();
         }
   
@@ -3814,7 +3773,6 @@ function AddInventory(choice) {
         if (isMagic == true) {
            
             emitterList[0].destroy();
-            //question.getChildAt(6).destroy();
             displayItem.destroy();
             inventory = this.game.add.sprite (40,110, itemObject);
             inventory.scale.setTo(.25,.25);
@@ -3840,7 +3798,6 @@ function AddInventory(choice) {
         
     }
     
-    console.log(playerBonus[currentPlayer - 1]);
     garbageButton.destroy();
     keepButton.destroy();
     turnText.setText("turn \nover");
@@ -3851,7 +3808,7 @@ function CreateParticles(particle, object, mini) {
     
     var getPos = cList[currentPlayer - 1];
     var currentEmitter;
-    //StartParticles(emitter, particle);
+
     if (mini == true) {
         
         emitterMini[currentPlayer - 1] = this.game.add.emitter(getPos.x + getPos.width - 50  , getPos.y + getPos.height - 10, 100);
@@ -3990,7 +3947,6 @@ function DeleteWorldEvent() {
 
 //*******************Corners
 
-//Tunnel is done
 function TunnelResult() {
 
     var getGold = packList[currentPlayer - 1].getChildAt(2);
@@ -4086,7 +4042,7 @@ function TunnelResult() {
     }
 
 }
-//village is done
+
 function VillageResult() {
     
     var getLife = packList[currentPlayer - 1].getChildAt(4);
@@ -4141,7 +4097,7 @@ function VillageResult() {
     
     
 }
-//Castle is done
+
 function CastleResult() {
     
     var getLife = packList[currentPlayer - 1].getChildAt(4);
@@ -4196,7 +4152,7 @@ function CastleResult() {
     
     
 }
-//Witch is done
+
 function WitchResult() {
     
     var getLife = packList[currentPlayer - 1].getChildAt(4);
@@ -4260,7 +4216,7 @@ function WitchResult() {
     
     
 }
-//Forest is done
+
 function ForestResult() {
     
     var getLife = packList[currentPlayer - 1].getChildAt(4);
@@ -4317,7 +4273,7 @@ function ForestResult() {
     
     
 }
-//Pool is done
+
 function PoolResult() {
     
     var getLife = packList[currentPlayer - 1].getChildAt(4);
@@ -4352,7 +4308,6 @@ function PoolResult() {
             
         case 5:
             choiceText.setText("You find a bright blue rock in the water. You don't know what it does!?!");
-            //add blue rock
             DisplayItem("rockBlue");
             currentItem = "rockBlue";
             break;
@@ -4369,7 +4324,7 @@ function PoolResult() {
     
     
 }
-//Ropasci Cave: rock
+
 function DragonResult() {
     
     var getLife = packList[currentPlayer - 1].getChildAt(4);
@@ -4428,7 +4383,7 @@ function DragonResult() {
     
     
 }
-//Ants:  rock
+
 function AntsResult() {
     
     var getLife = packList[currentPlayer - 1].getChildAt(4);
@@ -4480,7 +4435,6 @@ function AntsResult() {
             
         case 5:
             choiceText.setText("The ants give you a bright yellow rock. You don't know what it does!?!");
-            //add yellow rock
             DisplayItem("rockYellow");
             currentItem = "rockYellow";
             break;
@@ -4687,7 +4641,7 @@ function FrogChange() {
     var getAttack = packList[currentPlayer - 1].getChildAt(3);
     
     saveStat[currentPlayer - 1] = parseInt(getAttack.text,10);
-    console.log("stat = " + saveStat[currentPlayer - 1]);
+
     getAttack = getAttack.setText("0");
     packList[currentPlayer - 1].getChildAt(0).loadTexture('frog');
     tokenList[currentPlayer - 1].loadTexture('frog');
@@ -5247,7 +5201,7 @@ function WorldEvent() {
 
     var getLife;
     
-    //pickEvent = 2;
+    turnText.setText("world\nevent");
     
     switch (pickEvent) {
         case 0:
@@ -5265,8 +5219,7 @@ function WorldEvent() {
                     getLife = packList[i].getChildAt(4);
                     getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
                     RunDelay(LoopScaleText, i, 500);
-                    console.log("text looped");
-                    
+
                 }
                 
             }
@@ -5288,8 +5241,7 @@ function WorldEvent() {
                     getLife = packList[i].getChildAt(4);
                     getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
                     RunDelay(LoopScaleText, i, 500);
-                    console.log("text looped");
-                    
+
                 }
                 
             }
@@ -5319,7 +5271,7 @@ function WorldEvent() {
                     getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
 
                     RunDelay(LoopScaleText, i, 500);
-                    console.log("text looped");
+
                 }
                 
             }
@@ -5424,7 +5376,8 @@ function DeadPlayer() {
         
         packList[currentPlayer - 1].getChildAt(0).loadTexture('tokenSkull');
         tokenList[currentPlayer - 1].loadTexture('tokenSkull');
-            
+        hasCurse[currentPlayer - 1] = "none";
+        curseTokens[currentPlayer - 1].destroy();
         
     }
  
@@ -5473,7 +5426,7 @@ function RunDelay(ToDo, arg, timeX) {
     deleteQuestion.input.enabled = false;
     
     timer = this.game.time.create(false);
-    //var actionTime = Mavar actionTime = 4000;
+
     if (arg == "none") {
         
         timer.add(timeX, ToDo, this);    
@@ -5508,8 +5461,7 @@ function DeleteOn() {
 }
 
 function AddQuake() {
-    
-    // define the camera offset for the quake
+
     var rumbleOffset = 10;
     
     // we need to move according to the camera's current position
@@ -5552,7 +5504,7 @@ function EarthquakeEvent() {
             
             var getLife = packList[i].getChildAt(4);
             getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
-            
+            RunDelay(LoopScaleText, i, 500);
         }
         
     }
@@ -5562,8 +5514,7 @@ function ScaleText(scaleText, player, color) {
 
     scalingText = this.game.add.text(30, 70, scaleText, { font: "20px impact", fill: color, align: "center" }); 
     cList[player].addChild(scalingText);
-    //scalingTexts.addChild(scalingText);
-    
+
     scalingTexts[player] = this.game.add.tween(scalingText.scale).to({ x: 3, y: 3 }, 500, Phaser.Easing.Back.Out, true, 1000); 
     scalingTexts[player].onComplete.add(function () {MoveText(player);}, this);
     
@@ -5571,21 +5522,9 @@ function ScaleText(scaleText, player, color) {
 
 function MoveText(player) {
 
-    console.log("move text");
-   
     scalingTexts[player].to({y: -300}, 1000, Phaser.Easing.Back.Out);
-    //textTween.onComplete.add(RemoveElement, cList[player]);
-    
     
 }
 
-function RemoveElement(thisArray) {
-    
-    console.log("pop");
-    
-    thisArray.pop();
-    
-    
-}
 
 
