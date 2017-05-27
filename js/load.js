@@ -169,6 +169,9 @@ var loadState = {
         this.game.load.image('treasurePoison', 'assets/treasurePoison.png');
         this.game.load.image('treasureThief', 'assets/treasureThief.png');
         
+        //Audio
+        this.game.load.audio('clickSound', 'audio/click.mp3');
+        this.game.load.audio('coinSound', 'audio/coin.mp3');
         
         
     },

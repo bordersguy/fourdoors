@@ -266,6 +266,9 @@ var scalingText6;
 
 var scalingTexts = [scalingText1, scalingText2, scalingText3, scalingText4, scalingText5, scalingText6];
 
+var coinSound;
+var clickSound;
+
 
 var playState = {
  
@@ -360,6 +363,8 @@ create: function () {
             backCloud.angle += 90;
             
         }
+        
+        AddSound();
         
     }
     
@@ -1929,7 +1934,9 @@ function ShuffleWord (word){
 }
 
 function CheckAnswer(result) {
-
+    
+    clickSound.play();
+    
     var getGold = packList[currentPlayer - 1].getChildAt(2);
     var getLife = packList[currentPlayer - 1].getChildAt(4);
     var adjustGold;  
@@ -1978,7 +1985,8 @@ function CheckAnswer(result) {
             
             choiceText.setText("Congratulations!  Here's " + adjustGold + " gold!");
             turnText.setText("turn \nover");
-                
+            coinSound.play();
+                            
             } else {
                 
                 var allKids = 0;
@@ -2008,6 +2016,8 @@ function CheckAnswer(result) {
 
 function ShowAnswer(argument) {
     
+    clickSound.play();
+    
     var answerY = 250;
     
     if (turn == 31 || turn == 30) {
@@ -2030,7 +2040,7 @@ function ShowAnswer(argument) {
 function GoToQuest() {
     
     choiceText = this.game.add.text(50, 50, "Great!  Here's 1 Gold. \nWhat now?", { font: "40px Arial", fill: "black", align: "center", wordWrap: true, wordWrapWidth: question.width - 50 });
-    
+    coinSound.play();
     var restName = packList[currentPlayer - 1].getChildAt(5).text.slice(0, -2);
     
     if (isDead[currentPlayer - 1] == "yes") {
@@ -3075,10 +3085,7 @@ function ManageQuest(choice) {
             TreasureHunt();
             break;
     }
-    
-    
-    
-    
+  
 }
 
 function TreasureHunt() {
@@ -3647,6 +3654,8 @@ function CreateMagicButtons () {
 
 function UseMagic(magic) {
     
+    clickSound.play();
+    
     if (magic == noMagicButton) {
         
         if (turn == 4) {
@@ -3893,6 +3902,7 @@ function DeleteInventory() {
 
 function DeleteQuestion() {
     
+    clickSound.play();
     CloudGenerator();
     
     if (typeof displayItem !== "undefined") {
@@ -3937,7 +3947,8 @@ function DeleteQuestion() {
 }
 
 function DeleteWorldEvent() {
-
+    
+    clickSound.play();
     questionPanel.destroy();
     questionUp = false;
     ManageTurn();
@@ -5525,6 +5536,16 @@ function MoveText(player) {
     scalingTexts[player].to({y: -300}, 1000, Phaser.Easing.Back.Out);
     
 }
+
+//Audio
+
+function AddSound() {
+    
+    coinSound = this.game.add.audio("coinSound");
+    clickSound = this.game.add.audio("clickSound");
+    
+}
+
 
 
 
