@@ -170,9 +170,11 @@ var loadState = {
         this.game.load.image('treasureThief', 'assets/treasureThief.png');
         
         //Audio
+        this.game.load.audio('backgroundMusic', 'audio/backgroundMusic.mp3');
         this.game.load.audio('coinSound', 'audio/coinSound.mp3');
         this.game.load.audio('clickSound', 'audio/clickSound.mp3');
         this.game.load.audio('blizzardSound', 'audio/blizzardSound.mp3');
+        this.game.load.audio('cardflipSound', 'audio/cardflipSound.mp3');
         this.game.load.audio('castleSound', 'audio/castleSound.mp3');
         this.game.load.audio('chestSound', 'audio/chestSound.mp3');
         this.game.load.audio('diceSound', 'audio/diceSound.mp3');

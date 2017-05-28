@@ -266,7 +266,8 @@ var scalingText6;
 
 var scalingTexts = [scalingText1, scalingText2, scalingText3, scalingText4, scalingText5, scalingText6];
 
-var blizardSound;
+var blizzardSound;
+var cardflipSound;
 var castleSound;
 var chestSound;
 var clickSound;
@@ -291,6 +292,7 @@ var vampireSound;
 var werewolfSound;
 var witchHutSound;
 var zombieSound;
+var backgroundMusic;
 
 
 var playState = {
@@ -394,6 +396,7 @@ create: function () {
     this.game.world.sendToBack(cloudsBack);
     
     AddSound();
+    backgroundMusic.play();
     
     //Create Particles
     
@@ -1207,8 +1210,12 @@ function ShowQuestion() {
  
     if (questionUp == false) {
         
+        cardflipSound.play();
+        
         if (turnText.text == "Quest!" || turnText.text == "cave" || turnText.text == "exit" || 
         turnText.text == "stairs") {
+        
+        
         
         questionPanel = this.game.add.sprite(300, 0, 'answersheet');
         question = this.game.add.group();
@@ -4340,6 +4347,7 @@ function PoolResult() {
             choiceText.setText("A fairy gives you some magic water.  \nGain 1 life.");
             getLife = getLife.setText((parseInt(getLife.text, 10) + 1).toString());
             ScaleText("+1", currentPlayer - 1, "red");
+            fairySound.play();
             turnText.setText("next");
             break;
             
@@ -4371,6 +4379,7 @@ function PoolResult() {
             choiceText.setText("A fairy wants to play a game with you.  \nDo you want to play?");
             var gameFairy = this.game.add.sprite(400, 200, "fairy");
             question.add(gameFairy);
+            fairySound.play();
             choice = "fairygame";
             Choice();
             break;
@@ -4723,6 +4732,8 @@ function TreasureResult() {
     
     var getLife = packList[currentPlayer - 1].getChildAt(4);
     var getGold = packList[currentPlayer - 1].getChildAt(2);
+    
+    chestSound.play();
     
     if (dieResult > 4) {
         treasureChest.loadTexture("treasureReally");
@@ -5353,6 +5364,8 @@ function LoopScaleText(player) {
 
 function WorldEventPanel() {
      
+    cardflipSound.play(); 
+     
     questionPanel = this.game.add.sprite(300, 0, 'answersheet');
     question = this.game.add.group();
     question.width = questionPanel.width;
@@ -5592,7 +5605,9 @@ function MoveText(player) {
 
 function AddSound() {
     
-    blizardSound = this.game.add.audio("blizzardSound");
+    backgroundMusic = this.game.add.audio("backgroundMusic", .25, true);
+    blizzardSound = this.game.add.audio("blizzardSound");
+    cardflipSound = this.game.add.audio("cardflipSound");
     castleSound = this.game.add.audio("castleSound");
     chestSound = this.game.add.audio("chestSound");
     clickSound = this.game.add.audio("clickSound");
