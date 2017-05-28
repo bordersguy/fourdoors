@@ -266,8 +266,31 @@ var scalingText6;
 
 var scalingTexts = [scalingText1, scalingText2, scalingText3, scalingText4, scalingText5, scalingText6];
 
-var coinSound;
+var blizardSound;
+var castleSound;
+var chestSound;
 var clickSound;
+var coinSound;
+var diceSound;
+var doorSound;
+var dragonSound;
+var earthquakeSound;
+var fairySound;
+var forestSound;
+var garbageSound;
+var hitSound;
+var krakenSound;
+var lightningstormSound;
+var punchSound;
+var snakeSound;
+var spiderSound;
+var swordSound;
+var takeSound;
+var thiefSound;
+var vampireSound;
+var werewolfSound;
+var witchHutSound;
+var zombieSound;
 
 
 var playState = {
@@ -364,13 +387,13 @@ create: function () {
             
         }
         
-        AddSound();
+       
         
     }
     
     this.game.world.sendToBack(cloudsBack);
     
-    
+    AddSound();
     
     //Create Particles
     
@@ -653,6 +676,7 @@ function RollDie() {
     
     if (ready > 0 && turn > 0) {
         
+        diceSound.play();
         dice.animations.play('roll');
     
         //timer
@@ -2040,7 +2064,7 @@ function ShowAnswer(argument) {
 function GoToQuest() {
     
     choiceText = this.game.add.text(50, 50, "Great!  Here's 1 Gold. \nWhat now?", { font: "40px Arial", fill: "black", align: "center", wordWrap: true, wordWrapWidth: question.width - 50 });
-    coinSound.play();
+   
     var restName = packList[currentPlayer - 1].getChildAt(5).text.slice(0, -2);
     
     if (isDead[currentPlayer - 1] == "yes") {
@@ -2143,7 +2167,7 @@ function GoToQuest() {
     
     if (turnText.text === "Quest!") {
         turn = 3;
-
+        coinSound.play();
         restButton = this.game.add.button(250, 200, restName, StartActionTimer, 2,1,0);
         restButtonText = this.game.add.text(-20, 70, "Take a Rest", buttonStyle);   
         restButton.addChild(restButtonText);
@@ -2172,7 +2196,7 @@ function GoToQuest() {
         
         
     } else if (turnText.text == "cave" || turnText.text == "exit") {
-
+        coinSound.play();
         turn = 3;
         var caveText;
         
@@ -2221,7 +2245,7 @@ function GoToQuest() {
     } else if (turnText.text == "stairs") {
         
         turn = 3;
-        
+        coinSound.play();
         restButton = this.game.add.button(400, 200, restName, StartActionTimer, 2,1,0);
         restButtonText = this.game.add.text(-20, 70, "Take a Rest", buttonStyle);   
         restButton.addChild(restButtonText);
@@ -2288,6 +2312,9 @@ function GoToQuest() {
                 break;
                 
             case "witch":
+                
+                witchHutSound.play();
+                
                 if (hasCurse[currentPlayer - 1] == "vampire") {
                     
                     choiceText.setText("I can stop the vampire curse for 3 gold.");
@@ -2305,6 +2332,8 @@ function GoToQuest() {
                 break;
             
             case "castle":
+                
+                castleSound.play();
                 
                 if (hasCurse[currentPlayer - 1] == "zombie") {
                     
@@ -2332,6 +2361,7 @@ function GoToQuest() {
                 choiceText.setText("The forest can be dangerous! \nRoll the die.");
                 turn = 20;
                 CreateSun();
+                forestSound.play();
                 break;
                 
             case "ants":
@@ -3314,6 +3344,17 @@ function FightMonster() {
         
     }
     
+    if (specialMonster == "none") {
+            
+        PlayMonsterSound(monster);
+        
+    } else {
+        
+        PlayMonsterSound(specialMonster);
+        
+    }
+    
+    
     question.add(monsterSprite);
 }
 
@@ -3764,6 +3805,8 @@ function AddInventory(choice) {
 
     if (choice == garbageButton) {
         
+        garbageSound.play();
+        
         if (isMagic == true) {
             
             emitterList[0].destroy();    
@@ -3777,7 +3820,8 @@ function AddInventory(choice) {
     } else {
 
         DeleteInventory();
-
+        
+        takeSound.play();
         
         if (isMagic == true) {
            
@@ -5217,9 +5261,11 @@ function WorldEvent() {
     switch (pickEvent) {
         case 0:
             
+            lightningstormSound.play();
+            
             WorldEventPanel();
             questionText.setText("A lightning storm hits the world!  If you are outside lose 1 life.");
-
+            
             eventPicture = this.game.add.sprite(50, 250, "storm");
             question.addChild(eventPicture);
             
@@ -5238,6 +5284,8 @@ function WorldEvent() {
             break;
             
         case 1:
+            
+            blizzardSound.play();
             
             WorldEventPanel();
             questionText.setText("A blizzard hits the world! If you are outside without special clothes lose 1 life.");
@@ -5260,12 +5308,15 @@ function WorldEvent() {
             break;
             
         case 2:
-
+            
+            earthquakeSound.play();
             AddQuake();
 
             break;
             
         case 3:
+            
+            dragonSound();
             
             WorldEventPanel();
             
@@ -5541,8 +5592,78 @@ function MoveText(player) {
 
 function AddSound() {
     
-    coinSound = this.game.add.audio("coinSound");
+    blizardSound = this.game.add.audio("blizzardSound");
+    castleSound = this.game.add.audio("castleSound");
+    chestSound = this.game.add.audio("chestSound");
     clickSound = this.game.add.audio("clickSound");
+    coinSound = this.game.add.audio("coinSound");
+    diceSound = this.game.add.audio("diceSound");
+    doorSound = this.game.add.audio("doorSound");
+    dragonSound = this.game.add.audio("dragonSound");
+    earthquakeSound = this.game.add.audio("earthquakeSound");
+    fairySound = this.game.add.audio("fairySound");
+    forestSound = this.game.add.audio("forestSound");
+    garbageSound = this.game.add.audio("garbageSound");
+    hitSound = this.game.add.audio("hitSound");
+    krakenSound = this.game.add.audio("krakenSound");
+    lightningstormSound = this.game.add.audio("lightningstormSound");
+    punchSound = this.game.add.audio("punchSound");
+    snakeSound = this.game.add.audio("snakeSound");
+    spiderSound = this.game.add.audio("spiderSound");
+    swordSound = this.game.add.audio("swordSound");
+    takeSound = this.game.add.audio("takeSound");
+    thiefSound = this.game.add.audio("thiefSound");
+    vampireSound = this.game.add.audio("vampireSound");
+    werewolfSound = this.game.add.audio("werewolfSound");
+    witchHutSound = this.game.add.audio("witchHutSound");
+    zombieSound = this.game.add.audio("zombieSound");
+    
+}
+
+function PlayMonsterSound(monsterSound) {
+    
+    switch (monsterSound) {
+        
+        case 'dragon':
+            dragonSound.play();
+            break;
+        
+        case 'kraken':
+            krakenSound.play();
+            break;
+        
+        case 'snake':
+            snakeSound.play();
+            break;
+            
+        case 'spider':
+            spiderSound.play();
+            break;
+        
+        case 'thief':
+            thiefSound.play();
+            break;
+            
+        case 'vampire':
+            vampireSound.play();
+            break;
+            
+        case 'werewolf':
+            werewolfSound.play();
+            break;
+
+        
+        case 'zombie':
+            zombieSound.play();
+            break;
+            
+            
+        
+   
+    }
+    
+        
+    
     
 }
 

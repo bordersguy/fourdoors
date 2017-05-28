@@ -170,8 +170,33 @@ var loadState = {
         this.game.load.image('treasureThief', 'assets/treasureThief.png');
         
         //Audio
-        this.game.load.audio('clickSound', 'audio/click.mp3');
-        this.game.load.audio('coinSound', 'audio/coin.mp3');
+        this.game.load.audio('coinSound', 'audio/coinSound.mp3');
+        this.game.load.audio('clickSound', 'audio/clickSound.mp3');
+        this.game.load.audio('blizzardSound', 'audio/blizzardSound.mp3');
+        this.game.load.audio('castleSound', 'audio/castleSound.mp3');
+        this.game.load.audio('chestSound', 'audio/chestSound.mp3');
+        this.game.load.audio('diceSound', 'audio/diceSound.mp3');
+        this.game.load.audio('doorSound', 'audio/doorSound.mp3');
+        this.game.load.audio('dragonSound', 'audio/dragonSound.mp3');
+        this.game.load.audio('earthquakeSound', 'audio/earthquakeSound.mp3');
+        this.game.load.audio('fairySound', 'audio/fairySound.mp3');
+        this.game.load.audio('forestSound', 'audio/forestSound.mp3');
+        this.game.load.audio('garbageSound', 'audio/garbageSound.mp3');
+        this.game.load.audio('hitSound', 'audio/hitSound.mp3');
+        this.game.load.audio('krakenSound', 'audio/krakenSound.mp3');
+        this.game.load.audio('lightningstormSound', 'audio/lightningstormSound.mp3');
+        this.game.load.audio('punchSound', 'audio/punchSound.mp3');
+        this.game.load.audio('snakeSound', 'audio/snakeSound.mp3');
+        this.game.load.audio('spiderSound', 'audio/spiderSound.mp3');
+        this.game.load.audio('swordSound', 'audio/swordSound.mp3');
+        this.game.load.audio('takeSound', 'audio/takeSound.mp3');
+        this.game.load.audio('thiefSound', 'audio/thiefSound.mp3');
+        this.game.load.audio('vampireSound', 'audio/vampireSound.mp3');
+        this.game.load.audio('werewolfSound', 'audio/werewolfSound.mp3');
+        this.game.load.audio('witchHutSound', 'audio/witchHutSound.mp3');
+        this.game.load.audio('zombieSound', 'audio/zombieSound.mp3');
+        
+        
         
         
     },
