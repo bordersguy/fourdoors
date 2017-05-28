@@ -9,13 +9,18 @@ var submit;
 var clear;
 var instructions;
 var settingsGroup;
-
+var backgroundMusic;
+var clickSound;
 
 
 var menuState = {
 
- 
+    
     create: function () {
+    clickSound = this.game.add.audio("clickSound");
+    backgroundMusic = this.game.add.audio("backgroundMusic", .1, true);
+    
+    backgroundMusic.play();
       
     localStorage.clear();
         
@@ -80,6 +85,8 @@ function  saveWord () {
 
 
 function  start () {
+    backgroundMusic.stop();
+    clickSound.play();
     
     game.state.start('play');
     
@@ -90,7 +97,8 @@ function  start () {
 
 function showSettings () {
     
-
+    clickSound.play();
+    
     if (settingsSwitch == 0)
     {
         explain = "Type in up to 5\n words you want\n your students\n to solve.";

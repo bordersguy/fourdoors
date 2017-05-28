@@ -184,6 +184,7 @@ var loadState = {
         this.game.load.audio('fairySound', 'audio/fairySound.mp3');
         this.game.load.audio('forestSound', 'audio/forestSound.mp3');
         this.game.load.audio('garbageSound', 'audio/garbageSound.mp3');
+        this.game.load.audio('ghostSound', 'audio/ghostSound.mp3');
         this.game.load.audio('hitSound', 'audio/hitSound.mp3');
         this.game.load.audio('krakenSound', 'audio/krakenSound.mp3');
         this.game.load.audio('lightningstormSound', 'audio/lightningstormSound.mp3');

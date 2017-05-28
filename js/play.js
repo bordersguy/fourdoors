@@ -5,7 +5,7 @@
 //      movement markers didn't disappear
 //      sun is flying away
 //      Prevent quest card from being clicked while a world event is about to be played
-
+//      fix background music loop
 
 //To Do: 
 
@@ -16,6 +16,7 @@
 //      Update webpage
 //      redraw player characters
 //      Fix vampire curse
+//      Sounds needed: ants
 
 
 
@@ -279,6 +280,7 @@ var earthquakeSound;
 var fairySound;
 var forestSound;
 var garbageSound;
+var ghostSound;
 var hitSound;
 var krakenSound;
 var lightningstormSound;
@@ -396,6 +398,7 @@ create: function () {
     this.game.world.sendToBack(cloudsBack);
     
     AddSound();
+    backgroundMusic.loop = true;
     backgroundMusic.play();
     
     //Create Particles
@@ -685,7 +688,7 @@ function RollDie() {
         //timer
         var rollTimer = this.game.time.create(false);
         
-        rollTime = Math.floor(((Math.random() * 3) + 3) * 1000);
+        rollTime = Math.floor(((Math.random() * 3) + 1) * 1000);
         
         rollTimer.add(rollTime, StopDie, this);
         
@@ -1057,6 +1060,7 @@ function AddStats(player) {
             
             if (setPlayer == i && cSet[i] == false) {
                 
+                clickSound.play();
                 cSet[i] = true;
                 cList[i].input.useHandCursor = false;
                 totalPlayers += 1;
@@ -1533,10 +1537,10 @@ function StartSun() {
     if (specialMonster == "none") {
         
         this.game.physics.enable(sun);
-        sun.enableBody = true;
+        
         sun.body.gravity.setTo(0, 0);
         sun.body.velocity.setTo( 4, -15);
-        
+        sun.enableBody = true;
     }
     
     deleteQuestion.input.enabled = false;
@@ -5605,13 +5609,13 @@ function MoveText(player) {
 
 function AddSound() {
     
-    backgroundMusic = this.game.add.audio("backgroundMusic", .25, true);
+    backgroundMusic = this.game.add.audio("backgroundMusic", .05, true);
     blizzardSound = this.game.add.audio("blizzardSound");
     cardflipSound = this.game.add.audio("cardflipSound");
     castleSound = this.game.add.audio("castleSound");
     chestSound = this.game.add.audio("chestSound");
     clickSound = this.game.add.audio("clickSound");
-    coinSound = this.game.add.audio("coinSound");
+    coinSound = this.game.add.audio("coinSound", .35);
     diceSound = this.game.add.audio("diceSound");
     doorSound = this.game.add.audio("doorSound");
     dragonSound = this.game.add.audio("dragonSound");
@@ -5619,11 +5623,12 @@ function AddSound() {
     fairySound = this.game.add.audio("fairySound");
     forestSound = this.game.add.audio("forestSound");
     garbageSound = this.game.add.audio("garbageSound");
+    ghostSound = this.game.add.audio("ghostSound");
     hitSound = this.game.add.audio("hitSound");
     krakenSound = this.game.add.audio("krakenSound");
     lightningstormSound = this.game.add.audio("lightningstormSound");
     punchSound = this.game.add.audio("punchSound");
-    snakeSound = this.game.add.audio("snakeSound");
+    snakeSound = this.game.add.audio("snakeSound", .5);
     spiderSound = this.game.add.audio("spiderSound");
     swordSound = this.game.add.audio("swordSound");
     takeSound = this.game.add.audio("takeSound");
@@ -5641,6 +5646,10 @@ function PlayMonsterSound(monsterSound) {
         
         case 'dragon':
             dragonSound.play();
+            break;
+            
+        case 'ghost':
+            ghostSound.play();
             break;
         
         case 'kraken':
