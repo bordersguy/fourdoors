@@ -9,14 +9,16 @@
 
 //To Do: 
 
-//      Add visual for time passing on inner path
+//      Add visual for time passing on inner path....also build better path
 //      create better buttons :)
 //      Limit objects to certain classes
 //      Add special character advantages
 //      Update webpage
 //      redraw player characters
 //      Fix vampire curse
-//      Sounds needed: ants
+//      add troll sound
+
+
 
 
 
@@ -132,6 +134,7 @@ var questionUp = false;
 var monsterModifier;
 var monster;
 var monsterSprite;
+var monsterTween;
 
 var treasureType;
 var bonusType;
@@ -267,6 +270,8 @@ var scalingText6;
 
 var scalingTexts = [scalingText1, scalingText2, scalingText3, scalingText4, scalingText5, scalingText6];
 
+var antDeathSound;
+var antsSound;
 var blizzardSound;
 var cardflipSound;
 var castleSound;
@@ -279,6 +284,7 @@ var dragonSound;
 var earthquakeSound;
 var fairySound;
 var forestSound;
+var frogSound;
 var garbageSound;
 var ghostSound;
 var hitSound;
@@ -288,13 +294,18 @@ var punchSound;
 var snakeSound;
 var spiderSound;
 var swordSound;
+var successSound;
 var takeSound;
 var thiefSound;
+var ticktockSound;
+var trollSound;
 var vampireSound;
+var watcherSound;
 var werewolfSound;
 var witchHutSound;
 var zombieSound;
 var backgroundMusic;
+
 
 
 var playState = {
@@ -427,7 +438,11 @@ create: function () {
 
 function KeyMove(number) {
     
+    
+    
     if (questionUp == false && turnText.text !== "move" && totalPlayers > 0) {
+        
+        diceSound.play();
         
         turn = 1;
         
@@ -464,6 +479,8 @@ function KeyMove(number) {
     }    
           
     } else { 
+        
+        //diceSound.play();
         
         switch (number) {
             case key1:
@@ -680,7 +697,7 @@ function RollDie() {
         
     }
     
-    if (ready > 0 && turn > 0) {
+    if (ready > 0 && turn > 0 && !turnText.text.includes("over")) {
         
         diceSound.play();
         dice.animations.play('roll');
@@ -1534,8 +1551,11 @@ function CreateSun() {
 
 function StartSun() {
     
+    
+    
     if (specialMonster == "none") {
         
+        ticktockSound.play();    
         this.game.physics.enable(sun);
         
         sun.body.gravity.setTo(0, 0);
@@ -2376,6 +2396,7 @@ function GoToQuest() {
                 break;
                 
             case "ants":
+                antsSound.play();
                 choiceText.setText("Aaaahhh!! Giant Ants!!! \nRoll the die.");
                 turn = 23;
                 break;
@@ -3284,7 +3305,7 @@ function FightMonster() {
         
     } else if (specialMonster == "ant") {
         
-       
+        antsSound.play(); 
         choiceText.setText("The ants are attacking you! \nRoll to fight! \nYou need a " + (monsterModifier + 1).toString() + " to win!!!" );
         
         
@@ -3389,7 +3410,7 @@ function AttackResult() {
         } else if (dieResult < monsterModifier) {
             
             if (hasPet[currentPlayer - 1] == true) {
-                
+                antDeathSound.play();
                 choiceText.setText("Oh no!  You lost...and, your ant died protecting your life!");
                 hasPet[currentPlayer - 1] = false;
                 petList[currentPlayer - 1].destroy();
@@ -3435,6 +3456,10 @@ function AttackResult() {
                 getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 1).toString());
                 ScaleText("+1", currentPlayer - 1, "grey");
                 turn = 3;
+                this.game.add.tween(monsterSprite).to( { x: 1500, y: -600 }, 4000, Phaser.Easing.Bounce.Out, true);
+                swordSound.play();
+                swordSound.onStop.add(function () {successSound.play();}, this);
+                
                 
                 if (hasQuest[currentPlayer - 1][0] == "witch") {
                     
@@ -3465,13 +3490,15 @@ function AttackResult() {
                         if (monsterCount > 0) {
                             
                             choiceText.setText("That's one, but there's " + monsterCount + " more!");
-                            
+                            swordSound.play();
                             RunDelay(FightMonster, "none", 3000);
                             monsters.getChildAt(0).destroy();
                             
                             
                         } else {
                             
+                            swordSound.play();
+                            swordSound.onStop.add(function () {successSound.play();}, this);
                             AddVictoryPoint(specialMonster);
                             choiceText.setText("Wow!  You got them all!  You get 3 attack! You get 1 victory point!");
                             getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 3).toString());
@@ -3485,6 +3512,10 @@ function AttackResult() {
                         break;
                         
                     case 'troll':
+                            
+                            this.game.add.tween(monsterSprite).to( { x: 1500, y: -600 }, 4000, Phaser.Easing.Bounce.Out, true);
+                            swordSound.play();
+                            swordSound.onStop.add(function () {successSound.play();}, this);
                             
                             AddVictoryPoint(specialMonster);
                             choiceText.setText("You won!  You get 1 attack and you're in the mountain! You get 1 victory point!");
@@ -3503,15 +3534,18 @@ function AttackResult() {
                         monsterCount -= 1;
                         
                         if (monsterCount > 0) {
-                            
+                            //antDeathSound.play();
                             choiceText.setText("That's one, but there's " + monsterCount + " more!");
-                            
+                            swordSound.play();
+                            swordSound.onStop.add(function () {antDeathSound.play();}, this);
                             RunDelay(FightMonster, "none", 3000);
                             monsters.getChildAt(0).destroy();
                             
                             
                         } else {
                             
+                            swordSound.play();
+                            swordSound.onStop.add(function () {successSound.play();}, this);
                             AddVictoryPoint(specialMonster);
                             choiceText.setText("Wow!  You got them all!  You get 3 attack! You get 1 victory point!");
                             getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 3).toString());
@@ -3525,11 +3559,14 @@ function AttackResult() {
                         
                     case 'watcher':
                         
+                        this.game.add.tween(monsterSprite).to( { x: 1500, y: -600 }, 4000, Phaser.Easing.Bounce.Out, true);
+                        swordSound.play();
+                        swordSound.onStop.add(function () {successSound.play();}, this);
+                                
                         AddVictoryPoint(specialMonster);
                         choiceText.setText("Wow!  You won!  You gain 2 power! Open any door you want! You get 1 victory point!");
                         getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 2).toString());
                         ScaleText("+2", currentPlayer - 1, "grey");
-                        monsterSprite.destroy();
                         monsterValue.destroy();
                         specialMonster = "none";
                         CreateDoors("any");
@@ -3537,6 +3574,10 @@ function AttackResult() {
                         break;
                         
                     case 'kraken':
+                        
+                        this.game.add.tween(monsterSprite).to( { x: 1500, y: -600 }, 4000, Phaser.Easing.Bounce.Out, true);
+                        swordSound.play();
+                        swordSound.onStop.add(function () {successSound.play();}, this);
                         
                         AddVictoryPoint(specialMonster);
                         choiceText.setText("Wow!  You won!  You gain 1 power! You get 1 victory point!");
@@ -3549,10 +3590,14 @@ function AttackResult() {
                         
                     case 'ropasci':
                         
+                        this.game.add.tween(monsterSprite).to( { x: 1500, y: -600 }, 4000, Phaser.Easing.Bounce.Out, true);
+                        swordSound.play();
+                        swordSound.onStop.add(function () {successSound.play();}, this);
+                        
                         AddVictoryPoint(ropasci);
                         choiceText.setText("Wow!  You won!  You gain 1 power! You get 1 victory point!");
                         getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 1).toString());
-                        ScaleText("+1", currentPlayer - 1,"grey");
+                        ScaleText("+1", currentPlayer - 1, "grey");
                         specialMonster = "none";
                        
                         
@@ -3566,6 +3611,7 @@ function LostFight() {
       
         var getLife = packList[currentPlayer - 1].getChildAt(4);
         
+        hitSound.play();
         choiceText.setText("Uggghh! The " + monster + " won. \nLose 1 life.");
         getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
         ScaleText("-1", currentPlayer - 1, "red");
@@ -4174,7 +4220,7 @@ function CastleResult() {
     switch (dieResult) {
         
         case 1:
-            choiceText.setText("You eat at a delicious restaurant.  \nGain 1 life.");
+            choiceText.setText("You eat with the King!  \nGain 1 life.");
             getLife = getLife.setText((parseInt(getLife.text, 10) + 1).toString());
             ScaleText("+1", currentPlayer - 1, "red");
             turnText.setText("turn \nover");
@@ -4317,6 +4363,7 @@ function ForestResult() {
             break;
             
         case 4:
+            
             choiceText.setText("Giant spiders attack you!  \nCan you defeat them all!");
             RunDelay(GiantSpider,"none", 3000);
             break;
@@ -4352,7 +4399,7 @@ function PoolResult() {
             getLife = getLife.setText((parseInt(getLife.text, 10) + 1).toString());
             ScaleText("+1", currentPlayer - 1, "red");
             fairySound.play();
-            turnText.setText("next");
+            turnText.setText("turn\nover");
             break;
             
         case 2:
@@ -4370,7 +4417,7 @@ function PoolResult() {
             choiceText.setText("You find some gold in the pool!  \nGain 2 gold.");
             getGold = getGold.setText((parseInt(getGold.text, 10) + 2).toString());
             ScaleText("+2", currentPlayer - 1);
-            turnText.setText("next");
+            turnText.setText("turn\nover");
             break;
             
         case 5:
@@ -5258,7 +5305,7 @@ function AddVictoryPoint(killed) {
     var vPY = victoryPoints[currentPlayer - 1] * 25;
     
     
-    var victoryPoint = this.game.add.sprite(cList[currentPlayer - 1].x - xModify, vPY, killed);
+    var victoryPoint = this.game.add.sprite(cList[currentPlayer - 1].x - xModify, cList[currentPlayer - 1].y + vPY, killed);
     
     victoryPoint.scale.setTo(.10,.10);
     
@@ -5455,8 +5502,15 @@ function DeadPlayer() {
         
         packList[currentPlayer - 1].getChildAt(0).loadTexture('tokenSkull');
         tokenList[currentPlayer - 1].loadTexture('tokenSkull');
+        
+        if (hasCurse[currentPlayer - 1] != "none") {
+            
+            curseTokens[currentPlayer - 1].destroy();
+            
+        }
+        
         hasCurse[currentPlayer - 1] = "none";
-        curseTokens[currentPlayer - 1].destroy();
+        
         
     }
  
@@ -5609,34 +5663,41 @@ function MoveText(player) {
 
 function AddSound() {
     
+    antDeathSound = this.game.add.audio("antDeathSound");
+    antsSound = this.game.add.audio("antsSound", .45);
     backgroundMusic = this.game.add.audio("backgroundMusic", .05, true);
     blizzardSound = this.game.add.audio("blizzardSound");
     cardflipSound = this.game.add.audio("cardflipSound");
-    castleSound = this.game.add.audio("castleSound");
+    castleSound = this.game.add.audio("castleSound", .50);
     chestSound = this.game.add.audio("chestSound");
     clickSound = this.game.add.audio("clickSound");
     coinSound = this.game.add.audio("coinSound", .35);
     diceSound = this.game.add.audio("diceSound");
     doorSound = this.game.add.audio("doorSound");
-    dragonSound = this.game.add.audio("dragonSound");
-    earthquakeSound = this.game.add.audio("earthquakeSound");
+    dragonSound = this.game.add.audio("dragonSound", .60);
+    earthquakeSound = this.game.add.audio("earthquakeSound", .45);
     fairySound = this.game.add.audio("fairySound");
-    forestSound = this.game.add.audio("forestSound");
+    forestSound = this.game.add.audio("forestSound", .50);
+    frogSound = this.game.add.audio("frogSound");
     garbageSound = this.game.add.audio("garbageSound");
     ghostSound = this.game.add.audio("ghostSound");
-    hitSound = this.game.add.audio("hitSound");
-    krakenSound = this.game.add.audio("krakenSound");
-    lightningstormSound = this.game.add.audio("lightningstormSound");
-    punchSound = this.game.add.audio("punchSound");
+    hitSound = this.game.add.audio("hitSound", .25);
+    krakenSound = this.game.add.audio("krakenSound", .50);
+    lightningstormSound = this.game.add.audio("lightningstormSound",.25);
+    punchSound = this.game.add.audio("punchSound", .50);
     snakeSound = this.game.add.audio("snakeSound", .5);
-    spiderSound = this.game.add.audio("spiderSound");
-    swordSound = this.game.add.audio("swordSound");
-    takeSound = this.game.add.audio("takeSound");
-    thiefSound = this.game.add.audio("thiefSound");
-    vampireSound = this.game.add.audio("vampireSound");
-    werewolfSound = this.game.add.audio("werewolfSound");
-    witchHutSound = this.game.add.audio("witchHutSound");
-    zombieSound = this.game.add.audio("zombieSound");
+    spiderSound = this.game.add.audio("spiderSound", .35);
+    swordSound = this.game.add.audio("swordSound", .50);
+    successSound = this.game.add.audio("successSound",.25);
+    takeSound = this.game.add.audio("takeSound", .35);
+    thiefSound = this.game.add.audio("thiefSound", .75);
+    ticktockSound = this.game.add.audio("ticktockSound", .75);
+    trollSound = this.game.add.audio("trollSound", .75);
+    vampireSound = this.game.add.audio("vampireSound", .50);
+    watcherSound = this.game.add.audio("watcherSound", .75);
+    werewolfSound = this.game.add.audio("werewolfSound", .65);
+    witchHutSound = this.game.add.audio("witchHutSound", .20);
+    zombieSound = this.game.add.audio("zombieSound", .60);
     
 }
 
@@ -5644,6 +5705,10 @@ function PlayMonsterSound(monsterSound) {
     
     switch (monsterSound) {
         
+        case 'ant':
+            antsSound.play();
+            break;
+
         case 'dragon':
             dragonSound.play();
             break;
@@ -5668,9 +5733,17 @@ function PlayMonsterSound(monsterSound) {
             thiefSound.play();
             break;
             
+        case 'troll':
+            trollSound.play();
+            break;
+            
         case 'vampire':
             vampireSound.play();
             break;
+            
+         case 'watcher':
+            watcherSound.play();
+            break;    
             
         case 'werewolf':
             werewolfSound.play();
