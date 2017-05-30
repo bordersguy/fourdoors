@@ -16,7 +16,7 @@
 //      Update webpage
 //      redraw player characters
 //      Fix vampire curse
-//      add troll sound
+
 
 
 
@@ -304,6 +304,8 @@ var watcherSound;
 var werewolfSound;
 var witchHutSound;
 var zombieSound;
+
+var sounds;
 var backgroundMusic;
 
 
@@ -409,9 +411,17 @@ create: function () {
     this.game.world.sendToBack(cloudsBack);
     
     AddSound();
-    backgroundMusic.loop = true;
-    backgroundMusic.play();
     
+
+    backgroundMusic.play('', 0, .05, false);
+
+    backgroundMusic.onStop.addOnce(function() {
+ 
+        BackgroundLoop();
+ 
+    }, this);
+    
+   // backgroundMusic.onStop.add(function () {BackgroundLoop();}, this);
     //Create Particles
     
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -5665,7 +5675,7 @@ function AddSound() {
     
     antDeathSound = this.game.add.audio("antDeathSound");
     antsSound = this.game.add.audio("antsSound", .45);
-    backgroundMusic = this.game.add.audio("backgroundMusic", .05, true);
+    backgroundMusic = this.game.add.audio("backgroundMusic");
     blizzardSound = this.game.add.audio("blizzardSound");
     cardflipSound = this.game.add.audio("cardflipSound");
     castleSound = this.game.add.audio("castleSound", .50);
@@ -5677,7 +5687,7 @@ function AddSound() {
     dragonSound = this.game.add.audio("dragonSound", .60);
     earthquakeSound = this.game.add.audio("earthquakeSound", .45);
     fairySound = this.game.add.audio("fairySound");
-    forestSound = this.game.add.audio("forestSound", .50);
+    forestSound = this.game.add.audio("forestSound", .20);
     frogSound = this.game.add.audio("frogSound");
     garbageSound = this.game.add.audio("garbageSound");
     ghostSound = this.game.add.audio("ghostSound");
@@ -5760,6 +5770,19 @@ function PlayMonsterSound(monsterSound) {
     }
     
         
+    
+    
+}
+
+function BackgroundLoop() {
+    
+    backgroundMusic.play('', 0, .05, false);
+
+    backgroundMusic.onStop.addOnce(function() {
+ 
+        BackgroundLoop();
+ 
+    }, this);
     
     
 }
