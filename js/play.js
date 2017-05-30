@@ -16,6 +16,8 @@
 //      Update webpage
 //      redraw player characters
 //      Fix vampire curse
+//      Fix location of use magic buttons
+//      on reroll monster appears twice
 
 
 
