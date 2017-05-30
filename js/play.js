@@ -37,6 +37,8 @@ var c6;
 var cList;
 var cSet = [false, false, false, false, false, false];
 var totalPlayers = 0;
+var clickStart;
+var gameStarted = false;
 
 //vars used to set the position of the tokens
 var cPos1;
@@ -336,6 +338,9 @@ create: function () {
     c5 = this.game.add.sprite(1000, 180, 'sheet');
     c6 = this.game.add.sprite(1000, 330, 'sheet');
     
+    
+    
+    
     cList = [c1,c2,c3,c4,c5,c6];
     
     TurnOnCharacters();
@@ -343,6 +348,7 @@ create: function () {
     //Create Card
     card = this.game.add.button (950, 500, 'card', ShowQuestion, this, 2,1,0);
     card.input.useHandCursor = true;
+    clickStart = this.game.add.text(c1.width, c1.height/2,  "Click Here\nTo Start", { font: "16px Arial", fill: "black", align: "center" }); 
     
     //Create Die    
     dice = this.game.add.sprite(175, 500, 'die');
@@ -355,9 +361,10 @@ create: function () {
     CreateInnerBoard();
     
     //Create Turn Management Button...this just starts the game and identifies what to do
-    turnManagerButton = this.game.add.button(0, 480, "turnButton", ManageTurn, 2,1,0);
-    turnText = this.game.add.text(turnManagerButton.width/2, turnManagerButton.height/2,  "Ready?", { font: "40px Arial", fill: "black", align: "center" }); 
-    turnManagerButton.input.useHandCursor = true;
+    //turnManagerButton = this.game.add.sprite(0, 480, "turnButton", ManageTurn, 2,1,0);
+    turnManagerButton = this.game.add.sprite(0, 480, "turnButton");
+    turnText = this.game.add.text(turnManagerButton.width/2, turnManagerButton.height/2,  "", { font: "40px Arial", fill: "black", align: "center" }); 
+    //turnManagerButton.input.useHandCursor = true;
     turnManagerButton.addChild(turnText);
     turnText.anchor.set(0.5, 0.5);
     
@@ -421,7 +428,6 @@ create: function () {
  
     }, this);
     
-   // backgroundMusic.onStop.add(function () {BackgroundLoop();}, this);
     //Create Particles
     
     this.game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -631,7 +637,7 @@ function CreateInnerBoard () {
 
 function ManageTurn () {
     
-    turnManagerButton.inputEnabled = false;
+    //turnManagerButton.inputEnabled = false;
     var getLife = packList[currentPlayer - 1].getChildAt(4);
     var getLifeInt = parseInt(getLife.text, 10);
     
@@ -742,12 +748,13 @@ function RollDie() {
     } else if (ready == 0 && turn == 0) {
         
         turnText.setText("make\nplayers");
-        
-    } else if (ready > 0 && turn == 0) {
-        
-        turnText.setText("Click here\nto start");
-        
     }
+        
+    // } else if (ready > 0 && turn == 0) {
+        
+    //     turnText.setText("Click here\nto start");
+        
+    // }
     
     ready = 0;
 
@@ -1073,14 +1080,14 @@ function TurnOnCharacters () {
         cList[i].input.useHandCursor = true;
         packList[i] = this.game.add.group();
     }
+    
+    
 }
 
 function AddStats(player) {
         
         for (var i = 0; i < cSet.length; i++) {
-            
-            
-            
+
             var pName = player.name;
             
             var setPlayer = parseInt(pName.substring(1,2), 10) - 1;
@@ -1137,6 +1144,21 @@ function AddStats(player) {
                 deletePlayer.input.useHandCursor = true;
                 
                 CreateToken(i);
+                
+                // if (typeof clickStart !== "undefined") {
+                
+                //     clickStart.destroy();
+                    
+                // }
+                
+                if (gameStarted == false) {
+                    
+                    clickStart.destroy();
+                    ManageTurn();
+                    gameStarted = true;
+                    
+                    
+                }
                 
                 return;
             }
@@ -1231,22 +1253,21 @@ function CreateToken(player) {
 }
 
 function ShowQuestion() {
-   
-    //this is just a temporary fix    
-     if (typeof sun !== "undefined") {
-        
-        sun.destroy();
-        
-    }
- 
+
     if (questionUp == false) {
         
-        cardflipSound.play();
+         if (typeof sun !== "undefined") {
+        
+            sun.destroy();
+        
+        }
+        
+        
         
         if (turnText.text == "Quest!" || turnText.text == "cave" || turnText.text == "exit" || 
         turnText.text == "stairs") {
         
-        
+        cardflipSound.play();
         
         questionPanel = this.game.add.sprite(300, 0, 'answersheet');
         question = this.game.add.group();
@@ -1276,11 +1297,14 @@ function ShowQuestion() {
         revealButton.input.useHandCursor = true;
 
         questionUp = true;
+        deleteQuestion.input.useHandCursor = true;
    
         } else if (turnText.text == "village" || turnText.text == "castle" || turnText.text == "forest"
             || turnText.text == "witch" || turnText.text == "ants" || turnText.text == "dragon" || 
             turnText.text == "pool" || turnText.text == "castle \nprison") {
-    
+            
+            cardflipSound.play();
+                
             questionPanel = this.game.add.sprite(300, 0, 'answersheet');
             question = this.game.add.group();
             question.width = questionPanel.width;
@@ -1292,10 +1316,12 @@ function ShowQuestion() {
             GetCorner();
 
             questionUp = true;
+            
+            deleteQuestion.input.useHandCursor = true;
         }
         
         
-        deleteQuestion.input.useHandCursor = true;
+        
     }
 }
 
@@ -1560,17 +1586,17 @@ function CreateSun() {
 }
 
 function StartSun() {
-    
-    
-    
+
     if (specialMonster == "none") {
         
         ticktockSound.play();    
-        this.game.physics.enable(sun);
         
-        sun.body.gravity.setTo(0, 0);
-        sun.body.velocity.setTo( 4, -15);
-        sun.enableBody = true;
+        this.game.add.tween(sun).to( { x: sun.x + 50, y: sun.y - 80 }, 5000, Phaser.Easing.Linear.Out, true);
+        // this.game.physics.enable(sun);
+        
+        // sun.body.gravity.setTo(0, 0);
+        // sun.body.velocity.setTo( 4, -15);
+        // sun.enableBody = true;
     }
     
     deleteQuestion.input.enabled = false;
