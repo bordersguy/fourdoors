@@ -125,6 +125,7 @@ var loadState = {
         this.game.load.image('earthquake', 'assets/earthquake.png');
         this.game.load.image('dragonAttack', 'assets/dragonAttack.png');
         this.game.load.image('storm', 'assets/storm.png');
+        this.game.load.image('healingCircle', 'assets/healingCircle.png');
         
         
         
@@ -190,6 +191,7 @@ var loadState = {
         this.game.load.audio('ghostSound', 'audio/ghostSound.mp3');
         this.game.load.audio('hitSound', 'audio/hitSound.mp3');
         this.game.load.audio('krakenSound', 'audio/krakenSound.mp3');
+        this.game.load.audio('lifeSound', 'audio/lifeSound.mp3');
         this.game.load.audio('lightningstormSound', 'audio/lightningstormSound.mp3');
         this.game.load.audio('punchSound', 'audio/punchSound.mp3');
         this.game.load.audio('snakeSound', 'audio/snakeSound.mp3');

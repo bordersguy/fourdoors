@@ -3,29 +3,27 @@
 //      Test prison break some more
 //      sun doesn't always get deleted....but, i think this is because of my key testing
 //      movement markers didn't disappear
-//      sun is flying away
-//      Prevent quest card from being clicked while a world event is about to be played
-//      fix background music loop
+
+
 
 //To Do: 
 
 //      Add visual for time passing on inner path....also build better path
-//      create better buttons :)
+//      Redo menu screen
 //      Limit objects to certain classes
 //      Add special character advantages
 //      Update webpage
 //      redraw player characters
 //      Fix vampire curse
-//      Fix location of use magic buttons
-//      on reroll monster appears twice
-
-
+//      add sounds: movement, teleport, normal item take
+//      image for life panel
+//      get new ticktock...old has a hiss
+//      add title to world events
 
 
 
 
 //Later:
-//      Music & Sound effects
 //      Polish 
 //      question input
 //      tidy up when keyboard input is viable
@@ -293,6 +291,7 @@ var garbageSound;
 var ghostSound;
 var hitSound;
 var krakenSound;
+var lifeSound;
 var lightningstormSound;
 var punchSound;
 var snakeSound;
@@ -650,7 +649,9 @@ function ManageTurn () {
                 
                 getLife = getLife.setText((parseInt(getLife.text, 10) + 4).toString());
                 getLifeInt += 4;
+                LifeSaved();
                 DeleteInventory();
+                
             }
             
             if (getLifeInt <= 0 && hasCurse[currentPlayer - 1] != "zombie" && isDead[currentPlayer - 1] == "no"){
@@ -3777,8 +3778,8 @@ function CurseResult() {
 
 function CreateMagicButtons () {
     
-    noMagicButton = this.game.add.button(100, 400, "noMagicButton", UseMagic, 2,1,0);
-    useMagicButton = this.game.add.button(400, 400, "useMagicButton", UseMagic, 2,1,0);
+    noMagicButton = this.game.add.button(50, 510, "noMagicButton", UseMagic, 2,1,0);
+    useMagicButton = this.game.add.button(300, 510, "useMagicButton", UseMagic, 2,1,0);
     
     noMagicButton.input.useHandCursor = true;
     useMagicButton.input.useHandCursor = true;
@@ -3823,6 +3824,7 @@ function UseMagic(magic) {
             emitterMini[currentPlayer - 1].destroy(); 
             DeleteInventory();
             playerBonus[currentPlayer - 1][1] = "none";
+            monsterSprite.destroy();
             FightMonster();
             
             
@@ -3845,7 +3847,8 @@ function CreateItem() {
     //gold is worth 2 gold, life adds 2 life(while wearing), strength adds 1 strength while wearing
     //luck lets you reroll once(anything) then its gone, speed lets you reroll movement twice then magic is gone.
     bonusType = ['gold', 'life', 'luck', 'speed', 'strength'];
-
+    
+    giveBonus = 5;
     
 
     if (giveBonus > 4) {
@@ -3853,6 +3856,7 @@ function CreateItem() {
         treasureType = ['sword', 'ring', 'shield', 'potion', 'wand', 'boots'];
         itemObject = treasureType[getRandomInt(0, treasureType.length)];
         itemModifier = bonusType[getRandomInt(0, bonusType.length)];
+        itemModifier = "life";
         currentItem = itemObject + " of " + itemModifier;
         isMagic = true;
         
@@ -5416,7 +5420,7 @@ function WorldEvent() {
             
         case 3:
             
-            dragonSound();
+            dragonSound.play();
             
             WorldEventPanel();
             
@@ -5504,9 +5508,7 @@ function SellInventory(yesNo) {
 }
 
 function DeadPlayer() {
-    
-    isDead[currentPlayer - 1] = "yes";
-    
+
     questionPanel = this.game.add.sprite(300, 0, 'answersheet');
     question = this.game.add.group();
     question.width = questionPanel.width;
@@ -5518,6 +5520,8 @@ function DeadPlayer() {
     deleteQuestion.input.useHandCursor = true;
     question.addChild(deleteQuestion);
     question.addChild(questionText);
+
+    isDead[currentPlayer - 1] = "yes";
     
     if (hasCurse[currentPlayer - 1] == "zombie") {
         
@@ -5554,6 +5558,38 @@ function DeadPlayer() {
  
     
     
+}
+
+function LifeSaved() {
+
+    questionPanel = this.game.add.sprite(300, 0, 'answersheet');
+    question = this.game.add.group();
+    question.width = questionPanel.width;
+    questionPanel.addChild(question);
+        
+    questionText = this.game.add.text(20, 100, getQuestion, { font: "40px Arial", fill: "black", align: "center", wordWrap: true, wordWrapWidth: question.width - 20 });
+    
+    deleteQuestion = this.game.add.button (520, 15, 'deleteX', DeleteWorldEvent, this, 2,1,0);
+    deleteQuestion.input.useHandCursor = true;
+    question.addChild(deleteQuestion);
+    question.addChild(questionText);
+   
+    questionText.setText("Your life magic saved you!  You have 4 life...becareful!");
+    lifeSound.play();
+    
+    var restName = packList[currentPlayer - 1].getChildAt(5).text.slice(0, -2);
+    var playerImage = this.game.add.sprite(300, 300, restName);
+    var healingCircle = this.game.add.sprite(300, 300, "healingCircle");
+    
+    healingCircle.scale.setTo(.10, .10);
+    
+    question.addChild(playerImage);
+    question.addChild(healingCircle);
+   
+    var scaleCircle = this.game.add.tween(healingCircle.scale).to({ x: 3, y: 3 }, 500, Phaser.Easing.Back.Out, true, 1000); 
+    
+   
+   
 }
 
 //***************Tools
@@ -5721,6 +5757,7 @@ function AddSound() {
     ghostSound = this.game.add.audio("ghostSound");
     hitSound = this.game.add.audio("hitSound", .25);
     krakenSound = this.game.add.audio("krakenSound", .50);
+    lifeSound = this.game.add.audio("lifeSound", .35);
     lightningstormSound = this.game.add.audio("lightningstormSound",.25);
     punchSound = this.game.add.audio("punchSound", .50);
     snakeSound = this.game.add.audio("snakeSound", .5);
@@ -5729,7 +5766,7 @@ function AddSound() {
     successSound = this.game.add.audio("successSound",.25);
     takeSound = this.game.add.audio("takeSound", .35);
     thiefSound = this.game.add.audio("thiefSound", .75);
-    ticktockSound = this.game.add.audio("ticktockSound", .75);
+    ticktockSound = this.game.add.audio("ticktockSound", .50);
     trollSound = this.game.add.audio("trollSound", .75);
     vampireSound = this.game.add.audio("vampireSound", .50);
     watcherSound = this.game.add.audio("watcherSound", .75);
