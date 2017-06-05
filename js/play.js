@@ -1,9 +1,9 @@
 //Bugs:  
 //      On mobile, the game doesn't resize in landscape
 //      Test prison break some more
-//      sun doesn't always get deleted....but, i think this is because of my key testing
-//      movement markers didn't disappear
-
+//      sun doesn't always get deleted(it happens when I telport)....but, i think this is because of my key testing
+//      sometimes markers can be double created and are not removed
+//      sometimes scaling text doesn't disappear
 
 
 //To Do: 
@@ -16,11 +16,7 @@
 //      redraw player characters
 //      Fix vampire curse
 //      add sounds: movement, teleport, normal item take
-//      image for life panel
 //      get new ticktock...old has a hiss
-//      add title to world events
-
-
 
 
 //Later:
@@ -261,6 +257,7 @@ var playerAttackValue;
 var whichPlayerFighting;
 var currentStronger;
 
+var eventTitle;
 var scalingText;
 var textTween;
 var scalingText1;
@@ -2876,37 +2873,42 @@ function ChosenPlayer(chosenPlayer) {
         holdValue = getAttackCurrent.text;
 
         getAttackCurrent = getAttackCurrent.setText((parseInt(getAttackOther.text, 10)).toString());
-
+        //ScaleText(getAttackCurrent.text, currentPlayer - 1, "grey");
+            
         getAttackOther = getAttackOther.setText((parseInt(holdValue, 10)).toString());
+        //ScaleText(getAttackOther.text, getNumber, "grey");
         
     } else if (doorChoice == "red") {
         
         
             holdValue = getLifeCurrent.text;
-        
+            
+            ScaleText(getLifeOther.text, currentPlayer - 1, "red");
             getLifeCurrent = getLifeCurrent.setText((parseInt(getLifeOther.text, 10)).toString());
-
+            
+            ScaleText(holdValue, getNumber, "red");
             getLifeOther = getLifeOther.setText((parseInt(holdValue, 10)).toString());
+       
         
         
     } else if (doorChoice == "yellow") {
         
         
             getGoldCurrent = getGoldCurrent.setText((parseInt(getGoldCurrent.text, 10) + 5).toString());
-
+            //ScaleText("+5", currentPlayer - 1, "yellow");
+            
             getGoldOther = getGoldOther.setText((parseInt(getGoldOther.text, 10) - 5).toString());
-        
+            //ScaleText("-5", getNumber, "yellow");
     }
 
-    var listLength = playerButtons.length;
-    
-    for (var i = 0; i < listLength; i++) {
-        
+   // var listLength = playerButtons.length;
+    //console.log("LL = " + listLength);
+    for (var i = 0; i < totalPlayers; i++) {
+
         playerButtons[i].destroy();
         
     }
-    
-  
+ 
 }
 
 function FightPlayer(fightPlayer) {
@@ -3075,14 +3077,9 @@ function AttackPlayerResult() {
                 ScaleText("-1", currentPlayer - 1, "red");
                 ScaleText("-1", whichPlayerFighting, "red");
                 break;
-                
-            
-            
+      
         }
-        
-        
-        
-        
+  
     }
     
     
@@ -3228,11 +3225,11 @@ function TreasureHunt() {
 
         if (isMagic == true)  {
             
-            choiceText.setText("Wow! You found " + article + "\n" + currentItem + "!");    
+            choiceText.setText("Wow! You found " + article + " " + currentItem + "!");    
             
         } else {
             
-            choiceText.setText("You found " + article + "\n" + currentItem + "!");
+            choiceText.setText("You found " + article + " " + currentItem + "!");
         }
         
         DisplayItem(itemObject);
@@ -3439,7 +3436,9 @@ function AttackResult() {
     
     
     var getAttack = packList[currentPlayer - 1].getChildAt(3);
-
+    console.log("GA = " +  getAttack);
+    console.log("GAstring = " + getAttack.toString());
+    console.log("GAtext = " + getAttack.text);
     
     if (dieResult == monsterModifier) {
         
@@ -3698,6 +3697,7 @@ function MonsterCurse() {
         case "thief": 
             choiceText.setText("...the thief steals 1 gold!");
             getGold = getGold.setText((parseInt(getGold.text, 10) - 1).toString());
+            ScaleText("-1", currentPlayer - 1, "yellow");
             break;
             
         case "vampire":
@@ -3848,7 +3848,7 @@ function CreateItem() {
     //luck lets you reroll once(anything) then its gone, speed lets you reroll movement twice then magic is gone.
     bonusType = ['gold', 'life', 'luck', 'speed', 'strength'];
     
-    giveBonus = 5;
+    //giveBonus = 5;
     
 
     if (giveBonus > 4) {
@@ -3856,7 +3856,7 @@ function CreateItem() {
         treasureType = ['sword', 'ring', 'shield', 'potion', 'wand', 'boots'];
         itemObject = treasureType[getRandomInt(0, treasureType.length)];
         itemModifier = bonusType[getRandomInt(0, bonusType.length)];
-        itemModifier = "life";
+        //itemModifier = "life";
         currentItem = itemObject + " of " + itemModifier;
         isMagic = true;
         
@@ -5359,7 +5359,7 @@ function WorldEvent() {
     var eventPicture;
 
     var getLife;
-    
+
     turnText.setText("world\nevent");
     
     switch (pickEvent) {
@@ -5369,7 +5369,7 @@ function WorldEvent() {
             
             WorldEventPanel();
             questionText.setText("A lightning storm hits the world!  If you are outside lose 1 life.");
-            
+            eventTitle.setText("Lightning Storm!");
             eventPicture = this.game.add.sprite(50, 250, "storm");
             question.addChild(eventPicture);
             
@@ -5393,7 +5393,7 @@ function WorldEvent() {
             
             WorldEventPanel();
             questionText.setText("A blizzard hits the world! If you are outside without special clothes lose 1 life.");
-            
+            eventTitle.setText("Snow Storm!");
             eventPicture = this.game.add.sprite(50, 250, "blizzard");
             question.addChild(eventPicture);
             
@@ -5425,7 +5425,7 @@ function WorldEvent() {
             WorldEventPanel();
             
             questionText.setText("The dragons united and are attacking!! If you are outside lose 1 life.");
-            
+            eventTitle.setText("Dragon Party!");
             eventPicture = this.game.add.sprite(50, 250, "dragonAttack");
             question.addChild(eventPicture);
             
@@ -5449,6 +5449,28 @@ function WorldEvent() {
         
 }
 
+function EarthquakeEvent() {
+    
+    WorldEventPanel();
+    
+    questionText.setText("An earthquake hits the world!  If you are in the mountain lose 1 life.");
+    
+    var eventPicture = this.game.add.sprite(50, 250, "earthquake");
+    question.addChild(eventPicture);
+    eventTitle.setText("Earthquake!!");
+    
+    for (var i = 0; i < totalPlayers; i++) {
+        
+        if (boardLevel[i] == 2) {
+            
+            var getLife = packList[i].getChildAt(4);
+            getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
+            RunDelay(LoopScaleText, i, 500);
+        }
+        
+    }
+}
+
 function LoopScaleText(player) {
     
     ScaleText("-1", player, "red");
@@ -5469,6 +5491,8 @@ function WorldEventPanel() {
     deleteQuestion = this.game.add.button (520, 15, 'deleteX', DeleteWorldEvent, this, 2,1,0);
     deleteQuestion.input.useHandCursor = true;
     
+    eventTitle = this.game.add.text(30, 20,  "", { font: "60px Arial", fill: "red", align: "center", wordWrap: true, wordWrapWidth: question.width - 20  }); 
+    question.addChild(eventTitle);
     question.addChild(deleteQuestion);
     question.addChild(questionText);
 }
@@ -5578,16 +5602,21 @@ function LifeSaved() {
     lifeSound.play();
     
     var restName = packList[currentPlayer - 1].getChildAt(5).text.slice(0, -2);
-    var playerImage = this.game.add.sprite(300, 300, restName);
-    var healingCircle = this.game.add.sprite(300, 300, "healingCircle");
+    var playerImage = this.game.add.sprite(300, 350, 'tokenSkull');
+    var healingCircle = this.game.add.sprite(325, 375, "healingCircle");
     
-    healingCircle.scale.setTo(.10, .10);
+    playerImage.scale.setTo(1.5,1.5);
+    //healingCircle.scale.setTo(.10, .10);
     
     question.addChild(playerImage);
     question.addChild(healingCircle);
    
-    var scaleCircle = this.game.add.tween(healingCircle.scale).to({ x: 3, y: 3 }, 500, Phaser.Easing.Back.Out, true, 1000); 
-    
+    var scaleCircle = this.game.add.tween(healingCircle.scale).to({ x: .1, y: .1 }, 500, Phaser.Easing.Back.Out, true, 1000); 
+    scaleCircle.onComplete.add(function () {
+        healingCircle.destroy();
+        playerImage.loadTexture(restName);
+        
+    }, this);
    
    
 }
@@ -5695,27 +5724,7 @@ function AddQuake() {
     quake.start();
 }
 
-function EarthquakeEvent() {
-    
-    WorldEventPanel();
-    
-    questionText.setText("An earthquake hits the world!  If you are in the mountain lose 1 life.");
-    
-    var eventPicture = this.game.add.sprite(50, 250, "earthquake");
-    question.addChild(eventPicture);
-    
-    
-    for (var i = 0; i < totalPlayers; i++) {
-        
-        if (boardLevel[i] == 2) {
-            
-            var getLife = packList[i].getChildAt(4);
-            getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
-            RunDelay(LoopScaleText, i, 500);
-        }
-        
-    }
-}
+
 
 function ScaleText(scaleText, player, color) {
 
