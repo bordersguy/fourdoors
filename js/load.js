@@ -40,7 +40,7 @@ var loadState = {
         this.game.load.image('leftBorder', 'assets/sideBoardLeft.png');
         
         
-        
+        this.game.load.spritesheet('torch', 'assets/torchAnimation.png', 36, 60);
         this.game.load.spritesheet('die', 'assets/dice.png', 79, 75);
         this.game.load.image('sheet', 'assets/characterFrame.png');
         this.game.load.image('sheetX', 'assets/characterFrameX.png');
@@ -75,6 +75,7 @@ var loadState = {
         this.game.load.image('zombieToken', 'assets/zombieToken.png');
         this.game.load.image('zombieHead', 'assets/zombieHead.png');
         this.game.load.image('monsterValue', 'assets/monsterAttackValueFrame.png');
+        
         
         
         //Inventory

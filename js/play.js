@@ -17,6 +17,8 @@
 //      Fix vampire curse
 //      add sounds: movement, teleport, normal item take
 //      get new ticktock...old has a hiss
+//      finish RSP game...specifically buttons
+//      fix exit background.....only outer cave for leaving...otherwise innerpath
 
 
 //Later:
@@ -185,6 +187,7 @@ var clouds;
 var stars;
 var moon;
 var cloudsBack;
+var torch;
 
 var teleport;
 var inOut;
@@ -1574,15 +1577,27 @@ function CreateSun() {
         
     }
     
-    if (dayNight == 1) {
+    if (boardLevel[currentPlayer -  1] == 2 && turnText.text != "exit") {
         
-        sun = this.game.add.sprite(sunX, 300, "sun");
+        torch = this.game.add.sprite(450, 300, 'torch');
+        torch.animations.add('burn', [0,1,2,3,4], 10, true);
+        
+    } else if (boardLevel[currentPlayer - 1] == 1 || 
+                (boardLevel[currentPlayer - 1] == 2) && turnText.text == "exit") {
+        
+        if (dayNight == 1) {
+        
+            sun = this.game.add.sprite(sunX, 300, "sun");
             
-    } else {
+        } else {
         
-        sun = this.game.add.sprite(sunX, 300, "moon");
+            sun = this.game.add.sprite(sunX, 300, "moon");
+        
+        }
         
     }
+    
+
 }
 
 function StartSun() {
@@ -1591,7 +1606,17 @@ function StartSun() {
         
         ticktockSound.play();    
         
-        this.game.add.tween(sun).to( { x: sun.x + 50, y: sun.y - 80 }, 5000, Phaser.Easing.Linear.Out, true);
+        if (boardLevel[currentPlayer - 1] == 1 || turnText.text == "cave" || turnText.text == "exit") {
+           
+            this.game.add.tween(sun).to( { x: sun.x + 50, y: sun.y - 80 }, 5000, Phaser.Easing.Linear.Out, true);
+            
+        } else if (boardLevel[currentPlayer - 1] == 2 && turnText.text != "cave") {
+            
+            torch.animations.play("burn");
+            
+            
+        }
+
         // this.game.physics.enable(sun);
         
         // sun.body.gravity.setTo(0, 0);
@@ -1605,26 +1630,31 @@ function StartSun() {
 }
 
 function StopSun() {
-
-    if (dayNight == 1 ) {
+    
+    
+    if (boardLevel[currentPlayer - 1] == 1 || turnText.text == "cave") {
+        
+        if (dayNight == 1 ) {
         
         newSun = this.game.add.sprite(sun.x - 300, sun.y, "sun");    
         
-    } else {
+        } else {
+            
+            newSun = this.game.add.sprite(sun.x - 300, sun.y, "moon");    
+            
+        }
         
-        newSun = this.game.add.sprite(sun.x - 300, sun.y, "moon");    
+        question.add(newSun);
+        sun.destroy();
         
+        if (turn == 29) {
+            
+            this.game.world.sendToBack(newSun);
+            
+        }
+  
     }
-    
-    question.add(newSun);
-    sun.destroy();
-    
-    if (turn == 29) {
-        
-        this.game.world.sendToBack(newSun);
-        
-    }
-    
+
     deleteQuestion.input.enabled = true;
     
 }
@@ -4062,6 +4092,12 @@ function DeleteQuestion() {
         miniWatcher.destroy();  
         
     }
+    
+     if (typeof torch !== "undefined") {
+        
+        torch.destroy();  
+        
+    }
 
     questionPanel.destroy();
     questionUp = false;
@@ -5638,19 +5674,21 @@ function RunTimer(doThis) {
     timer = this.game.time.create(false);
     var actionTime = Math.floor(((Math.random() * 3) + 3) * 1000);
     
-    if (boardLevel[currentPlayer -  1] == 2) {
+    
+    CreateSun();
+    
+    StartSun();
+ 
+    timer.add(actionTime, StopSun, this);
+    // if (boardLevel[currentPlayer -  1] == 2) {
         
-        //add torch animation later
+    //     CreateTorch();
         
-    } else {
+    // } else {
         
-        CreateSun();
-        
-        StartSun();
-     
-        timer.add(actionTime, StopSun, this);
+    
    
-    }
+    // }
 
     timer.add(actionTime, ManageQuest, this, doThis);
     
@@ -5723,8 +5761,6 @@ function AddQuake() {
     // let the earthquake begins
     quake.start();
 }
-
-
 
 function ScaleText(scaleText, player, color) {
 
