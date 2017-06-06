@@ -251,6 +251,8 @@ var player5Button;
 var player6Button;
 var playerButtons = [player1Button, player2Button, player3Button, player4Button, player5Button, player6Button];
 
+var hitMark;
+var monsterHit;
 var monsterValue;
 var turnMarker;
 var victoryPoints = [1,1,1,1,1,1];
@@ -3466,10 +3468,7 @@ function AttackResult() {
     
     
     var getAttack = packList[currentPlayer - 1].getChildAt(3);
-    console.log("GA = " +  getAttack);
-    console.log("GAstring = " + getAttack.toString());
-    console.log("GAtext = " + getAttack.text);
-    
+
     if (dieResult == monsterModifier) {
         
         choiceText.setText("Try again! \nRoll Again!!");
@@ -3520,6 +3519,8 @@ function AttackResult() {
             
             if (specialMonster == "none") {
                 
+                monsterHit = this.game.add.sprite(monsterSprite.x + 250, monsterSprite.y + 50, "monsterHit");
+                RunDelay(DestroyThis, monsterHit, 500);
                 choiceText.setText("You won!!  \nGain 1 attack!");
                 getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 1).toString());
                 ScaleText("+1", currentPlayer - 1, "grey");
@@ -3527,7 +3528,7 @@ function AttackResult() {
                 this.game.add.tween(monsterSprite).to( { x: 1500, y: -600 }, 4000, Phaser.Easing.Bounce.Out, true);
                 swordSound.play();
                 swordSound.onStop.add(function () {successSound.play();}, this);
-                
+               
                 
                 if (hasQuest[currentPlayer - 1][0] == "witch") {
                     
@@ -3557,6 +3558,8 @@ function AttackResult() {
                         
                         if (monsterCount > 0) {
                             
+                            monsterHit = this.game.add.sprite(monsterSprite.x + 250, monsterSprite.y + 50, "monsterHit");
+                            RunDelay(DestroyThis, monsterHit, 500);
                             choiceText.setText("That's one, but there's " + monsterCount + " more!");
                             swordSound.play();
                             RunDelay(FightMonster, "none", 3000);
@@ -3565,6 +3568,8 @@ function AttackResult() {
                             
                         } else {
                             
+                            monsterHit = this.game.add.sprite(monsterSprite.x + 250, monsterSprite.y + 50, "monsterHit");
+                            RunDelay(DestroyThis, monsterHit, 500);
                             swordSound.play();
                             swordSound.onStop.add(function () {successSound.play();}, this);
                             AddVictoryPoint(specialMonster);
@@ -3580,6 +3585,9 @@ function AttackResult() {
                         break;
                         
                     case 'troll':
+                            
+                            monsterHit = this.game.add.sprite(monsterSprite.x + 250, monsterSprite.y + 50, "monsterHit");
+                            RunDelay(DestroyThis, monsterHit, 500);
                             
                             this.game.add.tween(monsterSprite).to( { x: 1500, y: -600 }, 4000, Phaser.Easing.Bounce.Out, true);
                             swordSound.play();
@@ -3603,6 +3611,8 @@ function AttackResult() {
                         
                         if (monsterCount > 0) {
                             //antDeathSound.play();
+                            monsterHit = this.game.add.sprite(monsterSprite.x + 250, monsterSprite.y + 50, "monsterHit");
+                            RunDelay(DestroyThis, monsterHit, 500);
                             choiceText.setText("That's one, but there's " + monsterCount + " more!");
                             swordSound.play();
                             swordSound.onStop.add(function () {antDeathSound.play();}, this);
@@ -3612,6 +3622,8 @@ function AttackResult() {
                             
                         } else {
                             
+                            monsterHit = this.game.add.sprite(monsterSprite.x + 250, monsterSprite.y + 50, "monsterHit");
+                            RunDelay(DestroyThis, monsterHit, 500);
                             swordSound.play();
                             swordSound.onStop.add(function () {successSound.play();}, this);
                             AddVictoryPoint(specialMonster);
@@ -3626,6 +3638,9 @@ function AttackResult() {
                         break;
                         
                     case 'watcher':
+                        
+                        monsterHit = this.game.add.sprite(monsterSprite.x + 250, monsterSprite.y + 50, "monsterHit");
+                        RunDelay(DestroyThis, monsterHit, 500);
                         
                         this.game.add.tween(monsterSprite).to( { x: 1500, y: -600 }, 4000, Phaser.Easing.Bounce.Out, true);
                         swordSound.play();
@@ -3643,6 +3658,9 @@ function AttackResult() {
                         
                     case 'kraken':
                         
+                        monsterHit = this.game.add.sprite(monsterSprite.x + 250, monsterSprite.y + 50, "monsterHit");
+                        RunDelay(DestroyThis, monsterHit, 500);
+                        
                         this.game.add.tween(monsterSprite).to( { x: 1500, y: -600 }, 4000, Phaser.Easing.Bounce.Out, true);
                         swordSound.play();
                         swordSound.onStop.add(function () {successSound.play();}, this);
@@ -3658,6 +3676,8 @@ function AttackResult() {
                         
                     case 'ropasci':
                         
+                        monsterHit = this.game.add.sprite(monsterSprite.x + 250, monsterSprite.y + 50, "monsterHit");
+                        RunDelay(DestroyThis, monsterHit, 500);
                         this.game.add.tween(monsterSprite).to( { x: 1500, y: -600 }, 4000, Phaser.Easing.Bounce.Out, true);
                         swordSound.play();
                         swordSound.onStop.add(function () {successSound.play();}, this);
@@ -3679,6 +3699,8 @@ function LostFight() {
       
         var getLife = packList[currentPlayer - 1].getChildAt(4);
         
+        hitMark = this.game.add.sprite(250, 0, "hitMark");
+        RunDelay(DestroyThis, hitMark, 500);
         hitSound.play();
         choiceText.setText("Uggghh! The " + monster + " won. \nLose 1 life.");
         getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
@@ -5013,7 +5035,7 @@ function DragonGame(yesNo) {
 function PlayDragonGame() {
     
     choiceText.setText("Stand up!  Let's say it together, 'Rock, Scissors, Paper!'");
-    rpsButton = this.game.add.button(100, 525, 'rpsButton', RPSReveal, this, 2,1,0);
+    rpsButton = this.game.add.button(100, 510, 'rpsButton', RPSReveal, this, 2,1,0);
     rpsButton.input.useHandCursor = true;
     
     

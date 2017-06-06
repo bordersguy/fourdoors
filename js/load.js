@@ -75,6 +75,8 @@ var loadState = {
         this.game.load.image('zombieToken', 'assets/zombieToken.png');
         this.game.load.image('zombieHead', 'assets/zombieHead.png');
         this.game.load.image('monsterValue', 'assets/monsterAttackValueFrame.png');
+        this.game.load.image('hitMark', 'assets/hitMark.png');
+        this.game.load.image('monsterHit', 'assets/monsterHit.png');
         
         
         
