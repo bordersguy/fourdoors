@@ -1,12 +1,19 @@
 var wordList;
+var questionList;
 var settingsSwitch = 0;
 var settingsPanel;
 var currentList;
-var totalWords = 0; 
+var currentList2
+var totalWords = 0;
+var totalQuestions = 0;
+var saveText;
+var saveQuestion = [];
 var enter1;
 var explain;
 var submit;
+var submitQuestion;
 var clear;
+var clearQuestion;
 var instructions;
 var settingsGroup;
 var backgroundMusic;
@@ -43,7 +50,7 @@ var menuState = {
 
 
 
-function  saveWord () {
+function  SaveWord () {
     
     if (totalWords == 0)
     {
@@ -66,7 +73,7 @@ function  saveWord () {
     
         window.localStorage["save"] = saveText;
         
-        currentList.setText(currentList.text + "\n" + wordList.value);    
+        currentList.setText(currentList.text + " " + (totalWords + 1) + ": " + wordList.value);    
         
         totalWords += 1;
         
@@ -80,6 +87,42 @@ function  saveWord () {
 
     
     wordList.startFocus();
+    
+}
+
+function  SaveQuestion () {
+    
+    if (totalQuestions == 0)
+    {
+        currentList2.setText("");
+    }
+    
+    if (totalQuestions < 20)
+    {
+        if (totalQuestions == 0)
+        {
+            saveQuestion = questionList.value;
+        }
+        else
+        {
+            saveQuestion = saveQuestion + " " + questionList.value;    
+        }
+        
+
+    
+        window.localStorage["saveQuestion"] = saveQuestion;
+        
+        currentList2.setText(currentList2.text + " " + (totalQuestions + 1) + ": " + questionList.value);    
+        
+        totalQuestions += 1;
+        
+        
+    }
+    
+    
+    
+    questionList.resetText();
+    questionList.startFocus();
     
 }
 
@@ -97,59 +140,79 @@ function  start () {
 
 function showSettings () {
     
-    clickSound.play();
-    
+
     if (settingsSwitch == 0)
     {
-        explain = "Type in up to 5\n words you want\n your students\n to solve.";
-        settingsPanel = game.add.sprite(800,50, "settingspanel");
+        explain = "Type in up to 20 questions and up to 20 words you want your students to review.";
+        settingsPanel = this.game.add.sprite(150,50, "settingspanel");
         
-        instructions = game.add.text(settingsPanel.x + 30, settingsPanel.y + 10, explain, { fill: '#ffffff', fontSize: '120px' });
+        instructions = this.game.add.text(50, 10, explain, { fill: '#ffffff', fontSize: '120px', wordWrap: true, wordWrapWidth: settingsPanel.width - 70});
 
-        wordList = this.game.add.inputField(settingsPanel.x + 50, settingsPanel.y + 130, {
+        wordList = this.game.add.inputField(550, 80, {
         font: '18px Arial',
         fill: '#212121',
         fontWeight: 'bold',
         width: 150,
-        padding: 8,
+        padding: 12,
         borderWidth: 1,
         borderColor: '#000',
         placeHolder: 'Click Here To Type'
     
         });
 
-        wordList.startFocus();
-        
-        currentList = game.add.text(wordList.x ,wordList.y + 60, "Type one word\nin at a time", { fill: '#ffffff', fontSize: '120px' });   
-        
-        submit = game.add.button (settingsPanel.x +25, settingsPanel.y + 400, 'submit', saveWord, this, 2,1,0);
         
         
-        clear = game.add.button (submit.x +130, settingsPanel.y + 400, 'clear', clearList, this, 2,1,0);
+        questionList = this.game.add.inputField(50, 80, {
+        font: '18px Arial',
+        fill: '#212121',
+        fontWeight: 'bold',
+        width: 150,
+        padding: 12,
+        borderWidth: 1,
+        borderColor: '#000',
+        placeHolder: 'Click Here To Type'
+    
+        });
+        
+        questionList.startFocus();
+        
+        currentList = this.game.add.text(wordList.x ,wordList.y + 60, "Type one word in at a time: ", { fill: '#ffffff', font: '12pt Arial', wordWrap: true, wordWrapWidth: 250 });   
+        currentList2 = this.game.add.text(questionList.x ,questionList.y + 60, "Type one question in at a time: ", { fill: '#ffffff', font: '12pt Arial', wordWrap: true, wordWrapWidth: 250 });
+        
+        submit = this.game.add.button (550, 400, 'submit', SaveWord, this, 2,1,0);
+        submitQuestion = this.game.add.button (25, 400, 'submit', SaveQuestion, this, 2,1,0);
+        
+        
+        clear = this.game.add.button (submit.x + 150, 400, 'clear', clearList, this, 2,1,0);
+        clearQuestion = this.game.add.button (submitQuestion.x + 150, 400, 'clear', clearList2, this, 2,1,0);
 
         // enter1 = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         
         // enter1.onDown.add(saveWord,this);
         settingsSwitch = 1;
         
+        settingsPanel.addChild(instructions);
+        settingsPanel.addChild(wordList);
+        settingsPanel.addChild(questionList);
+        settingsPanel.addChild(submit);
+        settingsPanel.addChild(submitQuestion);
+        settingsPanel.addChild(clear);
+        settingsPanel.addChild(clearQuestion);
+        settingsPanel.addChild(currentList);
+        settingsPanel.addChild(currentList2);
+        
+        
+        
+        
         return;
-    }
-    
-    if (settingsSwitch == 1)
-    {
+        
+    } else {
+        
         settingsPanel.destroy();
-        instructions.destroy();
-        currentList.destroy();
-        submit.destroy();
-        clear.destroy();
-        wordList.destroy();    
-            
         settingsSwitch = 0;
         
-     
-        
-    }  
-
+    }
+    
 }
 
 
@@ -159,6 +222,14 @@ function clearList () {
    localStorage.clear();
    currentList.setText("");
    totalWords = 0;
+                
+}
+
+function clearList2 () {
+        
+   localStorage.clear();
+   currentList2.setText("");
+   totalQuestions = 0;
                 
 }
 

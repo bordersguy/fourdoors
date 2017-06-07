@@ -111,9 +111,9 @@ var updatePos;
 
 var questionPanel;
 var questionText;
-var getQuestion;
-var vocabularyList;
-var questionList;
+var getQuestion = "something";
+
+
 var qType;
 var questionExplain;
 var answer;
@@ -313,6 +313,19 @@ var zombieSound;
 var sounds;
 var backgroundMusic;
 
+// var vocabularyList = ["beautiful", "nickname", "second", "headache", "stomachache", "restaurant", "post office",
+//                       "medicine", "always", "because", "interesting", "February", "worry", "scared",
+//                       "practice", "January", "August", "hospital", "lucky", "store", "corner",
+//                       "different", "student", "straight", "curly", "winter", "cloudy", ];
+
+var vocabularyList = ["test1", "test2", "test3" ];
+                      
+var questionList = ["Where's the toy museum?", "Oh, I can't find the toy museum.", "Go straight and turn left.", "It's on your left.", "What does she look like?",
+                    "She has short curly hair and big brown eyes.", "He's tall, isn't he?", "When is Earth Day?", "It's on April 22nd.",
+                    "Why are you sad?", "Because I can't find my cat.", "How's the weather today?", "What's the matter?", "Take this medicine and get some rest.",
+                    "How do you spell your name?", "What grade are you in?", "I'm in the 6th grade.", "I like playing baseball with my friends.", 
+                    "I have a new friend. She's from Canada.", "Don't worry.", "I'll help you."];
+
 
 
 var playState = {
@@ -448,12 +461,16 @@ create: function () {
     // it's not necessary to increase height, we do it to keep uniformity
     this.game.world.setBounds(x, y, w, h);
     
+    SavedWords();
+    
 }
 
 
 };
 
 //***************Basic Board Management
+
+
 
 function KeyMove(number) {
     
@@ -1266,9 +1283,7 @@ function ShowQuestion() {
             sun.destroy();
         
         }
-        
-        
-        
+
         if (turnText.text == "Quest!" || turnText.text == "cave" || turnText.text == "exit" || 
         turnText.text == "stairs") {
         
@@ -1792,19 +1807,23 @@ function DayNight() {
 
 function GetQuestion() {
 
-    questionList = ["Where's the toy museum?", "Oh, I can't find the toy museum.", "Go straight and turn left.", "It's on your left.", "What does she look like?",
-                    "She has short curly hair and big brown eyes.", "He's tall, isn't he?", "When is Earth Day?", "It's on April 22nd.",
-                    "Why are you sad?", "Because I can't find my cat.", "How's the weather today?", "What's the matter?", "Take this medicine and get some rest.",
-                    "How do you spell your name?", "What grade are you in?", "I'm in the 6th grade.", "I like playing baseball with my friends.", 
-                    "I have a new friend. She's from Canada.", ];
-                   
-    vocabularyList = ["beautiful", "nickname", "second", "headache", "stomachache", "restaurant", "post office",
-                      "medicine", "always", "because", "interesting", "February", "worry", "scared",
-                      "practice", "January", "August", "hospital", "lucky", "store", "corner",
-                      "different", "student", "straight", "curly", "winter", "cloudy", ];
-    
     CreateQuestion(getQuestion);
 
+}
+
+function SavedWords() {
+    
+    if (window.localStorage.getItem("save") != null)
+    {
+        vocabularyList = window.localStorage.getItem("save").split(" ");
+    }
+
+        
+    if (window.localStorage.getItem("saveQuestion") != null)
+    {
+        questionList = window.localStorage.getItem("saveQuestion").match( /[^\.!\?]+[\.!\?]+/g );
+    }    
+  
 }
 
 function CreateQuestion(puzzle) {
@@ -2085,7 +2104,7 @@ function CheckAnswer(result) {
         if (parseInt(getGold.text, 10) >= 1) {
             
             getGold = getGold.setText((parseInt(getGold.text, 10) - adjustGold).toString());
-            ScaleText("+" + adjustGold, currentPlayer - 1, "yellow");
+            ScaleText("-" + adjustGold, currentPlayer - 1, "yellow");
             questionExplain.setText("Sorry, you lose " + adjustGold.toString() + " gold."); 
 
         }
