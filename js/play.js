@@ -1792,20 +1792,16 @@ function DayNight() {
 
 function GetQuestion() {
 
-    questionList = ["What's your favorite color?",
-                   "What grade are you in?",
-                   "May I go to the bathroom?",
-                   "Can you come to my party?",
-                   "What's your favorite food?",
-                   "How do you spell your name?",
-                   "What's the matter?", "Why are angry?", "Why are you sad?",
-                   "Why are you worried?", "Because I have a math test.",
-                   "I have a headache.", "When is your birthday?", "Go to bed and get some rest.",
-                   "Don't worry.", "I'll help you."];
+    questionList = ["Where's the toy museum?", "Oh, I can't find the toy museum.", "Go straight and turn left.", "It's on your left.", "What does she look like?",
+                    "She has short curly hair and big brown eyes.", "He's tall, isn't he?", "When is Earth Day?", "It's on April 22nd.",
+                    "Why are you sad?", "Because I can't find my cat.", "How's the weather today?", "What's the matter?", "Take this medicine and get some rest.",
+                    "How do you spell your name?", "What grade are you in?", "I'm in the 6th grade.", "I like playing baseball with my friends.", 
+                    "I have a new friend. She's from Canada.", ];
                    
-    vocabularyList = ["beautiful", "nickname", "second", "headache", "stomachache",
-                      "medicine", "always", "because", "interesting", "February",
-                      "practice", "January", "August"];
+    vocabularyList = ["beautiful", "nickname", "second", "headache", "stomachache", "restaurant", "post office",
+                      "medicine", "always", "because", "interesting", "February", "worry", "scared",
+                      "practice", "January", "August", "hospital", "lucky", "store", "corner",
+                      "different", "student", "straight", "curly", "winter", "cloudy", ];
     
     CreateQuestion(getQuestion);
 
