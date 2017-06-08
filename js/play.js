@@ -1294,9 +1294,9 @@ function ShowQuestion() {
         question.width = questionPanel.width;
         questionPanel.addChild(question);
             
-        wrongButton = this.game.add.button(100, 400, 'wrong', CheckAnswer, this, 2,1,0);
-        correctButton = this.game.add.button(400, 400, 'correct', CheckAnswer, this, 2,1,0);
-        revealButton = this.game.add.button(250, 500, 'reveal', ShowAnswer, this, 2,1,0);
+        wrongButton = this.game.add.button(75, 350, 'wrong', CheckAnswer, this, 2,1,0);
+        correctButton = this.game.add.button(325, 350, 'correct', CheckAnswer, this, 2,1,0);
+        revealButton = this.game.add.button(200, 450, 'reveal', ShowAnswer, this, 2,1,0);
    
         GetQuestion();    
         
@@ -1958,7 +1958,7 @@ function CreateQuestion(puzzle) {
              
             ShuffleWord(answer);
              
-            answer = shuffledWord;
+            //answer = shuffledWord;
              
             for (var i = 0; i < vocabLength; i++) {
                 
@@ -1972,13 +1972,13 @@ function CreateQuestion(puzzle) {
                 
                 
                 
-                if (answer.charAt(i) == 'I')
+                if (shuffledWord.charAt(i) == 'I')
                 {
                      letterText = this.game.add.text(20, 9, "I", style );
                 }
                 else
                 {
-                     letterText = this.game.add.text(11, 9, answer.charAt(i), style );
+                     letterText = this.game.add.text(11, 9, shuffledWord.charAt(i), style );
                 }
                 
                 bubble.addChild(letterText);
@@ -1995,9 +1995,9 @@ function CreateQuestion(puzzle) {
         
             });
             
-            wrongButton = this.game.add.button(100, 525, 'wrong', CheckAnswer, this, 2,1,0);
-            correctButton = this.game.add.button(400, 525, 'correct', CheckAnswer, this, 2,1,0);
-            revealButton = this.game.add.button(250, 525, 'reveal', ShowAnswer, this, 2,1,0);
+            wrongButton = this.game.add.button(75, 350, 'wrong', CheckAnswer, this, 2,1,0);
+            correctButton = this.game.add.button(325, 350, 'correct', CheckAnswer, this, 2,1,0);
+            revealButton = this.game.add.button(200, 450, 'reveal', ShowAnswer, this, 2,1,0);
             
             wrongButton.input.useHandCursor = true;
             correctButton.input.useHandCursor = true;
@@ -2035,10 +2035,10 @@ function CreateQuestion(puzzle) {
                 sentenceY += 50;
             }
             
-            wrongButton = this.game.add.button(100, 525, 'wrong', CheckAnswer, this, 2,1,0);
-            correctButton = this.game.add.button(400, 525, 'correct', CheckAnswer, this, 2,1,0);
-            revealButton = this.game.add.button(250, 525, 'reveal', ShowAnswer, this, 2,1,0);
-            
+            wrongButton = this.game.add.button(75, 350, 'wrong', CheckAnswer, this, 2,1,0);
+            correctButton = this.game.add.button(325, 350, 'correct', CheckAnswer, this, 2,1,0);
+            revealButton = this.game.add.button(200, 450, 'reveal', ShowAnswer, this, 2,1,0);
+           
             wrongButton.input.useHandCursor = true;
             correctButton.input.useHandCursor = true;
             revealButton.input.useHandCursor = true;
