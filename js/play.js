@@ -15,15 +15,17 @@
 //      Update webpage
 //      redraw player characters
 //      Fix vampire curse
-//      add sounds: movement, teleport, normal item take
+//      add sounds: movement, teleport
 //      get new ticktock...old has a hiss
 //      finish RSP game...specifically buttons
 //      fix exit background.....only outer cave for leaving...otherwise innerpath
+//      change text delays to next buttons
+//      add more visuals for corner effects
+//      go through list of questions before repeating a question
 
 
 //Later:
 //      Polish 
-//      question input
 //      tidy up when keyboard input is viable
 
 var c1;
@@ -1300,8 +1302,8 @@ function ShowQuestion() {
    
         GetQuestion();    
         
-        questionText = this.game.add.text(20, 150, getQuestion, { font: "40px Arial", fill: "black", align: "center", wordWrap: true, wordWrapWidth: question.width - 20 });
-        questionExplain = this.game.add.text(20, 50, qType, { font: "40px Arial", fill: "blue", align: "center", wordWrap: true, wordWrapWidth: question.width - 20 }); 
+        questionText = this.game.add.text(40, 150, getQuestion, { font: "40px Arial", fill: "black", align: "center", wordWrap: true, wordWrapWidth: question.width - 40 });
+        questionExplain = this.game.add.text(40, 50, qType, { font: "40px Arial", fill: "blue", align: "center", wordWrap: true, wordWrapWidth: question.width - 40 }); 
         
         deleteQuestion = this.game.add.button (520, 15, 'deleteX', DeleteQuestion, this, 2,1,0);
         question.addChild(deleteQuestion);
@@ -5559,12 +5561,12 @@ function WorldEventPanel() {
     question.width = questionPanel.width;
     questionPanel.addChild(question);
         
-    questionText = this.game.add.text(20, 100, getQuestion, { font: "40px Arial", fill: "black", align: "center", wordWrap: true, wordWrapWidth: question.width - 20 });
+    questionText = this.game.add.text(40, 100, getQuestion, { font: "40px Arial", fill: "black", align: "center", wordWrap: true, wordWrapWidth: question.width - 40 });
 
     deleteQuestion = this.game.add.button (520, 15, 'deleteX', DeleteWorldEvent, this, 2,1,0);
     deleteQuestion.input.useHandCursor = true;
     
-    eventTitle = this.game.add.text(30, 20,  "", { font: "60px Arial", fill: "red", align: "center", wordWrap: true, wordWrapWidth: question.width - 20  }); 
+    eventTitle = this.game.add.text(50, 20,  "", { font: "60px Arial", fill: "red", align: "center", wordWrap: true, wordWrapWidth: question.width - 40  }); 
     question.addChild(eventTitle);
     question.addChild(deleteQuestion);
     question.addChild(questionText);
