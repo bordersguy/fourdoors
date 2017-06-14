@@ -15,13 +15,11 @@
 //      Update webpage
 //      redraw player characters
 //      Fix vampire curse
-//      add sounds: movement, teleport
-//      get new ticktock...old has a hiss
-//      finish RSP game...specifically buttons
 //      fix exit background.....only outer cave for leaving...otherwise innerpath
 //      change text delays to next buttons
 //      add more visuals for corner effects
 //      go through list of questions before repeating a question
+//      add negative sound effect for losses
 
 
 //Later:
@@ -291,18 +289,22 @@ var earthquakeSound;
 var fairySound;
 var forestSound;
 var frogSound;
+var gainSound;
 var garbageSound;
 var ghostSound;
 var hitSound;
 var krakenSound;
 var lifeSound;
 var lightningstormSound;
+var movementSound;
+var prisonDoorSound;
 var punchSound;
 var snakeSound;
 var spiderSound;
 var swordSound;
 var successSound;
 var takeSound;
+var teleportSound;
 var thiefSound;
 var ticktockSound;
 var trollSound;
@@ -702,6 +704,7 @@ function ManageTurn () {
                 
             } else if (isFrog[currentPlayer - 1] == true) {
                 
+                frogSound.play();
                 frog = true;
                 CreateMovementToken(1);
                 turn = 1;
@@ -1024,6 +1027,8 @@ function MovePlayer (spot) {
     aSpot.destroy();
     bSpot.destroy();
 
+    movementSound.play();
+    
     ManageTurn();
     
     reroll = false;
@@ -4189,6 +4194,7 @@ function TunnelResult() {
                 boardLevel[currentPlayer - 1] = 2;
                 LevelSwitch("in10");
                 turnText.setText("turn \nover");
+                teleportSound.play();
                 break;
                 
             case 2:
@@ -4341,6 +4347,7 @@ function CastleResult() {
             getLife = getLife.setText((parseInt(getLife.text, 10) + 1).toString());
             ScaleText("+1", currentPlayer - 1, "red");
             turnText.setText("turn \nover");
+            gainSound.play();
             break;
             
         case 2:
@@ -4349,6 +4356,7 @@ function CastleResult() {
             ScaleText("+1", currentPlayer - 1, "red");
             turn = 1;
             reroll = true;
+            gainSound.play();
             break;
             
         case 3:
@@ -4363,10 +4371,13 @@ function CastleResult() {
             getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 1).toString());
             ScaleText("+1", currentPlayer - 1, "yellow");
             turnText.setText("turn \nover");
+            gainSound.play();
             break;
             
         case 5:
             choiceText.setText("Soldiers think you're a thief. \nThey arrest you!!");
+            prisonDoorSound.play();
+            
             RunDelay(Arrested, "none", 3000);
             
             break;
@@ -4374,6 +4385,7 @@ function CastleResult() {
         case 6:
             choiceText.setText("The King wants to help you!.  \nHe shows you a secret way into the mountain!");
             LevelSwitch("teleportInner");
+            teleportSound.play();
             turnText.setText("turn \nover");
             break;
 
@@ -4400,11 +4412,12 @@ function WitchResult() {
             getLife = getLife.setText((parseInt(getLife.text, 10) + 1).toString());
             ScaleText("+1", currentPlayer - 1, "red");
             turnText.setText("turn \nover");
-            
+            gainSound.play();
             break;
             
         case 2:
             choiceText.setText("She says, 'Good Luck!' and then teleports you inside the mountain!");
+            teleportSound.play();
             LevelSwitch("teleportInner");
             turnText.setText("turn \nover");
             
@@ -4415,7 +4428,7 @@ function WitchResult() {
             getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 1).toString());
             ScaleText("+1", currentPlayer - 1, "grey");
             turnText.setText("turn \nover");
-            
+            gainSound.play();
             break;
             
         case 4:
@@ -4423,7 +4436,7 @@ function WitchResult() {
             getAttack = getAttack.setText((parseInt(getAttack.text, 10) + 1).toString());
             ScaleText("+1", currentPlayer - 1, "grey");
             turnText.setText("turn \nover");
-            
+            gainSound.play();
             break;
             
         case 5:
@@ -4463,6 +4476,7 @@ function ForestResult() {
             getLife = getLife.setText((parseInt(getLife.text, 10) + 1).toString());
             ScaleText("+1", currentPlayer - 1, "red");
             turnText.setText("turn \over");
+            gainSound.play();
             break;
             
         case 2:
@@ -4535,6 +4549,7 @@ function PoolResult() {
             getGold = getGold.setText((parseInt(getGold.text, 10) + 2).toString());
             ScaleText("+2", currentPlayer - 1);
             turnText.setText("turn\nover");
+            gainSound.play();
             break;
             
         case 5:
@@ -4589,6 +4604,7 @@ function DragonResult() {
             choiceText.setText("...is sleepy.  You both rest. \nGain 1 life.");
             getLife = getLife.setText((parseInt(getLife.text, 10) + 1).toString());
             ScaleText("+1", currentPlayer - 1, "red");
+            gainSound.play();
             break;
             
         case 4:
@@ -4654,7 +4670,8 @@ function AntsResult() {
             if (hasPet[currentPlayer - 1] == false) {
                 
                 choiceText.setText("One ant really likes you! You have a pet! It's like a sword and shield.");
-                PetAnt();    
+                PetAnt();   
+                gainSound.play();
                 
             } else {
                 
@@ -4878,7 +4895,7 @@ function FrogChange() {
     packList[currentPlayer - 1].getChildAt(0).loadTexture('frog');
     tokenList[currentPlayer - 1].loadTexture('frog');
     isFrog[currentPlayer - 1] = true;
-    
+    frogSound.play();
     
     
     
@@ -4910,18 +4927,23 @@ function TreasureResult() {
         getGold = getGold.setText((parseInt(getGold.text, 10) + 3).toString());
         ScaleText("+3", currentPlayer - 1, "yellow");
         turnText.setText("turn \nover");
+        gainSound.play();
+        
     } else if (dieResult == 3) {
         treasureChest.loadTexture("treasureThief");
         choiceText.setText("There was a thief hiding here!  He steals 1 gold and runs away!");
         getGold = getGold.setText((parseInt(getGold.text, 10) - 3).toString());
         turnText.setText("turn \nover");
+        
     } else if (dieResult == 2) {
         treasureChest.loadTexture("treasurePoison");
         choiceText.setText("Uggh! It's a trap!  Poison gas comes out and you lose 1 life!")
         getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
         ScaleText("-1", currentPlayer - 1);
         turnText.setText("turn \nover");
+        
     } else {
+        
         treasureChest.loadTexture("treasureEmpty");
         choiceText.setText("You get nothing! It's empty!");
         turnText.setText("turn \nover");
@@ -5112,6 +5134,7 @@ function RPSResult(winLose) {
         choiceText.setText("You beat me!  Here's 3 gold!");
         getGold = getGold.setText((parseInt(getGold.text, 10) + 3).toString());
         ScaleText("+3", currentPlayer - 1, "yellow");
+        gainSound.play();
         
     } else {
         
@@ -5253,6 +5276,7 @@ function HelpWitch(yesNo) {
         choiceText.setText("Well, that's okay. \nI'll still give you a gold.");
         getGold = getGold.setText((parseInt(getGold.text, 10) + 1).toString());
         ScaleText("+1", currentPlayer - 1, "yellow");
+        gainSound.play();
     }
     
     
@@ -5376,6 +5400,8 @@ function RemoveCurse(yesNo) {
         turnText.setText("turn \nover");
         curseTokens[currentPlayer - 1].destroy();
         hasCurse[currentPlayer - 1] = "none";
+        gainSound.play();
+        
     } else {
         
         choiceText.setText("No? Okay. Roll the die.");
@@ -5837,18 +5863,22 @@ function AddSound() {
     fairySound = this.game.add.audio("fairySound");
     forestSound = this.game.add.audio("forestSound", .20);
     frogSound = this.game.add.audio("frogSound");
+    gainSound = this.game.add.audio("gainSound", .60);
     garbageSound = this.game.add.audio("garbageSound");
     ghostSound = this.game.add.audio("ghostSound");
     hitSound = this.game.add.audio("hitSound", .25);
     krakenSound = this.game.add.audio("krakenSound", .50);
     lifeSound = this.game.add.audio("lifeSound", .35);
     lightningstormSound = this.game.add.audio("lightningstormSound",.25);
+    movementSound = this.game.add.audio("movementSound", .4);
+    prisonDoorSound = this.game.add.audio("prisonDoorSound", .75);
     punchSound = this.game.add.audio("punchSound", .50);
     snakeSound = this.game.add.audio("snakeSound", .5);
     spiderSound = this.game.add.audio("spiderSound", .35);
     swordSound = this.game.add.audio("swordSound", .50);
     successSound = this.game.add.audio("successSound",.25);
     takeSound = this.game.add.audio("takeSound", .35);
+    teleportSound = this.game.add.audio("teleportSound", .75);
     thiefSound = this.game.add.audio("thiefSound", .75);
     ticktockSound = this.game.add.audio("ticktockSound", .50);
     trollSound = this.game.add.audio("trollSound", .75);
