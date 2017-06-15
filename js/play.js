@@ -20,6 +20,8 @@
 //      add more visuals for corner effects
 //      go through list of questions before repeating a question
 //      add negative sound effect for losses
+//      clean up +1's
+//      fix question mark question
 
 
 //Later:
@@ -112,6 +114,9 @@ var updatePos;
 var questionPanel;
 var questionText;
 var getQuestion = "something";
+
+var newWList = false;
+var newQList = false;
 
 
 var qType;
@@ -323,7 +328,14 @@ var backgroundMusic;
 //                       "different", "student", "straight", "curly", "winter", "cloudy", ];
 
 var vocabularyList = ["test1", "test2", "test3" ];
-                      
+var backupWList = ["test1", "test2", "test3" ];
+
+var backupQList = ["Where's the toy museum?", "Oh, I can't find the toy museum.", "Go straight and turn left.", "It's on your left.", "What does she look like?",
+                    "She has short curly hair and big brown eyes.", "He's tall, isn't he?", "When is Earth Day?", "It's on April 22nd.",
+                    "Why are you sad?", "Because I can't find my cat.", "How's the weather today?", "What's the matter?", "Take this medicine and get some rest.",
+                    "How do you spell your name?", "What grade are you in?", "I'm in the 6th grade.", "I like playing baseball with my friends.", 
+                    "I have a new friend. She's from Canada.", "Don't worry.", "I'll help you."];
+
 var questionList = ["Where's the toy museum?", "Oh, I can't find the toy museum.", "Go straight and turn left.", "It's on your left.", "What does she look like?",
                     "She has short curly hair and big brown eyes.", "He's tall, isn't he?", "When is Earth Day?", "It's on April 22nd.",
                     "Why are you sad?", "Because I can't find my cat.", "How's the weather today?", "What's the matter?", "Take this medicine and get some rest.",
@@ -1823,13 +1835,25 @@ function SavedWords() {
     if (window.localStorage.getItem("save") != null)
     {
         vocabularyList = window.localStorage.getItem("save").split(" ");
+        backupWList = window.localStorage.getItem("save").split(" ");
     }
-
+    
+    //backupWList = vocabularyList;
+    //wordCount = vocabularyList.length;
         
     if (window.localStorage.getItem("saveQuestion") != null)
     {
         questionList = window.localStorage.getItem("saveQuestion").match( /[^\.!\?]+[\.!\?]+/g );
+        backupQList = window.localStorage.getItem("saveQuestion").match( /[^\.!\?]+[\.!\?]+/g );
+        console.log("qllength" + questionList.length);        
+        console.log("bqllength" + backupQList.length);
+        
     }    
+    
+    //backupQList = questionList;
+    //questionCount = questionList.length;
+    
+    
   
 }
 
@@ -1842,6 +1866,57 @@ function CreateQuestion(puzzle) {
     var randomPick;
     var sentenceLength;
     var newOrder;
+    var thisList;
+    var thisWList;
+    var answerSpot;
+    
+    if (questionList.length == 0) {
+        
+        console.log("ql Length = " + questionList.length);
+        console.log("ql == 0");
+        newQList = true;
+        questionList = backupQList.slice();
+        
+    } else if (backupQList.length == 0) {
+        
+        console.log("bql == 0");
+        newQList = false;
+        backupQList = questionList.slice();
+        
+    }
+    
+    if (vocabularyList.length == 0) {
+        
+        newWList = true;
+        vocabularyList = backupWList.slice();
+        
+    } else if (backupWList.length == 0) {
+        
+        console.log("vql == 0");
+        newWList = false;
+        backupWList = vocabularyList.slice();
+        
+    }
+    
+    if (newQList == false) {
+        
+        thisList = questionList;
+        
+    } else {
+        
+        thisList = backupQList;
+        
+    }
+    
+    if (newWList == false) {
+        
+        thisWList = vocabularyList;
+        
+    } else {
+        
+        thisWList = backupWList;
+        
+    }
     
     
     if (turn == 30) {
@@ -1854,6 +1929,11 @@ function CreateQuestion(puzzle) {
         
     }
     
+    console.log("ql = " + questionList.length);
+    console.log("bql = " + backupQList.length);
+    console.log("vl = " + vocabularyList.length);
+    console.log("bvl = " + backupWList.length);
+    
     
     switch(pickPuzzle) {
         
@@ -1861,7 +1941,20 @@ function CreateQuestion(puzzle) {
             
             qType = "Fill in the Blank";
             
-            answer = questionList[getRandomInt(0, questionList.length)];
+            answerSpot = getRandomInt(0, thisList.length);
+            answer = thisList[answerSpot];
+            
+            if (newQList == false) {
+                console.log("nql0 = false");
+                questionList.splice(answerSpot, 1);    
+                
+            } else if (newQList == true) {
+                
+                console.log("nql0 = true");
+                backupQList.splice(answerSpot, 1);    
+                
+            }
+            
             
             
             deconstructed = answer.split(" ");
@@ -1884,24 +1977,67 @@ function CreateQuestion(puzzle) {
             
             var questionMark = [];
             
-            for (var i = 0; i < questionList.length; i++) {
+            for (var i = 0; i < thisList.length; i++) {
                 
-                if (questionList[i].slice(-1) == "?") {
+                if (thisList[i].slice(-1) == "?") {
                     
-                    questionMark.push(questionList[i]);
+                    questionMark.push(thisList[i]);
                     
+             
                 }
                 
             }
             
             getQuestion = questionMark[getRandomInt(0, questionMark.length)];
+            
+            
+            
+            if (newQList == false) {
+                
+                for (var i = 0; i < questionList.length; i++) {
+                    
+                    if (getQuestion == questionList[i]) {
+                            
+                        questionList.splice(i, 1);
+                        console.log("nql1 = false");
+                    }
+                    
+                    
+                }
+
+            } else if (newQList == true) {
+                
+                for (var i = 0; i < backupQList.length; i++) {
+                    
+                    if (getQuestion == backupQList[i]) {
+                        
+                        backupQList.splice(answerSpot, 1); 
+                        console.log("nql1 = true");
+                    }
+   
+                }
+ 
+            }
+            
             answer = "Your teacher will check your answer.";
 
             break;
         
         case 2:
             qType = "Sentence Scramble";
-            getQuestion = questionList[getRandomInt(0, questionList.length)];
+            answerSpot = getRandomInt(0, thisList.length);
+            getQuestion = thisList[answerSpot];
+            
+            if (newQList == false) {
+                console.log("nql2 = false");
+                questionList.splice(answerSpot, 1);    
+                
+            } else if (newQList == true) {
+                console.log("nql2 = true");
+                backupQList.splice(answerSpot, 1);    
+                
+            }
+            
             answer = getQuestion;
             deconstructed = getQuestion.split(" ");
             newOrder = [];
@@ -1925,7 +2061,19 @@ function CreateQuestion(puzzle) {
             
         case 3:
             qType = "Scramble Words";
-            getQuestion = questionList[getRandomInt(0, questionList.length)];
+            answerSpot = getRandomInt(0, thisList.length);
+            getQuestion = thisList[answerSpot];
+            
+            if (newQList == false) {
+                
+                questionList.splice(answerSpot, 1);    
+                
+            } else if (newQList == true) {
+                
+                backupQList.splice(answerSpot, 1);    
+                
+            }
+            
             answer = getQuestion;
             deconstructed = getQuestion.split(" ");
             newOrder = [];
@@ -1946,7 +2094,19 @@ function CreateQuestion(puzzle) {
             
         case 4:
             qType = "Make a sentence";
-            getQuestion = vocabularyList[getRandomInt(0, vocabularyList.length)];
+            answerSpot = getRandomInt(0, thisWList.length);
+            getQuestion = thisWList[answerSpot];
+            
+            if (newWList == false) {
+                
+                vocabularyList.splice(answerSpot, 1);    
+                
+            } else if (newWList == true) {
+                
+                backupWList.splice(answerSpot, 1);    
+                
+            }
+            
             answer = "Your teacher will say if you are correct.";
 
             break;
@@ -1954,7 +2114,19 @@ function CreateQuestion(puzzle) {
             
         case 10:
             qType = "Bubble Words";
-            getQuestion = vocabularyList[getRandomInt(0, vocabularyList.length)];
+            answerSpot = getRandomInt(0, thisWList.length);
+            getQuestion = thisWList[answerSpot];
+           
+            if (newWList == false) {
+                
+                vocabularyList.splice(answerSpot, 1);    
+                
+            } else if (newWList == true) {
+                
+                backupWList.splice(answerSpot, 1);    
+                
+            }
+            
             answer = getQuestion;
 
             var vocabLength = getQuestion.length;
