@@ -29,20 +29,20 @@ var menuState = {
     
     backgroundMusic.play();
       
-    localStorage.clear();
+    window.localStorage.clear();
         
-    game.plugins.add(PhaserInput.Plugin);
+    this.game.plugins.add(PhaserInput.Plugin);
     
-    game.add.sprite(300, 25,'mainmenu');
+    this.game.add.sprite(300, 25,'mainmenu');
     
 
-    var button = game.add.button (450,250, 'startbutton', start, this, 2,1,0);
+    var button = this.game.add.button (450,250, 'startbutton', start, this, 2,1,0);
     button.input.useHandCursor = true;
     
-    var button2 = game.add.button (1100,25, 'settings', showSettings, this, 2,1,0);
+    var button2 = this.game.add.button (1100,25, 'settings', showSettings, this, 2,1,0);
     button2.input.useHandCursor = true;
     
-    settingsGroup = game.add.group();
+    settingsGroup = this.game.add.group();
     
     }
 
@@ -80,12 +80,7 @@ function  SaveWord () {
         
     }
     
-    
-    
     wordList.resetText();
-    
-
-    
     wordList.startFocus();
     
 }
@@ -118,9 +113,7 @@ function  SaveQuestion () {
         
         
     }
-    
-    
-    
+
     questionList.resetText();
     questionList.startFocus();
     
@@ -131,7 +124,7 @@ function  start () {
     backgroundMusic.stop();
     clickSound.play();
     
-    game.state.start('play');
+    this.game.state.start('play');
     
 }
 
@@ -143,7 +136,7 @@ function showSettings () {
 
     if (settingsSwitch == 0)
     {
-        explain = "Type in up to 20 questions and up to 20 words you want your students to review.";
+        explain = "Type in up to 20 questions and up to 20 words you want your students to review. Puncuation is necessary.";
         settingsPanel = this.game.add.sprite(150,50, "settingspanel");
         
         instructions = this.game.add.text(50, 10, explain, { fill: '#ffffff', fontSize: '120px', wordWrap: true, wordWrapWidth: settingsPanel.width - 70});
@@ -219,7 +212,7 @@ function showSettings () {
 
 function clearList () {
         
-   localStorage.clear();
+   window.localStorage.clear();
    currentList.setText("");
    totalWords = 0;
                 
@@ -227,7 +220,7 @@ function clearList () {
 
 function clearList2 () {
         
-   localStorage.clear();
+   window.localStorage.clear();
    currentList2.setText("");
    totalQuestions = 0;
                 

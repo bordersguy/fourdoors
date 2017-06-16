@@ -18,10 +18,9 @@
 //      fix exit background.....only outer cave for leaving...otherwise innerpath
 //      change text delays to next buttons
 //      add more visuals for corner effects
-//      go through list of questions before repeating a question
 //      add negative sound effect for losses
 //      clean up +1's
-//      fix question mark question
+
 
 
 //Later:
@@ -327,20 +326,14 @@ var backgroundMusic;
 //                       "practice", "January", "August", "hospital", "lucky", "store", "corner",
 //                       "different", "student", "straight", "curly", "winter", "cloudy", ];
 
-var vocabularyList = ["test1", "test2", "test3" ];
-var backupWList = ["test1", "test2", "test3" ];
+var vocabularyList;
+var backupWList;
 
-var backupQList = ["Where's the toy museum?", "Oh, I can't find the toy museum.", "Go straight and turn left.", "It's on your left.", "What does she look like?",
-                    "She has short curly hair and big brown eyes.", "He's tall, isn't he?", "When is Earth Day?", "It's on April 22nd.",
-                    "Why are you sad?", "Because I can't find my cat.", "How's the weather today?", "What's the matter?", "Take this medicine and get some rest.",
-                    "How do you spell your name?", "What grade are you in?", "I'm in the 6th grade.", "I like playing baseball with my friends.", 
-                    "I have a new friend. She's from Canada.", "Don't worry.", "I'll help you."];
+var backupQList; 
 
-var questionList = ["Where's the toy museum?", "Oh, I can't find the toy museum.", "Go straight and turn left.", "It's on your left.", "What does she look like?",
-                    "She has short curly hair and big brown eyes.", "He's tall, isn't he?", "When is Earth Day?", "It's on April 22nd.",
-                    "Why are you sad?", "Because I can't find my cat.", "How's the weather today?", "What's the matter?", "Take this medicine and get some rest.",
-                    "How do you spell your name?", "What grade are you in?", "I'm in the 6th grade.", "I like playing baseball with my friends.", 
-                    "I have a new friend. She's from Canada.", "Don't worry.", "I'll help you."];
+var questionList;
+var questionMark = [];
+var questionMark2 = [];
 
 
 
@@ -1836,6 +1829,15 @@ function SavedWords() {
     {
         vocabularyList = window.localStorage.getItem("save").split(" ");
         backupWList = window.localStorage.getItem("save").split(" ");
+        console.log("wllength" + vocabularyList.length);        
+        console.log("bwllength" + backupWList.length);
+   
+    } else {
+        
+        vocabularyList = ["grade", "weather", "medicine" ];
+        backupWList = vocabularyList.splice();
+        
+        
     }
     
     //backupWList = vocabularyList;
@@ -1845,11 +1847,37 @@ function SavedWords() {
     {
         questionList = window.localStorage.getItem("saveQuestion").match( /[^\.!\?]+[\.!\?]+/g );
         backupQList = window.localStorage.getItem("saveQuestion").match( /[^\.!\?]+[\.!\?]+/g );
-        console.log("qllength" + questionList.length);        
-        console.log("bqllength" + backupQList.length);
+        console.log("qllength 0 = " + questionList[0]);        
+        console.log("bqllength 0 = " + backupQList[0]);
+        
+    }   else {
+        
+        questionList = ["Where's the toy museum?", "Oh, I can't find the toy museum.", "Go straight and turn left.", "It's on your left.", "What does she look like?",
+                        "She has short curly hair and big brown eyes.", "He's tall, isn't he?", "When is Earth Day?", "It's on April 22nd.",
+                        "Why are you sad?", "Because I can't find my cat.", "How's the weather today?", "What's the matter?", "Take this medicine and get some rest.",
+                        "How do you spell your name?", "What grade are you in?", "I'm in the 6th grade.", "I like playing baseball with my friends.", 
+                        "I have a new friend. She's from Canada.", "Don't worry.", "I'll help you."];
+        
+        backupQList = questionList.splice();
         
     }    
     
+    
+    for (var i = 0; i < questionList.length; i++) {
+        
+        if (questionList[i].slice(-1) == "?") {
+            console.log("qm = " + i);
+            console.log("qmi = " + questionList[i]);
+            questionMark.push(questionList[i]);
+            questionMark2.push(questionList[i]);
+            console.log(questionMark2[i]);
+            
+     
+        }
+        
+    }
+    
+    console.log("all ql = " + questionList);
     //backupQList = questionList;
     //questionCount = questionList.length;
     
@@ -1975,50 +2003,24 @@ function CreateQuestion(puzzle) {
         case 1:
             qType = "Answer the Question";
             
-            var questionMark = [];
+            answerSpot = getRandomInt(0, questionMark.length);
             
-            for (var i = 0; i < thisList.length; i++) {
+            if (questionMark.length > 0) {
                 
-                if (thisList[i].slice(-1) == "?") {
-                    
-                    questionMark.push(thisList[i]);
-                    
-             
-                }
+                getQuestion = questionMark[answerSpot];    
+                
+                
+            } else {
+                
+                questionMark = questionMark2.slice();
+                
+                answerSpot = getRandomInt(0, questionMark.length);
+                getQuestion = questionMark[answerSpot];    
                 
             }
             
-            getQuestion = questionMark[getRandomInt(0, questionMark.length)];
-            
-            
-            
-            if (newQList == false) {
-                
-                for (var i = 0; i < questionList.length; i++) {
-                    
-                    if (getQuestion == questionList[i]) {
-                            
-                        questionList.splice(i, 1);
-                        console.log("nql1 = false");
-                    }
-                    
-                    
-                }
+            questionMark.splice(answerSpot, 1);
 
-            } else if (newQList == true) {
-                
-                for (var i = 0; i < backupQList.length; i++) {
-                    
-                    if (getQuestion == backupQList[i]) {
-                        
-                        backupQList.splice(answerSpot, 1); 
-                        console.log("nql1 = true");
-                    }
-   
-                }
- 
-            }
-            
             answer = "Your teacher will check your answer.";
 
             break;
