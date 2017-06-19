@@ -290,6 +290,7 @@ var diceSound;
 var doorSound;
 var dragonSound;
 var earthquakeSound;
+var failSound;
 var fairySound;
 var forestSound;
 var frogSound;
@@ -2287,13 +2288,14 @@ function CheckAnswer(result) {
             getGold = getGold.setText((parseInt(getGold.text, 10) - adjustGold).toString());
             ScaleText("-" + adjustGold, currentPlayer - 1, "yellow");
             questionExplain.setText("Sorry, you lose " + adjustGold.toString() + " gold."); 
-
+            failSound.play();
         }
         else {
             
             getLife = getLife.setText((parseInt(getLife.text, 10) - adjustGold).toString());
             ScaleText("-" + adjustGold, currentPlayer - 1, "yellow");
             questionExplain.setText("Sorry.  Oh no! You have no gold! \nLose " + adjustGold.toString() + " life.");
+            failSound.play();
        }
        
     }   else {
@@ -4479,6 +4481,7 @@ function VillageResult() {
             getGold = getGold.setText((parseInt(getGold.text, 10) - 1).toString());
             ScaleText("-1", currentPlayer - 1, "yellow");
             turnText.setText("next");
+            failSound.play();
             break;
             
         case 4:
@@ -4499,6 +4502,7 @@ function VillageResult() {
             reroll = true;
             RunDelay(CreateMovementToken, 1, 4000);
             RunDelay(DeleteQuestion, "none", 3500);
+            failSound.play();
             
             break;
 
@@ -4538,6 +4542,7 @@ function CastleResult() {
             getGold = getGold.setText((parseInt(getGold.text, 10) - 1).toString());
             ScaleText("-1", currentPlayer - 1, "yellow");
             turnText.setText("turn \nover");
+            failSound.play();
             break;
             
         case 4:
@@ -4659,6 +4664,7 @@ function ForestResult() {
             ScaleText("-1", currentPlayer - 1, "red");
             turn = 1;
             turnText.setText("turn \over");
+            failSound.play();
             break;
             
         case 3:
@@ -4816,6 +4822,7 @@ function AntsResult() {
         case 1:
             choiceText.setText("The ants don't like you and take you away!  \nWhere are you?");
             Portal();
+            failSound.play();
             break;
             
         case 2:
@@ -4837,6 +4844,7 @@ function AntsResult() {
         case 3:
             choiceText.setText("The ants are angry!! \nGet ready to fight!");
             FightAnts();
+            failSound.play();
             break;
             
         case 4:
@@ -5108,6 +5116,7 @@ function TreasureResult() {
         choiceText.setText("There was a thief hiding here!  He steals 1 gold and runs away!");
         getGold = getGold.setText((parseInt(getGold.text, 10) - 3).toString());
         turnText.setText("turn \nover");
+        failSound.play();
         
     } else if (dieResult == 2) {
         treasureChest.loadTexture("treasurePoison");
@@ -5115,12 +5124,14 @@ function TreasureResult() {
         getLife = getLife.setText((parseInt(getLife.text, 10) - 1).toString());
         ScaleText("-1", currentPlayer - 1);
         turnText.setText("turn \nover");
+        failSound.play();
         
     } else {
         
         treasureChest.loadTexture("treasureEmpty");
         choiceText.setText("You get nothing! It's empty!");
         turnText.setText("turn \nover");
+        failSound.play();
         
     }
     
@@ -6034,6 +6045,7 @@ function AddSound() {
     doorSound = this.game.add.audio("doorSound");
     dragonSound = this.game.add.audio("dragonSound", .60);
     earthquakeSound = this.game.add.audio("earthquakeSound", .45);
+    failSound = this.game.add.audio("failSound", .65);
     fairySound = this.game.add.audio("fairySound");
     forestSound = this.game.add.audio("forestSound", .20);
     frogSound = this.game.add.audio("frogSound");
